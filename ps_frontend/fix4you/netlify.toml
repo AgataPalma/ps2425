@@ -4,8 +4,6 @@
 
 ## Rewrite image URLs marked with imgcdn=true to use Netlify Image CDN
 [[redirects]]
-  from = "/*"
-  query = {imgcdn = "true"}
-  to = "/.netlify/images?url=/:splat&fm=webp"
-  status = 200
-  force = true
+    from = "/*"
+    to = "/index.html"
+    status = 200
