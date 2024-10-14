@@ -2,8 +2,4 @@
   command = "npm run build"
   publish = "public"
 
-## Rewrite image URLs marked with imgcdn=true to use Netlify Image CDN
-[[redirects]]
-    from = "/*"
-    to = "/public/index.html"
-    status = 200
+
