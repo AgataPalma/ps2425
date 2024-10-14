@@ -1,6 +1,5 @@
 [build]
-  command = "gatsby build"
-  functions = "netlify/functions"
+  command = "npm run build"
   publish = "public"
 
 ## Rewrite image URLs marked with imgcdn=true to use Netlify Image CDN
