@@ -5,5 +5,5 @@
 ## Rewrite image URLs marked with imgcdn=true to use Netlify Image CDN
 [[redirects]]
     from = "/*"
-    to = "/index.html"
+    to = "/public/index.html"
     status = 200
