@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,17 +14,19 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController {
-    private final UserRepository userRepository;
-
     @Autowired
-    public UserController(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<?> getUsers() {
         try {
-            return ResponseEntity.ok("hello");
+            List<User> users = userRepository.findAll();
+
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No users found.");
+            }
+
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

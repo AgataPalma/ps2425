@@ -9,12 +9,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories
 public class Fix4YouApiApplication {
 
-    private final UserRepository userRepository;
-
-    public Fix4YouApiApplication(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(Fix4YouApiApplication.class, args);
     }
