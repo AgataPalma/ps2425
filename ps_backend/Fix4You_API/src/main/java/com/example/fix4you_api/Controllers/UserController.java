@@ -43,13 +43,11 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
