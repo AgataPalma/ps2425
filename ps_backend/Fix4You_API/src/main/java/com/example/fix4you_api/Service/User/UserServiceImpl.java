@@ -2,7 +2,11 @@ package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
+import com.example.fix4you_api.Service.Login.LoginRequest;
+import com.example.fix4you_api.Utils.Encrypt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,5 +51,30 @@ public class UserServiceImpl implements UserService {
     private User findOrThrow(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(String.format("User %s not found", id)));
+    }
+
+    @Override
+    public User loginUser(LoginRequest request) {
+        try {
+
+            List<User> users = userRepository.findAll();
+            for (User user : users) {
+                if(user.getEmail().equals(request.getEmail())) {
+
+                    // encript password request
+                    Encrypt encrypt = new Encrypt();
+                    String encPswd = encrypt.encrypt(request.getPassword());
+
+                    // Success
+                    if(encPswd.equals(request.getPassword())) {
+                        return user;
+                    }
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return null;
+        }
     }
 }

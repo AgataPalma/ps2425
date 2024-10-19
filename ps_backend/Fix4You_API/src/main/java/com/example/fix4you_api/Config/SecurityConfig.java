@@ -27,11 +27,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/rest/auth/**").permitAll()
+                        .requestMatchers("/users/login").permitAll()    // all users are allowed
+                        .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // only the role USER is allowed (hasRole("CLIENT"))
                         .anyRequest().authenticated())
-                .sessionManagement(session -> session
+                        .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-// Disable sessions
 
         // Add the JWT filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
