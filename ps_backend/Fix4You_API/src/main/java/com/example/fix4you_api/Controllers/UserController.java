@@ -44,6 +44,37 @@ public class UserController {
         this.userDetailsService = userDetailsService;
     }
 
+    @GetMapping
+    public ResponseEntity<?> getUsers() {
+        List<User> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
+        }
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.createUser(user));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUser(id, user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok(String.format("User %s deleted", id));
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<?> createToken(@RequestBody LoginRequest request) throws Exception {
         try {
@@ -62,22 +93,6 @@ public class UserController {
             return ResponseEntity.ok(jwtResponse);
         } catch (Exception e) {
             throw new Exception("[ERROR LOGIN]: " +  e);
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getUsers() {
-        try {
-            List<User> users = userRepository.findAll();
-
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No users found.");
-            }
-
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
