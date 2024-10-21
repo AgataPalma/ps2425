@@ -5,25 +5,23 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-@Document("Professionals")
-public class Professional extends User {
+public class Professional extends Client {
 
     @Field
     @NotBlank(message = "Description cannot be blank")
+    @Size(max = 500, message = "Description must be less than 500 characters")
     private String description;
 
     @Field
     @NotBlank(message = "NIF cannot be blank")
-    @Size(min = 9, max = 9, message = "NIF must be 9 characters long")
+    @Pattern(regexp = "\\d{9}", message = "NIF must contain exactly 9 digits")
     private String nif;
 
     @Field

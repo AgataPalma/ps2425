@@ -1,16 +1,11 @@
 package com.example.fix4you_api.Auth;
 
-import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
-import com.example.fix4you_api.Utils.Encrypt;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
