@@ -1,6 +1,8 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Auth;
 
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

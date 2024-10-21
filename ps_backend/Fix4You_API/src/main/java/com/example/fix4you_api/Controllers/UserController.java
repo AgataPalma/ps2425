@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.LoginRequest;
 import com.example.fix4you_api.Service.User.UserService;

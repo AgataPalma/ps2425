@@ -2,7 +2,10 @@ package com.example.fix4you_api.Data.Models;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

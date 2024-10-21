@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.User;
 
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Service.Login.LoginRequest;
 
 import java.util.List;
