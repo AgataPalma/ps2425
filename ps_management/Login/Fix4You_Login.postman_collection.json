@@ -1,0 +1,34 @@
+{
+	"info": {
+		"_postman_id": "3b505afb-1c22-44c5-be97-acee6c534f78",
+		"name": "Fix4You_Login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31211363",
+		"_collection_link": "https://haupper.postman.co/workspace/Haupper~3db697c2-0c13-493b-b6e5-1b01af711100/collection/31211363-3b505afb-1c22-44c5-be97-acee6c534f78?action=share&source=collection_link&creator=31211363"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"example@gmail.com\",\r\n    \"password\" : \"1231123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/users/login"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
