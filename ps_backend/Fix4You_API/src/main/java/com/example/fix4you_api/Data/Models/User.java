@@ -44,8 +44,6 @@ public class User {
     private String phoneNumber;
 
     @Field
-    @PastOrPresent(message = "Creation date must be in the past or present")
-    @NotNull(message = "Date of creation cannot be null")
     private LocalDateTime dateCreation;
 
     @Field

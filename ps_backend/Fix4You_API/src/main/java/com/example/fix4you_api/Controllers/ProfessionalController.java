@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,8 @@ public class ProfessionalController {
     @PostMapping
     public ResponseEntity<String> addProfessional(@RequestBody Professional professional) {
         try {
+            LocalDateTime dateCreation = LocalDateTime.now();
+            professional.setDateCreation(dateCreation);
             this.professionalRepository.save(professional);
             return ResponseEntity.ok("Professional Added!");
         } catch (Exception e) {
