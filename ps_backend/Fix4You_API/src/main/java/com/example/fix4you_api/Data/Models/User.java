@@ -30,7 +30,6 @@ public class User {
     private String email;
 
     @Field
-    @JsonIgnore
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
