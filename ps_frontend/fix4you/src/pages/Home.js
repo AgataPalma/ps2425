@@ -1,14 +1,13 @@
 import React from 'react';
 import '../index.css';
 import backgroundImage from '../images/background.png';
-import Header from '../components/HeaderNotLogged';
 import Footer from '../components/Footer';
 
 const Home = () => {
   return (
     <div style={{ backgroundImage: `url(${backgroundImage})` }}>
 
-      <Header />
+
 
       <main className="bg-white bg-opacity-75 py-12 ">
 

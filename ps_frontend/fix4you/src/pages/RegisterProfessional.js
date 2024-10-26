@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import '../index.css';
-import Header from '../components/HeaderNotLogged';
 import Footer from '../components/Footer';
 
 const RegisterProfessional = () => {
@@ -31,7 +30,7 @@ const RegisterProfessional = () => {
 
   return (
     <div class="bg-gray-200">
-      <Header />
+
       <div class="sm:mx-auto sm:w-full sm:max-w-lg py-12">
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Register to Contact a Professional

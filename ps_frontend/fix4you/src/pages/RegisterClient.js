@@ -1,6 +1,5 @@
 import React from 'react';
 import '../index.css';
-import Header from '../components/HeaderNotLogged';
 import Footer from '../components/Footer';
 
 
@@ -8,7 +7,7 @@ const RegisterClient = () => {
     return (
 
         <div class="bg-gray-200">
-            <Header />
+
             <div class="sm:mx-auto sm:w-full sm:max-w-sm py-12">
                 <h2 class=" text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Register to Contact a Professional</h2>
             </div>
