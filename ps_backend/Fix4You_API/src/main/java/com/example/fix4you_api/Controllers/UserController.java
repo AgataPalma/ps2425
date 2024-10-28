@@ -54,9 +54,9 @@ public class UserController {
             users = this.userRepository.findByUserType(EnumUserType.CLIENT);
         } else if(Objects.equals(type, "ADMIN")) {
             users = this.userRepository.findByUserType(EnumUserType.ADMIN);
+        } else {
+            users = userService.getAllUsers();
         }
-
-        users = userService.getAllUsers();
 
         if (users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
