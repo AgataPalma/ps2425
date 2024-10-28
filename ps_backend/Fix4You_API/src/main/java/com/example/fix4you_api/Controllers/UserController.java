@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.LoginRequest;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("users")
@@ -44,8 +46,18 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<?> getUsers(@PathVariable String type) {
+        List<User> users = null;
+        if(Objects.equals(type, "PROFESSIONAL")) {
+            users = this.userRepository.findByUserType(EnumUserType.PROFESSIONAL);
+        } else if(Objects.equals(type, "CLIENT")) {
+            users = this.userRepository.findByUserType(EnumUserType.CLIENT);
+        } else if(Objects.equals(type, "ADMIN")) {
+            users = this.userRepository.findByUserType(EnumUserType.ADMIN);
+        }
+
+        users = userService.getAllUsers();
+
         if (users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
         }
