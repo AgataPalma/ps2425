@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -16,7 +17,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document("CategoryDescriptions")
 public class CategoryDescription {
 
-    //ID????
+    @Id
+    private String id;
 
     @Field
     @NotNull(message = "Professional ID cannot be null")
