@@ -73,25 +73,20 @@ public class UserController {
         return ResponseEntity.ok(String.format("User %s deleted", id));
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<?> createToken(@RequestBody LoginRequest request) throws Exception {
-        try {
-            // retrieve data from dataBase
-            User userLogin = userService.loginUser(request);
-            if(userLogin == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
-            }
-
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
-
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
-            final String jwt = jwtUtil.generateToken(userLogin.getEmail());
-            JwtResponse jwtResponse = new JwtResponse(jwt);
-
-            return ResponseEntity.ok(jwtResponse);
-        } catch (Exception e) {
-            throw new Exception("[ERROR LOGIN]: " +  e);
+    public ResponseEntity<?> createToken(@RequestBody LoginRequest request) {
+        // retrieve data from dataBase
+        User userLogin = userService.loginUser(request);
+        if(userLogin == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
         }
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
+        final String jwt = jwtUtil.generateToken(userLogin.getEmail());
+        JwtResponse jwtResponse = new JwtResponse(jwt);
+
+        return ResponseEntity.ok(jwtResponse);
     }
 }
