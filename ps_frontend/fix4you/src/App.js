@@ -29,7 +29,7 @@ function App() {
     };
 
     useEffect(() => {
-        handleLogin(null); //log in as a client or professional for testing
+        handleLogin('professional'); //log in as a client or professional for testing
 
 
         const type = localStorage.getItem('userType');
