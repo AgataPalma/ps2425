@@ -57,6 +57,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
         existingProfessional.setCompany(professional.isCompany());
 
+
         return professionalRepository.save(existingProfessional);
     }
 
