@@ -30,6 +30,12 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()    // all users are allowed
                         .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // only the role USER is allowed (hasRole("CLIENT"))
                         .requestMatchers("/professionals").permitAll()
+                        .requestMatchers("/categoryDescriptions").permitAll()
+                        .requestMatchers("/categoryDescriptions/*").permitAll()
+                        .requestMatchers("/categoryDescriptions/user/*").permitAll()
+                        .requestMatchers("/portfolioItems").permitAll()
+                        .requestMatchers("/portfolioItems/*").permitAll()
+                        .requestMatchers("/portfolioItems/user/*").permitAll()
                         .anyRequest().authenticated())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
