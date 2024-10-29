@@ -39,7 +39,24 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Override
     @Transactional
     public Professional updateProfessional(String id, Professional professional) {
-        Professional existingProfessional = findOrThrow(professional.getId());
+        Professional existingProfessional = findOrThrow(id);
+
+        existingProfessional.setEmail(professional.getEmail());
+        existingProfessional.setPassword(professional.getPassword());
+        existingProfessional.setDateCreation(professional.getDateCreation());
+        existingProfessional.setUserType(professional.getUserType());
+        existingProfessional.setName(professional.getName());
+        existingProfessional.setPhoneNumber(professional.getPhoneNumber());
+        existingProfessional.setLanguages(professional.getLanguages());
+        existingProfessional.setProfileImage(professional.getProfileImage());
+        existingProfessional.setAgeValidation(professional.isAgeValidation());
+        existingProfessional.setDescription(professional.getDescription());
+        existingProfessional.setNif(professional.getNif());
+        existingProfessional.setLocation(professional.getLocation());
+        existingProfessional.setLocationsRange(professional.getLocationsRange());
+        existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
+        existingProfessional.setCompany(professional.isCompany());
+
         return professionalRepository.save(existingProfessional);
     }
 

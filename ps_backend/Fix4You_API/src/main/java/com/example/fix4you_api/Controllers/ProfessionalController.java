@@ -56,7 +56,7 @@ public class ProfessionalController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProfessional(@PathVariable String id, @RequestBody Professional professional) {
-        return ResponseEntity.ok(professionalService.updateProfessional(id, professional));
+       return ResponseEntity.ok(professionalService.updateProfessional(id, professional));
     }
 
     @PatchMapping("/{id}")
