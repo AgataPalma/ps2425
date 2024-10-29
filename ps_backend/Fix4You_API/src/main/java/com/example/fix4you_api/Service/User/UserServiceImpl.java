@@ -53,26 +53,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User loginUser(LoginRequest request) {
-        try {
-
-            List<User> users = userRepository.findAll();
-            for (User user : users) {
-                if(user.getEmail().equals(request.getEmail())) {
-
-                    // encript password request
-                    Encrypt encrypt = new Encrypt();
-                    String encPswd = encrypt.encrypt(request.getPassword());
-
-                    // Success
-                    if(encPswd.equals(request.getPassword())) {
-                        return user;
-                    }
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if(user.getEmail().equals(request.getEmail())) {
+                // Success
+                if(user.getPassword().equals(request.getPassword())) {
+                    return user;
                 }
             }
-            return null;
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return null;
         }
+        return null;
     }
 }

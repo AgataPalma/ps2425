@@ -5,6 +5,7 @@ import com.example.fix4you_api.Auth.JwtUtil;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.LoginRequest;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,7 +73,6 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok(String.format("User %s deleted", id));
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> createToken(@RequestBody LoginRequest request) throws Exception {
