@@ -33,6 +33,15 @@ public class SecurityConfig {
                         .requestMatchers("/professionals").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
                         .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
+                        .requestMatchers("/categoryDescriptions").permitAll()
+                        .requestMatchers("/categoryDescriptions/*").permitAll()
+                        .requestMatchers("/categoryDescriptions/user/*").permitAll()
+                        .requestMatchers("/portfolioItems").permitAll()
+                        .requestMatchers("/portfolioItems/*").permitAll()
+                        .requestMatchers("/portfolioItems/user/*").permitAll()
+                        .requestMatchers("/professionalFees").permitAll()
+                        .requestMatchers("/professionalFees/*").permitAll()
+                        .requestMatchers("/professionalFees/user/*").permitAll()
                         .anyRequest().authenticated())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
