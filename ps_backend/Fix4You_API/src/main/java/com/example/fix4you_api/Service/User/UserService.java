@@ -17,4 +17,6 @@ public interface UserService {
     void deleteUser(String id);
 
     User loginUser(LoginRequest request);
+
+    boolean sendEmailWithVerificationToken(User user);
 }

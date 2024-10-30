@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.RequestContextFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,12 +25,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RequestContextFilter requestContextFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/login").permitAll()    // all users are allowed
                         .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // only the role USER is allowed (hasRole("CLIENT"))
                         .requestMatchers("/professionals").permitAll()
+                        .requestMatchers("/users/resetPasswordToken/**").permitAll()
+                        .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
                         .anyRequest().authenticated())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
