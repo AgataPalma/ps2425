@@ -12,6 +12,11 @@ import RegisterClient from './pages/RegisterClient';
 import RegisterProfessional from './pages/RegisterProfessional';
 import Header from './components/Header';
 import 'tailwindcss/tailwind.css';
+import PrincipalPageClient from "./pages/PrincipalPageClient";
+import PrincipalPageProfessional from "./pages/PrincipalPageProfessional";
+import MyRequests from "./pages/MyRequests";
+import NewRequests from "./pages/NewRequests";
+import RequestService from "./pages/RequestService";
 
 function App() {
 
@@ -105,6 +110,37 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/PrincipalPageClient"
+                        element={
+                            <PrincipalPageClient />
+                        }
+                    />
+                    <Route
+                        path="/PrincipalPageProfessional"
+                        element={
+                            <PrincipalPageProfessional />
+                        }
+                    />
+                    <Route
+                        path="/MyRequests"
+                        element={
+                            <MyRequests />
+                        }
+                    />
+                    <Route
+                        path="/NewRequests"
+                        element={
+                            <NewRequests />
+                        }
+                    />
+                    <Route
+                        path="/RequestService"
+                        element={
+                            <RequestService />
+                        }
+                    />
+
                 </Routes>
             </div>
         </Router>
