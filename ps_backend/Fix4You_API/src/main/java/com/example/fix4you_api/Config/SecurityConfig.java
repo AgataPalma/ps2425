@@ -36,6 +36,9 @@ public class SecurityConfig {
                         .requestMatchers("/portfolioItems").permitAll()
                         .requestMatchers("/portfolioItems/*").permitAll()
                         .requestMatchers("/portfolioItems/user/*").permitAll()
+                        .requestMatchers("/professionalFees").permitAll()
+                        .requestMatchers("/professionalFees/*").permitAll()
+                        .requestMatchers("/professionalFees/user/*").permitAll()
                         .anyRequest().authenticated())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

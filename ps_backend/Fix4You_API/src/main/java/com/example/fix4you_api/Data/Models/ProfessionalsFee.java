@@ -40,8 +40,6 @@ public class ProfessionalsFee {
     private String relatedMonth;
 
     @Field
-    @NotNull(message = "Payment date cannot be null")
-    @Future(message = "Payment date must be in the future")
     private LocalDateTime paymentDate;
 
     @Field
