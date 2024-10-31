@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ProfessionalRepository extends MongoRepository<Professional, String> {
-    List<User> findByUserType(EnumUserType userType);
-    User findByEmail(String email);
+    List<Professional> findByUserType(EnumUserType userType);
+    Professional findByEmail(String email);
 }
