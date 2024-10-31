@@ -1,0 +1,520 @@
+{
+	"info": {
+		"_postman_id": "6d09dc85-ef87-4c4f-87a0-36e452177a23",
+		"name": "Fix4You_ProfileManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31975943"
+	},
+	"item": [
+		{
+			"name": "Portfolio Items",
+			"item": [
+				{
+					"name": "portfolioItems",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"professionalId\": \"671fdf62a68b216e6101b20f\",\r\n    \"mediaContent\": [],\r\n    \"description\": \"description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/portfolioItems",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "portfolioItems",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"67212390aaed522ce3777269\",\r\n    \"professionalId\": \"671fdf62a68b216e6101b20f\",\r\n    \"mediaContent\": [],\r\n    \"description\": \"description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/portfolioItems/67212390aaed522ce3777269",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems",
+								"67212390aaed522ce3777269"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "portfolioItems",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/portfolioItems",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "portfolioItems",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/portfolioItems/67212415aaed522ce377726a",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems",
+								"67212415aaed522ce377726a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "portfolioItems",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/portfolioItems/user/671fdf62a68b216e6101b20f",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems",
+								"user",
+								"671fdf62a68b216e6101b20f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category Descriptions",
+			"item": [
+				{
+					"name": "categoryDescriptions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjIwODMwLCJleHAiOjE3MzAyMjQ0MzB9.1QYFxepUZoxMzw9pRojI4RpE7iHJsh60i5bCXXouuQc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categoryDescriptions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjIzNjkxLCJleHAiOjE3MzAyMjcyOTF9.mejsJEEX7Gv7E7xzeF5wRvH3FZ4C_gi5LQ6gV0ZTsgM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idProfessional\": \"671fdf62a68b216e6101b20f\",\r\n    \"category\": \"CLEANING\",\r\n    \"chargesTravels\": true,\r\n    \"providesInvoices\": true,\r\n    \"mediumPricePerService\": 1.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categoryDescriptions",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjIwODMwLCJleHAiOjE3MzAyMjQ0MzB9.1QYFxepUZoxMzw9pRojI4RpE7iHJsh60i5bCXXouuQc",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"67211e2449057153c81bd2f7\",\r\n    \"idProfessional\": \"671fdf62a68b216e6101b20f\",\r\n    \"category\": \"CLEANING\",\r\n    \"chargesTravels\": true,\r\n    \"providesInvoices\": true,\r\n    \"mediumPricePerService\": 1.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions/67211e2449057153c81bd2f7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions",
+								"67211e2449057153c81bd2f7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categoryDescriptions",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjIwODMwLCJleHAiOjE3MzAyMjQ0MzB9.1QYFxepUZoxMzw9pRojI4RpE7iHJsh60i5bCXXouuQc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions/67211e5849057153c81bd2f8",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions",
+								"67211e5849057153c81bd2f8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categoryDescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjIwODMwLCJleHAiOjE3MzAyMjQ0MzB9.1QYFxepUZoxMzw9pRojI4RpE7iHJsh60i5bCXXouuQc",
+								"type": "text"
+							},
+							{
+								"key": "id",
+								"value": "671fdf62a68b216e6101b20f",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions/user/671fdf62a68b216e6101b20f",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions",
+								"user",
+								"671fdf62a68b216e6101b20f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Professional Fees",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"value\": \"2.0\",\r\n    \"numberServices\": 3,\r\n    \"relatedMonth\": \"october\",\r\n    \"paymentStatus\": \"PENDING\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/professionalFees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/professionalFees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/professionalFees/67224e8f7f56b41c93f6f912",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees",
+								"67224e8f7f56b41c93f6f912"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/professionalFees/user/67215aa5c2ad4e541eff00de",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees",
+								"user",
+								"67215aa5c2ad4e541eff00de"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"67224e8f7f56b41c93f6f912\",\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"value\": \"3.0\",\r\n    \"numberServices\": 3,\r\n    \"relatedMonth\": \"october\",\r\n    \"paymentStatus\": \"PENDING\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/professionalFees/67224e8f7f56b41c93f6f912",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees",
+								"67224e8f7f56b41c93f6f912"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMzAwODI2LCJleHAiOjE3MzAzMDQ0MjZ9.HtYfnc2NaAqs6q761-7doLmZGMdKW2sfsue2lJx93YY",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/professionalFees/67224e8f7f56b41c93f6f912",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionalFees",
+								"67224e8f7f56b41c93f6f912"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

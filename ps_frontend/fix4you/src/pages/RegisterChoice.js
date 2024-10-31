@@ -1,6 +1,5 @@
 import React from 'react';
 import '../index.css';
-import Header from '../components/HeaderNotLogged';
 import Footer from '../components/Footer';
 import professionalImage from '../images/professional.png';
 import clientImage from '../images/client.png';
@@ -10,7 +9,7 @@ import { Link } from 'react-router-dom';
 const RegisterChoice = () => {
     return (
         <div className="h-screen bg-gray-200 text-black font-sans">
-            <Header />
+
 
             <div className="flex justify-center space-x-8 my-16">
                 <div

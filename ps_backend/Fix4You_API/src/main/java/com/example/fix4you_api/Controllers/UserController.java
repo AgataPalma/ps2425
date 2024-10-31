@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.LoginRequest;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("users")
@@ -45,8 +47,18 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<?> getUsers(@PathVariable String type) {
+        List<User> users = null;
+        if(Objects.equals(type, "PROFESSIONAL")) {
+            users = this.userRepository.findByUserType(EnumUserType.PROFESSIONAL);
+        } else if(Objects.equals(type, "CLIENT")) {
+            users = this.userRepository.findByUserType(EnumUserType.CLIENT);
+        } else if(Objects.equals(type, "ADMIN")) {
+            users = this.userRepository.findByUserType(EnumUserType.ADMIN);
+        } else {
+            users = userService.getAllUsers();
+        }
+
         if (users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
         }
@@ -75,23 +87,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createToken(@RequestBody LoginRequest request) throws Exception {
-        try {
-            // retrieve data from dataBase
-            User userLogin = userService.loginUser(request);
-            if(userLogin == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
-            }
-
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
-
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
-            final String jwt = jwtUtil.generateToken(userLogin.getEmail());
-            JwtResponse jwtResponse = new JwtResponse(jwt);
-
-            return ResponseEntity.ok(jwtResponse);
-        } catch (Exception e) {
-            throw new Exception("[ERROR LOGIN]: " +  e);
+    public ResponseEntity<?> createToken(@RequestBody LoginRequest request) {
+        // retrieve data from dataBase
+        User userLogin = userService.loginUser(request);
+        if(userLogin == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
         }
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
+        final String jwt = jwtUtil.generateToken(userLogin.getEmail());
+        JwtResponse jwtResponse = new JwtResponse(jwt);
+
+        return ResponseEntity.ok(jwtResponse);
     }
 }

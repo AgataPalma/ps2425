@@ -1,6 +1,5 @@
 import React from 'react';
 import '../index.css';
-import Header from '../components/HeaderNotLogged';
 import Footer from '../components/Footer';
 
 
@@ -8,7 +7,7 @@ const RegisterChoice = () => {
     return (
 
         <div class="bg-gray-200">
-            <Header />
+
             <div class="sm:mx-auto sm:w-full sm:max-w-sm py-12">
                 <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
             </div>
