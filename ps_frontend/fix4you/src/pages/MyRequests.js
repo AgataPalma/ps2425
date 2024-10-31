@@ -14,7 +14,7 @@ const MyRequests = () => {
                 <br/><br/>
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                     {Array(4).fill(0).map((_, index) => (
-                        <div key={index} className="rounded-xl shadow-lg bg-gray-50">
+                        <div key={index} className="rounded-xl shadow-lg bg-gray-50 p-4">
                             <div className="flex items-center space-x-4">
                                 <img src={user} alt="Profile" className="w-20 h-20"/>
                                 <div className="flex-1">
