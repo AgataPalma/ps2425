@@ -3,8 +3,8 @@ package com.example.fix4you_api.Service.User;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.LoginRequest;
-import com.example.fix4you_api.Utils.Encrypt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(String id, User user) {
         User existingUser = findOrThrow(user.getId());
+        BeanUtils.copyProperties(user, existingUser, "id");
         return userRepository.save(existingUser);
     }
 
