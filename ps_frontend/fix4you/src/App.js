@@ -34,7 +34,7 @@ function App() {
     };
 
     useEffect(() => {
-        handleLogin('professional'); //log in as a client or professional for testing
+        handleLogin('client'); //log in as a client or professional for testing
 
 
         const type = localStorage.getItem('userType');
@@ -65,6 +65,7 @@ function App() {
             <div>
                 <Header userType={userType} handleLogout={handleLogout} />
                 <Routes>
+                    <Route path="/" element={<Navigate to="/Home" />} />
                     <Route path="/Home" element={<Home />} />
                     <Route path="/RegisterChoice" element={!userType ? <RegisterChoice /> : <Navigate to="/Home" />} />
                     <Route path="/Login" element={!userType ? <Login /> : <Navigate to="/Home" />} />

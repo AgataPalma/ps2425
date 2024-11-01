@@ -24,7 +24,9 @@ const Header = ({ userType, handleLogout }) => {
                             {userType === 'client' && (
                                 <>
                                     {/*<Link to="/client-profile" className="text-gray-800 hover:text-gray-900">Perfil</Link>*/}
-                                    <Link to="/client-requests-history" className="text-gray-800 hover:text-gray-900">Os meus pedidos</Link>
+                                    <Link to="/RequestService" className="text-gray-800 hover:text-gray-900">Pedir um Serviço</Link>
+                                    <Link to="/MyRequests" className="text-gray-800 hover:text-gray-900">Os meus pedidos</Link>
+                                    <Link to="/client-requests-history" className="text-gray-800 hover:text-gray-900">Histórico de Pedidos</Link>
                                     <Link to="/client-profile"><img src={profileIcon} alt="profile" className="h-10" /></Link>
                                 </>
                             )}
@@ -32,6 +34,8 @@ const Header = ({ userType, handleLogout }) => {
                                 <>
                                     {/*<Link to="/professional-profile"
                                        className="text-gray-600 hover:text-gray-900">Perfil</Link>*/}
+                                    <Link to="/NewRequests"
+                                          className="text-gray-600 hover:text-gray-900">Novos Pedidos</Link>
                                     <Link to="/professional-requests-history"
                                        className="text-gray-600 hover:text-gray-900">Histórico de Serviços</Link>
                                     <Link to="/professional-calendar"
