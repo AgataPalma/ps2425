@@ -10,6 +10,7 @@ import com.example.fix4you_api.Utils.Encrypt;
 import com.example.fix4you_api.Utils.RandomDigitStringGenerator;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.apache.tomcat.util.descriptor.tagplugin.TagPluginParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(String id, User user) {
         User existingUser = findOrThrow(user.getId());
+        BeanUtils.copyProperties(user, existingUser, "id");
         return userRepository.save(existingUser);
     }
 
