@@ -2,11 +2,15 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
+import com.example.fix4you_api.Data.Models.PasswordResetToken;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.User;
+import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
+import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.Login.LoginRequest;
 import com.example.fix4you_api.Service.User.UserService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,12 +43,15 @@ public class UserController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    public UserController(UserService userService, UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    public UserController(UserService userService, UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService, PasswordResetTokenRepository passwordResetToken) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.passwordResetTokenRepository = passwordResetToken;
     }
 
     @GetMapping
@@ -100,5 +109,46 @@ public class UserController {
         JwtResponse jwtResponse = new JwtResponse(jwt);
 
         return ResponseEntity.ok(jwtResponse);
+    }
+
+    @PostMapping("/send-email-verification/{email}")
+    public ResponseEntity<?> sendEmail(@PathVariable String email) {
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.ok("User not found");
+        }
+
+        userService.sendEmailWithVerificationToken(user);
+
+        return ResponseEntity.ok("Email sent successfully");
+    }
+
+    @GetMapping("/resetPasswordToken/{token}")
+    public String resetPasswordForm(@PathVariable String token) {
+        List<PasswordResetToken> listToken = passwordResetTokenRepository.findAll();
+        PasswordResetToken passwordResetToken = null;
+        for (PasswordResetToken currentToken : listToken) {
+            if(currentToken.getToken().equals(token)) {
+                passwordResetToken = currentToken;
+            }
+        }
+        // token valid
+        if (passwordResetToken != null && passwordResetToken.getExpiryDateTime().isAfter(LocalDateTime.now())) {
+            // redirect to the page to forget Password
+            return "resetPassword";
+        }
+
+        return "redirect:/forgotPassword?error";
+    }
+
+    @PostMapping("/resetPassword")
+    public String passwordResetProcess(@RequestBody LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail());
+        if(user != null) {
+            user.setPassword(request.getPassword());
+            userRepository.save(user);
+        }
+        return "redirect:/login";
     }
 }
