@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -18,6 +19,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
+        LocalDateTime dateTime = LocalDateTime.now();
+        client.setDateCreation(dateTime);
         return clientRepository.save(client);
     }
 
@@ -35,6 +38,8 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public Client updateClient(String id, Client client) {
         Client existingClient = findOrThrow(id);
+        LocalDateTime dateTime = LocalDateTime.now();
+        existingClient.setDateCreation(dateTime);
         BeanUtils.copyProperties(client, existingClient, "id");
         return clientRepository.save(existingClient);
     }

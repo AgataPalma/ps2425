@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -29,6 +30,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     public Professional createProfessional(Professional professional) {
+        LocalDateTime dateTime = LocalDateTime.now();
+        professional.setDateCreation(dateTime);
         return professionalRepository.save(professional);
     }
 
@@ -36,10 +39,11 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Transactional
     public Professional updateProfessional(String id, Professional professional) {
         Professional existingProfessional = findOrThrow(id);
+        LocalDateTime dateTime = LocalDateTime.now();
 
         existingProfessional.setEmail(professional.getEmail());
         existingProfessional.setPassword(professional.getPassword());
-        existingProfessional.setDateCreation(professional.getDateCreation());
+        professional.setDateCreation(dateTime);
         existingProfessional.setUserType(professional.getUserType());
         existingProfessional.setName(professional.getName());
         existingProfessional.setPhoneNumber(professional.getPhoneNumber());

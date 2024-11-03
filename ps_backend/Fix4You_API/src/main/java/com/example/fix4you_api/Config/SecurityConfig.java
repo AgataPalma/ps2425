@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/login").permitAll()    // all users are allowed
                         .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // only the role USER is allowed (hasRole("CLIENT"))
+                        .requestMatchers("/clients").permitAll()
                         .requestMatchers("/professionals").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
                         .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
@@ -42,6 +43,14 @@ public class SecurityConfig {
                         .requestMatchers("/professionalFees").permitAll()
                         .requestMatchers("/professionalFees/*").permitAll()
                         .requestMatchers("/professionalFees/user/*").permitAll()
+                        .requestMatchers("/services").permitAll()
+                        .requestMatchers("/services/*").permitAll()
+                        .requestMatchers("/services/professional/*").permitAll()
+                        .requestMatchers("/services/client/*").permitAll()
+                        .requestMatchers("/scheduleAppointments").permitAll()
+                        .requestMatchers("/scheduleAppointments/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/professional/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/client/*").permitAll()
                         .anyRequest().authenticated())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
