@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
+import com.example.fix4you_api.Service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +16,29 @@ import java.util.Map;
 @RequestMapping("professionals")
 public class ProfessionalController {
     private ProfessionalService professionalService;
+    private UserService userService;
 
     @Autowired
     private ProfessionalRepository professionalRepository;
 
     @Autowired
-    public ProfessionalController(ProfessionalService professionalService, ProfessionalRepository professionalRepository) {
+    public ProfessionalController(ProfessionalService professionalService, ProfessionalRepository professionalRepository, UserService userService) {
         this.professionalService = professionalService;
         this.professionalRepository = professionalRepository;
+        this.userService = userService;
     }
 
     @PostMapping
     public ResponseEntity<?> createProfessional(@RequestBody Professional professional) {
-        return ResponseEntity.ok(professionalService.createProfessional(professional));
+        Professional response = professionalService.createProfessional(professional);
+        if(response == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // send verification email
+        userService.sendValidationEmailUserRegistration(professional.getEmail());
+
+        return ResponseEntity.ok("Professional created! Email confirmation sent.");
     }
 
     @GetMapping
