@@ -1,0 +1,246 @@
+{
+	"info": {
+		"_postman_id": "31d0630d-656c-4f97-bef3-1a2b6195581d",
+		"name": "Fix4You_ScheduleAppointment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31975943"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"clientId\": \"6726a9628eb1fe556ec92198\",\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"dateStart\": \"2024-11-03T17:50:32.8995637\",\r\n    \"dateFinish\": \"2024-11-03T18:50:32.8995637\",\r\n    \"state\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"6727b8dc805cf7792bd19460\",\r\n    \"clientId\": \"6726a9628eb1fe556ec92198\",\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"dateStart\": \"2024-11-03T16:50:32.8995637\",\r\n    \"dateFinish\": \"2024-11-03T18:50:32.8995637\",\r\n    \"state\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/6727b8dc805cf7792bd19460",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"6727b8dc805cf7792bd19460"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/6727b8dc805cf7792bd19460",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"6727b8dc805cf7792bd19460"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"6727b8dc805cf7792bd19460\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/6727b8dc805cf7792bd19460",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"6727b8dc805cf7792bd19460"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dateStart\": \"2024-11-03T15:00:32.8995637\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/6727bb52805cf7792bd19461",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"6727bb52805cf7792bd19461"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/professional/67215aa5c2ad4e541eff00de",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"professional",
+						"67215aa5c2ad4e541eff00de"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/scheduleAppointments/client/6726a9628eb1fe556ec92198",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduleAppointments",
+						"client",
+						"6726a9628eb1fe556ec92198"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
