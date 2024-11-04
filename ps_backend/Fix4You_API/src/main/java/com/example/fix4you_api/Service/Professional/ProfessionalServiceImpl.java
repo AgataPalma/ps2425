@@ -29,7 +29,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     public Professional createProfessional(Professional professional) {
-        professional.setIsEmailConfirmed(false);
+        professional.setIsEmailConfirmed(true);
         return professionalRepository.save(professional);
     }
 

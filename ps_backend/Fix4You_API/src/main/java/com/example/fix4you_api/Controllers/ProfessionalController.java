@@ -36,7 +36,7 @@ public class ProfessionalController {
         }
 
         // send verification email
-        userService.sendValidationEmailUserRegistration(professional.getEmail());
+        //userService.sendValidationEmailUserRegistration(professional.getEmail());
 
         return ResponseEntity.ok("Professional created! Email confirmation sent.");
     }

@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Service.Client.ClientService;
+import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,18 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
         Client createdClient = clientService.createClient(client);
+        if(createdClient == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // send verification email
+        //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
+
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
