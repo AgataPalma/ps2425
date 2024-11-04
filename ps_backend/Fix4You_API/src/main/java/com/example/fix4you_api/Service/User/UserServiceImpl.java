@@ -98,7 +98,22 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    public String generateResetToken(User user) {
+    @Override
+    public void sendValidationEmailUserRegistration(String email) {
+        try {
+            String endpointURL = "http://localhost:8080/users/email-confirmation/" + email;
+            String body = "Hello \n\n" + "Please Click on this link to confirm your email address and complete your registration at Fix4You:" + endpointURL + ". \n\n";
+
+            emailSenderService.sendSimpleEmail(email,
+                    "Email confirmation Fix4You",
+                    body);
+        } catch (Exception e) {
+            System.err.println("[ERROR] - " + e.getMessage());
+        }
+
+    }
+
+    private String generateResetToken(User user) {
         UUID uuid = UUID.randomUUID();
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime expiryDateTime = currentDateTime.plusMinutes(30);
