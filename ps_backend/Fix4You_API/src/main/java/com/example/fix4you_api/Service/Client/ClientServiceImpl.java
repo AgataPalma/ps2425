@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,6 +20,9 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client createClient(Client client) {
         client.setIsEmailConfirmed(true);
+        if (client.getDateCreation() == null) {
+            client.setDateCreation(LocalDateTime.now());
+        }
         return clientRepository.save(client);
     }
 
