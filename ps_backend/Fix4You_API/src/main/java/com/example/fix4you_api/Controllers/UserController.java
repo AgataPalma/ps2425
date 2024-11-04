@@ -102,6 +102,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
         }
 
+        // check if email is confirmed
+        if(!userLogin.isIsEmailConfirmed()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You need to confirm your email!");
+        }
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
@@ -150,5 +155,17 @@ public class UserController {
             userRepository.save(user);
         }
         return "redirect:/login";
+    }
+
+    @GetMapping("/email-confirmation/{email}")
+    public ResponseEntity<?> emailConfirmation(@PathVariable String email) {
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            return ResponseEntity.ok("User not found");
+        }
+
+        user.setIsEmailConfirmed(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("Email confirmed");
     }
 }

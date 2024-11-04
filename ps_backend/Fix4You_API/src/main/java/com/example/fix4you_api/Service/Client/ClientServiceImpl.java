@@ -18,6 +18,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
+        client.setIsEmailConfirmed(false);
         return clientRepository.save(client);
     }
 
