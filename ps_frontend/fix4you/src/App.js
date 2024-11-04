@@ -31,6 +31,7 @@ function App() {
     const handleLogout = () => {
         setUserType(null);
         localStorage.removeItem('userType');
+        localStorage.removeItem('token');
     };
 
     useEffect(() => {
