@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/professionalFees/*").permitAll()
                         .requestMatchers("/professionalFees/user/*").permitAll()
                         .anyRequest().authenticated())
+                        //.anyRequest().permitAll())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
