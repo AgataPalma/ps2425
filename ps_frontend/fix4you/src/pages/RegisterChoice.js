@@ -23,7 +23,7 @@ const RegisterChoice = () => {
                     </p>
                     <p className="mb-6">Join today and start growing your business!</p>
                     <Link to="/RegisterProfessional">
-                    <button className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
+                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
                     </Link>
                 </div>
 
@@ -39,7 +39,7 @@ const RegisterChoice = () => {
                     </p>
                     <p className="mb-6">It's simple, fast, and free! 🔧</p>
                     <Link to="/RegisterClient">
-                    <button className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
+                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
                     </Link>
                 </div>
             </div>

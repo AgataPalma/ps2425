@@ -4,7 +4,10 @@ import logo from '../images/logo_blue1.png';
 import profileIcon from '../images/profile_icon.png';
 import { Link } from 'react-router-dom';
 
-const Header = ({ userType, handleLogout }) => {
+
+const Header = ({userType, handleLogout }) => {
+
+    
     console.log("UserType in Header:", userType);
     return (
         <header className="bg-white shadow">
