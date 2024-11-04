@@ -24,7 +24,7 @@ public class Professional extends Client {
 
     @Field
     @NotBlank(message = "NIF cannot be blank")
-    @Pattern(regexp = "\\d{9}", message = "NIF must contain exactly 9 digits")
+    @Pattern(regexp = "^[0-46-9]\\d{8}$", message = "NIF must contain exactly 9 digits and cannot start with 5")
     private String nif;
 
     @Field
@@ -40,5 +40,6 @@ public class Professional extends Client {
     private List<PaymentTypesEnum> acceptedPayments;
 
     @Field
-    private boolean isCompany;
+    @NotNull(message = "strikes cannot be null")
+    private int strikes;
 }

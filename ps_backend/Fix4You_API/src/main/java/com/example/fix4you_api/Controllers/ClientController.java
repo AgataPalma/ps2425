@@ -20,13 +20,8 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
         Client createdClient = clientService.createClient(client);
-        if(createdClient == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         // send verification email
-        //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
-
+        userService.sendValidationEmailUserRegistration(createdClient.getEmail());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 

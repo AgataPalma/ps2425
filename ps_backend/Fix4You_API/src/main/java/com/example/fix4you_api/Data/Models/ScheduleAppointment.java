@@ -23,6 +23,10 @@ public class ScheduleAppointment {
     private String id;
 
     @Field
+    @NotNull(message = "Service ID cannot be null")
+    private String serviceId;
+
+    @Field
     @NotNull(message = "Professional ID cannot be null")
     private String professionalId;
 

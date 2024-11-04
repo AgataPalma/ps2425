@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.Professional;
 
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
@@ -7,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -29,6 +33,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     public Professional createProfessional(Professional professional) {
+        professional.setDateCreation(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("UTC")));
+        professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
         return professionalRepository.save(professional);
     }
@@ -52,7 +58,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         existingProfessional.setLocation(professional.getLocation());
         existingProfessional.setLocationsRange(professional.getLocationsRange());
         existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
-        existingProfessional.setCompany(professional.isCompany());
+        existingProfessional.setStrikes(professional.getStrikes());
+        existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
 
         return professionalRepository.save(existingProfessional);
     }
@@ -65,12 +72,16 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
         updates.forEach((key, value) -> {
             switch (key) {
+                case "password" -> professional.setPassword((String) value);
+                case "name" -> professional.setName((String) value);
+                case "phoneNumber" -> professional.setPhoneNumber((String) value);
+                case "languages" -> professional.setLanguages((List<LanguageEnum>) value);
+                case "profileImage" -> professional.setProfileImage((byte[]) value);
                 case "description" -> professional.setDescription((String) value);
-                case "nif" -> professional.setNif((String) value);
                 case "location" -> professional.setLocation((String) value);
                 case "locationsRange" -> professional.setLocationsRange((Integer) value);
                 case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentTypesEnum>) value);
-                case "isCompany" -> professional.setCompany((Boolean) value);
+                case "strikes" -> professional.setStrikes((Integer) value);
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });

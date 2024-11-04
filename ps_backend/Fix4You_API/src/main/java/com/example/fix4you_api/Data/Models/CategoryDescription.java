@@ -22,7 +22,7 @@ public class CategoryDescription {
 
     @Field
     @NotNull(message = "Professional ID cannot be null")
-    private String idProfessional;
+    private String professionalId;
 
     @Field
     @NotNull(message = "Category cannot be null")
