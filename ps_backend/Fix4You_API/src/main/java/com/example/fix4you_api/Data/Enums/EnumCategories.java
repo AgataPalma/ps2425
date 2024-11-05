@@ -6,5 +6,13 @@ public enum EnumCategories {
     ELECTRICAL,
     GARDENING,
     PAINTING,
-    OTHER
+    OTHER;
+
+    public boolean contains(String category) {
+        if(category.contains("CLEANING") || category.contains("PLUMBING") || category.contains("ELECTRICAL")
+            || category.contains("GARDENING") || category.contains("PAINTING") || category.contains("OTHER")){
+            return true;
+        }
+        return false;
+    }
 }

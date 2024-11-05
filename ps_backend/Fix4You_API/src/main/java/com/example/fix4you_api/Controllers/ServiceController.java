@@ -1,24 +1,17 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.EnumCategories;
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.Service;
-import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
-import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/services")
@@ -128,6 +121,48 @@ public class ServiceController {
 
             serviceRepository.save(service);
             return ResponseEntity.ok(service);
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/search")
+    public ResponseEntity<?> searchServices(
+            @RequestBody Map<String, Object> updates) {
+        try {
+            List<Service> filteredServices = new ArrayList<>(this.serviceRepository.findAll());
+
+            // Apply filters based on the updates map
+            if (updates.containsKey("title")) {
+                String title = (String) updates.get("title");
+                filteredServices.removeIf(service -> !service.getTitle().contains(title));
+            }
+
+            if (updates.containsKey("category")) {
+                String category = (String) updates.get("category");
+                filteredServices.removeIf(service -> !service.getCategory().contains(category));
+            }
+
+            if (updates.containsKey("price")) {
+                Object priceValue = updates.get("price");
+
+                if (priceValue instanceof Double) {
+                    Double price = (Double) priceValue;
+                    filteredServices.removeIf(service -> service.getPrice() != price.floatValue());
+                } else if (priceValue instanceof Float) {
+                    Float price = (Float) priceValue;
+                    filteredServices.removeIf(service -> service.getPrice() != price);
+                }
+            }
+
+            if (updates.containsKey("address")) {
+                String address = (String) updates.get("address");
+                filteredServices.removeIf(service -> !service.getAddress().contains(address));
+            }
+
+            // Return the final filtered list of services
+            return ResponseEntity.ok(filteredServices);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
