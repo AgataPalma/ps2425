@@ -43,7 +43,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
         existingProfessional.setEmail(professional.getEmail());
         existingProfessional.setPassword(professional.getPassword());
-        professional.setDateCreation(dateTime);
+        existingProfessional.setDateCreation(dateTime);
         existingProfessional.setUserType(professional.getUserType());
         existingProfessional.setName(professional.getName());
         existingProfessional.setPhoneNumber(professional.getPhoneNumber());
