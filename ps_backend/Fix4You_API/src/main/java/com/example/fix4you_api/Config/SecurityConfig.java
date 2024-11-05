@@ -33,6 +33,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/email-confirmation/**").permitAll()
                         .requestMatchers("/professionals").permitAll()
                         .requestMatchers("/professionals/*").permitAll()
+                        .requestMatchers("/clients").permitAll()
+                        .requestMatchers("/clients/*").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
                         .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
                         .requestMatchers("/categoryDescriptions").permitAll()

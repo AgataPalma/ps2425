@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -21,7 +19,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
-        client.setDateCreation(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("UTC")));
+        client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         return clientRepository.save(client);
     }
