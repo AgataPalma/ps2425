@@ -23,4 +23,6 @@ public interface UserService {
     boolean sendEmailWithVerificationToken(User user);
 
     void sendValidationEmailUserRegistration(String email);
+
+    boolean emailExists(String email);
 }

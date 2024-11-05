@@ -15,13 +15,19 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Client> createClient(@RequestBody Client client) {
+    public ResponseEntity<?> createClient(@RequestBody Client client) {
+
+        // check if email already exists
+        if(userService.emailExists(client.getEmail())){
+            return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
+        }
+
         Client createdClient = clientService.createClient(client);
         // send verification email
-        userService.sendValidationEmailUserRegistration(createdClient.getEmail());
+        //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
