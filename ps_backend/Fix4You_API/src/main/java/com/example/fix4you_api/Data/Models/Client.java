@@ -30,8 +30,8 @@ public class Client extends User {
     private String phoneNumber;
 
     @Field
-    @NotNull(message = "Languages cannot be null")
-    private List<LanguageEnum> languages;
+    @NotBlank(message = "Location cannot be blank")
+    private String location;
 
     @Field
     @NotNull(message = "Profile image cannot be null")
