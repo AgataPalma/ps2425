@@ -61,6 +61,12 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @GetMapping("/admins")
+    public ResponseEntity<List<User>> getAllAdmins() {
+        List<User> users = userService.getAllAdmins();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") String id) {
         User user = userService.getUserById(id);

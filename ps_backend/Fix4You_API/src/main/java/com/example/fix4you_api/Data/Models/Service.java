@@ -27,7 +27,6 @@ public class Service {
     private String clientId;
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
     private String professionalId;
 
     @Field

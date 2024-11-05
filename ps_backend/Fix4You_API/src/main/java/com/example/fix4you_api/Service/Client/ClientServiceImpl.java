@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.Client;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<Client> getAllClients() {
-        return clientRepository.findAll();
+        return clientRepository.findByUserType(EnumUserType.CLIENT);
     }
 
     @Override

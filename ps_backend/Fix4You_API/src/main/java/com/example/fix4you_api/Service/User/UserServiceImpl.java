@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.User;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
@@ -32,6 +33,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> getAllAdmins() {
+        return userRepository.findByUserType(EnumUserType.ADMIN);
     }
 
     @Override
