@@ -1,9 +1,12 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
+import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
+import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.fix4you_api.Service.User.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,59 +16,55 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("professionals")
+@RequiredArgsConstructor
 public class ProfessionalController {
-    private ProfessionalService professionalService;
 
-    @Autowired
-    private ProfessionalRepository professionalRepository;
-
-    @Autowired
-    public ProfessionalController(ProfessionalService professionalService, ProfessionalRepository professionalRepository) {
-        this.professionalService = professionalService;
-        this.professionalRepository = professionalRepository;
-    }
+    private final ProfessionalService professionalService;
+    private final CategoryDescriptionService categoryDescriptionService;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createProfessional(@RequestBody Professional professional) {
-        return ResponseEntity.ok(professionalService.createProfessional(professional));
+    public ResponseEntity<Professional> createProfessional(@RequestBody ProfessionalRegistrationRequest professionalRegistrationRequest) {
+        Professional createdProfessioanl = professionalService.createProfessional(professionalRegistrationRequest.getProfessional());
+
+        professionalRegistrationRequest.getCategoryDescriptions().forEach(categoryDescription -> {
+            categoryDescription.setProfessionalId(createdProfessioanl.getId());
+            categoryDescriptionService.createCategoryDescription(categoryDescription);
+        });
+
+        // send verification email
+        userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
+        return new ResponseEntity<>(createdProfessioanl, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<?> getProfessionals() {
+    public ResponseEntity<List<Professional>> getAllProfessionals() {
         List<Professional> professionals = professionalService.getAllProfessionals();
-        if (professionals.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No professionals found.");
-        }
-        return ResponseEntity.ok(professionals);
+        return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProfessional(@PathVariable("id") String id) {
-        return ResponseEntity.ok(professionalService.getProfessionalById(id));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProfessional(@PathVariable String id) {
-        professionalService.deleteProfessional(id);
-        return ResponseEntity.ok(String.format("Professional %s deleted", id));
+    public ResponseEntity<Professional> getProfessionalById(@PathVariable("id") String id) {
+        Professional professional = professionalService.getProfessionalById(id);
+        return new ResponseEntity<>(professional, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfessional(@PathVariable String id, @RequestBody Professional professional) {
-        return ResponseEntity.ok(professionalService.updateProfessional(id, professional));
+    public ResponseEntity<Professional> updateProfessional(@PathVariable String id, @RequestBody Professional professional) {
+        Professional updatedProfessional = professionalService.updateProfessional(id, professional);
+        return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> partialUpdateProfessional(
-            @PathVariable String id,
-            @RequestBody Map<String, Object> updates) {
-        try {
-            Professional updatedProfessional = professionalService.partialUpdateProfessional(id, updates);
-            return ResponseEntity.ok(updatedProfessional);
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<Professional> partialUpdateProfessional(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        Professional updatedProfessional = professionalService.partialUpdateProfessional(id, updates);
+        return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
+        professionalService.deleteProfessional(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

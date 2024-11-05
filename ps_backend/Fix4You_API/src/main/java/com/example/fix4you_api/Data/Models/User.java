@@ -39,4 +39,8 @@ public class User {
     @Field
     @NotNull(message = "User type cannot be null")
     private EnumUserType userType;
+
+    @Field
+    @NotNull(message = "email confirmation cannot be null")
+    private boolean IsEmailConfirmed;
 }

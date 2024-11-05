@@ -19,8 +19,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
-        LocalDateTime dateTime = LocalDateTime.now();
-        client.setDateCreation(dateTime);
+        client.setDateCreation(LocalDateTime.now());
+        client.setIsEmailConfirmed(true);
         return clientRepository.save(client);
     }
 
@@ -38,8 +38,6 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public Client updateClient(String id, Client client) {
         Client existingClient = findOrThrow(id);
-        LocalDateTime dateTime = LocalDateTime.now();
-        existingClient.setDateCreation(dateTime);
         BeanUtils.copyProperties(client, existingClient, "id");
         return clientRepository.save(existingClient);
     }

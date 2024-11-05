@@ -19,4 +19,6 @@ public interface UserService {
     User loginUser(LoginRequest request);
 
     boolean sendEmailWithVerificationToken(User user);
+
+    void sendValidationEmailUserRegistration(String email);
 }

@@ -1,0 +1,96 @@
+{
+	"info": {
+		"_postman_id": "e0a520c9-1581-402f-9e50-fb8691129246",
+		"name": "PS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26080303"
+	},
+	"item": [
+		{
+			"name": "Professionals",
+			"item": [
+				{
+					"name": "Create Professional",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"professional\": {\r\n        \"email\": \"edu@gmail.com\",\r\n        \"password\": \"securePassword123\",\r\n        \"userType\": \"PROFESSIONAL\",\r\n        \"name\": \"Edu\",\r\n        \"phoneNumber\": \"916712475\",\r\n        \"languages\": [\"PORTUGUESE\", \"ENGLISH\"],\r\n        \"profileImage\": \"base64EncodedImageString\",\r\n        \"ageValidation\": true,\r\n        \"description\": \"description\",\r\n        \"nif\": \"213876542\",\r\n        \"location\": \"location\",\r\n        \"locationsRange\": 5,\r\n        \"acceptedPayments\": [\"CREDIT_CARD\", \"CASH\"],\r\n        \"isCompany\": false\r\n    },\r\n    \"categoryDescriptions\": [\r\n        {\r\n            \"category\": \"CLEANING\",\r\n            \"chargesTravels\": false,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 10\r\n        },\r\n        {\r\n            \"category\": \"ELECTRICAL\",\r\n            \"chargesTravels\": true,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 25.0\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/professionals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professionals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/professionals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professional by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Professional (Full)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"edu@gmail.com\",\r\n    \"password\": \"securePassword123\",\r\n    \"dateCreation\": \"2024-11-04T21:10:50.000\",\r\n    \"userType\": \"PROFESSIONAL\",\r\n    \"name\": \"Eduardo\",\r\n    \"phoneNumber\": \"916712978\",\r\n    \"languages\": [\"PORTUGUESE\", \"ENGLISH\"],\r\n    \"profileImage\": \"base64EncodedImageString\",\r\n    \"ageValidation\": true,\r\n    \"description\": \"description\",\r\n    \"nif\": \"213876543\",\r\n    \"location\": \"location\",\r\n    \"locationsRange\": 5,\r\n    \"acceptedPayments\": [\"CREDIT_CARD\", \"CASH\"],\r\n    \"strikes\": 0,\r\n    \"IsEmailConfirmed\": true\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Professional (Partial)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"description teste\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Professional",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/professionals/67293d2edf04b14b7ebd2fe4"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

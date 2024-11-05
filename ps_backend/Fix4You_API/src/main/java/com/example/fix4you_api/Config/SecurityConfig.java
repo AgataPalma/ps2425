@@ -29,9 +29,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/login").permitAll()    // all users are allowed
-                        .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // only the role USER is allowed (hasRole("CLIENT"))
-                        .requestMatchers("/clients").permitAll()
+                        .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")    // if only the role USER is allowed (hasRole("CLIENT"))
+                        .requestMatchers("/users/email-confirmation/**").permitAll()
                         .requestMatchers("/professionals").permitAll()
+                        .requestMatchers("/professionals/*").permitAll()
+                        .requestMatchers("/clients").permitAll()
+                        .requestMatchers("/clients/*").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
                         .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
                         .requestMatchers("/categoryDescriptions").permitAll()

@@ -62,6 +62,10 @@ public class Service {
     private ServiceStateEnum state;
 
     @Field
+    @NotNull(message = "isUrgent cannot be null")
+    private boolean isUrgent;
+
+    @Field
     @NotNull(message = "Languages cannot be null")
     private List<LanguageEnum> languages;
 
