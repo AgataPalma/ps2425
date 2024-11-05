@@ -46,8 +46,15 @@ public class SecurityConfig {
                         .requestMatchers("/professionalFees").permitAll()
                         .requestMatchers("/professionalFees/*").permitAll()
                         .requestMatchers("/professionalFees/user/*").permitAll()
+                        .requestMatchers("/services").permitAll()
+                        .requestMatchers("/services/*").permitAll()
+                        .requestMatchers("/services/professional/*").permitAll()
+                        .requestMatchers("/services/client/*").permitAll()
+                        .requestMatchers("/scheduleAppointments").permitAll()
+                        .requestMatchers("/scheduleAppointments/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/professional/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/client/*").permitAll()
                         .anyRequest().authenticated())
-                        //.anyRequest().permitAll())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

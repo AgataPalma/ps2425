@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Data.Models;
 
 import com.example.fix4you_api.Data.Enums.EnumCategories;
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -61,4 +64,12 @@ public class Service {
     @Field
     @NotNull(message = "isUrgent cannot be null")
     private boolean isUrgent;
+
+    @Field
+    @NotNull(message = "Languages cannot be null")
+    private List<LanguageEnum> languages;
+
+    @Field
+    @NotBlank(message = "Location cannot be blank")
+    private String location;
 }

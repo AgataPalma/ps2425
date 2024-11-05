@@ -32,7 +32,6 @@ public class ScheduleAppointment {
 
     @Field
     @NotNull(message = "Start date cannot be null")
-    @PastOrPresent(message = "Start date must be in the past or present")
     private LocalDateTime dateStart;
 
     @Field

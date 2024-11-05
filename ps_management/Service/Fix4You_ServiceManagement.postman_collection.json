@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "88020a52-d267-4fdc-ba67-e5ed5a2b12e0",
+		"name": "Fix4You_ServiceManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31975943"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"clientId\": \"6726a9628eb1fe556ec92198\",\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"price\": 1.0,\r\n    \"address\": \"Route 66\",\r\n    \"postalCode\": \"3100-100\",\r\n    \"category\": 0,\r\n    \"description\": \"desc\",\r\n    \"title\": \"tit\",\r\n    \"state\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/services",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/services",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/services/6726aaf681ffb27e82e698b5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services",
+						"6726aaf681ffb27e82e698b5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"6726aaf681ffb27e82e698b5\",\r\n    \"clientId\": \"6726a9628eb1fe556ec92198\",\r\n    \"professionalId\": \"67215aa5c2ad4e541eff00de\",\r\n    \"price\": 12.0,\r\n    \"address\": \"Route 66\",\r\n    \"postalCode\": \"3100-100\",\r\n    \"category\": 1,\r\n    \"description\": \"desc\",\r\n    \"title\": \"tit\",\r\n    \"state\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/services/6726aaf681ffb27e82e698b5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services",
+						"6726aaf681ffb27e82e698b5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/services/6726aaf681ffb27e82e698b5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services",
+						"6726aaf681ffb27e82e698b5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/services/professional/67215aa5c2ad4e541eff00de",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services",
+						"professional",
+						"67215aa5c2ad4e541eff00de"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwNTg1OTcwLCJleHAiOjE3MzA1ODk1NzB9.svhtFqpoSJ2OgDjxqiqu0zeym5wDG-eDWLyEbV7HkR4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/services/client/6726a9628eb1fe556ec92198",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"services",
+						"client",
+						"6726a9628eb1fe556ec92198"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
