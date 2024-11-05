@@ -119,6 +119,19 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public boolean emailExists(String email) {
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+            if(user.getEmail().equals(email)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private String generateResetToken(User user) {
         UUID uuid = UUID.randomUUID();
         LocalDateTime currentDateTime = LocalDateTime.now();

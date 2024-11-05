@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,19 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     public void deleteProfessional(String id) {
         Professional professional = findOrThrow(id);
         professionalRepository.delete(professional);
+    }
+
+
+    @Override
+    public boolean nifExists(String nif){
+        List<Professional> professionals = getAllProfessionals();
+
+        for(Professional professional : professionals) {
+            if(professional.getNif().equals(nif))
+                return true;
+        }
+
+        return false;
     }
 
     private Professional findOrThrow(String id) {
