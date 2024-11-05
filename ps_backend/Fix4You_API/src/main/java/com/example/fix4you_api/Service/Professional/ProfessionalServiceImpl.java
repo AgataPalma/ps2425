@@ -5,6 +5,7 @@ import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
+import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +17,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 @Service
 @RequiredArgsConstructor
 public class ProfessionalServiceImpl implements ProfessionalService {
 
     private final ProfessionalRepository professionalRepository;
+    private final RsqlQueryService rsqlQueryService;
 
     @Override
-    public List<Professional> getAllProfessionals() {
-        return professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
+    public List<Professional> getProfessionals(String filter, String sort) {
+        if (isEmpty(filter) && isEmpty(sort)) {
+            return professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
+        }
+        filter = !isEmpty(filter)
+                ? "(" + filter + ");userType==\"PROFESSIONAL\""
+                : "userType==\"PROFESSIONAL\"";
+
+        return rsqlQueryService.findAll(Professional.class, filter, sort);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProfessionalService {
-    List<Professional> getAllProfessionals();
+    List<Professional> getProfessionals(String filter, String sort);
 
     Professional getProfessionalById(String id);
 

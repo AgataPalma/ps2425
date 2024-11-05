@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
@@ -38,8 +37,10 @@ public class ProfessionalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Professional>> getAllProfessionals() {
-        List<Professional> professionals = professionalService.getAllProfessionals();
+    public ResponseEntity<List<Professional>> getProfessionals(
+            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "sort", required = false) String sort) {
+        List<Professional> professionals = professionalService.getProfessionals(filter, sort);
         return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
