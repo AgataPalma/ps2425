@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"name\": \"John\",\r\n        \"phoneNumber\": \"920111222\",\r\n        \"languages\": [\"PORTUGUESE\", \"ENGLISH\"],\r\n        \"profileImage\": \"base64EncodedImageString\",\r\n        \"ageValidation\": true,\r\n        \"description\": \"description\",\r\n        \"userType\": \"CLIENT\",\r\n        \"password\": \"password\",\r\n        \"email\": \"xxx@gmail.com\"\r\n}   ",
+							"raw": "{\r\n        \"name\": \"John\",\r\n        \"phoneNumber\": \"920111222\",\r\n        \"location\": \"locationClient\",\r\n         \"profileImage\": \"base64EncodedImageString\",\r\n        \"ageValidation\": true,\r\n        \"description\": \"description\",\r\n        \"userType\": \"CLIENT\",\r\n        \"password\": \"password\",\r\n        \"email\": \"xxx@gmail.com\"\r\n}   ",
 							"options": {
 								"raw": {
 									"language": "json"
