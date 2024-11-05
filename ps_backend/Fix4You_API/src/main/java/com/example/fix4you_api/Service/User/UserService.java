@@ -18,6 +18,8 @@ public interface UserService {
 
     User loginUser(LoginRequest request);
 
+    List<User> getAllAdmins();
+
     boolean sendEmailWithVerificationToken(User user);
 
     void sendValidationEmailUserRegistration(String email);

@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.Professional;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Professional;
@@ -23,7 +24,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     public List<Professional> getAllProfessionals() {
-        return professionalRepository.findAll();
+        return professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
     }
 
     @Override
