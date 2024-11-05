@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Data.Models;
 
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,9 +28,8 @@ public class Professional extends Client {
     @Pattern(regexp = "^[0-46-9]\\d{8}$", message = "NIF must contain exactly 9 digits and cannot start with 5")
     private String nif;
 
-    @Field
-    @NotBlank(message = "Location cannot be blank")
-    private String location;
+    @NotNull(message = "Languages cannot be null")
+    private List<LanguageEnum> languages;
 
     @Field
     @NotNull(message = "Locations range cannot be null")
