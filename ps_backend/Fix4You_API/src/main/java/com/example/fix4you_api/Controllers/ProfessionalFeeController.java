@@ -1,8 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Models.PortfolioItem;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
-import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

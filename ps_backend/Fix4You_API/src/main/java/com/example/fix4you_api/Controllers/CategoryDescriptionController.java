@@ -1,10 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
-import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("categoryDescriptions")
+@RequestMapping("/categoryDescriptions")
 public class CategoryDescriptionController {
+
     @Autowired
     private CategoryDescriptionRepository categoryDescriptionRepository;
 
@@ -49,7 +47,7 @@ public class CategoryDescriptionController {
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserCategoryDescriptions(@PathVariable("id") String idProfessional) {
         try {
-            List<CategoryDescription> categoryDescriptions = this.categoryDescriptionRepository.findByIdProfessional(idProfessional);
+            List<CategoryDescription> categoryDescriptions = this.categoryDescriptionRepository.findByProfessionalId(idProfessional);
             return ResponseEntity.ok(categoryDescriptions);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);

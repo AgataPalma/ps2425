@@ -19,10 +19,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
+        client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
-        if (client.getDateCreation() == null) {
-            client.setDateCreation(LocalDateTime.now());
-        }
         return clientRepository.save(client);
     }
 

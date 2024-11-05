@@ -21,6 +21,7 @@ public class Client extends User {
 
     @Field
     @NotBlank(message = "Name cannot be blank")
+    @Size(max = 50, message = "Description must be less than 500 characters")
     private String name;
 
     @Field

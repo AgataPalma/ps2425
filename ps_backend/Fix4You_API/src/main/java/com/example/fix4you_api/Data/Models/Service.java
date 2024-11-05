@@ -24,6 +24,10 @@ public class Service {
     private String clientId;
 
     @Field
+    @NotNull(message = "Professional ID cannot be null")
+    private String professionalId;
+
+    @Field
     @NotNull(message = "Price cannot be null")
     @DecimalMin(value = "0.0", message = "Price must be a positive value")
     @Digits(integer = 5, fraction = 2, message = "Price must be a numeric value with up to 5 digits and 2 decimal places")
@@ -53,4 +57,8 @@ public class Service {
     @Field
     @NotNull(message = "State cannot be null")
     private ServiceStateEnum state;
+
+    @Field
+    @NotNull(message = "isUrgent cannot be null")
+    private boolean isUrgent;
 }
