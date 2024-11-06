@@ -1,12 +1,19 @@
 package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
+import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ProfessionalService {
     List<Professional> getProfessionals(String filter, String sort);
+
+    List<ProfessionalData> getAllProfessionalsCompleteData();
+
+    // its used for client dashboard
+    List<ProfessionalCategoryData> getAllProfessionalsCategoryData();
 
     Professional getProfessionalById(String id);
 

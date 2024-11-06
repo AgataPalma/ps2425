@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "e0a520c9-1581-402f-9e50-fb8691129246",
+		"_postman_id": "ccbbaae8-6b4f-4377-9ce6-46cf0f0e07af",
 		"name": "PS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "26080303"
+		"_exporter_id": "31211363",
+		"_collection_link": "https://haupper.postman.co/workspace/Haupper~3db697c2-0c13-493b-b6e5-1b01af711100/collection/31211363-ccbbaae8-6b4f-4377-9ce6-46cf0f0e07af?action=share&source=collection_link&creator=31211363"
 	},
 	"item": [
 		{
@@ -16,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"professional\": {\r\n        \"email\": \"edu@gmail.com\",\r\n        \"password\": \"securePassword123\",\r\n        \"userType\": \"PROFESSIONAL\",\r\n        \"name\": \"Edu\",\r\n        \"phoneNumber\": \"916712475\",\r\n        \"languages\": [\"PORTUGUESE\", \"ENGLISH\"],\r\n        \"profileImage\": \"base64EncodedImageString\",\r\n        \"ageValidation\": true,\r\n        \"description\": \"description\",\r\n        \"nif\": \"213876542\",\r\n        \"location\": \"location\",\r\n        \"locationsRange\": 5,\r\n        \"acceptedPayments\": [\"CREDIT_CARD\", \"CASH\"],\r\n        \"isCompany\": false\r\n    },\r\n    \"categoryDescriptions\": [\r\n        {\r\n            \"category\": \"CLEANING\",\r\n            \"chargesTravels\": false,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 10\r\n        },\r\n        {\r\n            \"category\": \"ELECTRICAL\",\r\n            \"chargesTravels\": true,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 25.0\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"professional\": {\r\n        \"email\": \"example@gmail.com\",\r\n        \"password\": \"password12345\",\r\n        \"userType\": \"PROFESSIONAL\",\r\n        \"name\": \"exampleProfessional\",\r\n        \"phoneNumber\": \"927146832\",\r\n        \"languages\": [\"PORTUGUESE\", \"ENGLISH\"],\r\n        \"profileImage\": \"base64EncodedImageString\",\r\n        \"ageValidation\": true,\r\n        \"description\": \"description\",\r\n        \"nif\": \"275663902\",\r\n        \"location\": \"location\",\r\n        \"locationsRange\": 5,\r\n        \"acceptedPayments\": [\"CREDIT_CARD\", \"CASH\"],\r\n        \"isCompany\": false\r\n    },\r\n    \"categoryDescriptions\": [\r\n        {\r\n            \"category\": \"CLEANING\",\r\n            \"chargesTravels\": false,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 10\r\n        },\r\n        {\r\n            \"category\": \"ELECTRICAL\",\r\n            \"chargesTravels\": true,\r\n            \"providesInvoices\": false,\r\n            \"mediumPricePerService\": 25.0\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -33,6 +34,24 @@
 						"method": "GET",
 						"header": [],
 						"url": "http://localhost:8080/professionals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professionals complete",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/professionals/complete-data"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professionals category data (client dashboard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/professionals/category-data"
 					},
 					"response": []
 				},
