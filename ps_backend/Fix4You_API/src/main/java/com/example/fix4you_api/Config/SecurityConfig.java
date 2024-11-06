@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/admins").hasAnyRole("ADMIN","PROFESSIONAL")
                         .requestMatchers("/users/email-confirmation/**").permitAll()
                         .requestMatchers("/professionals").permitAll()
-                        .requestMatchers("/professionals/*").permitAll()
+                        .requestMatchers("/professionals/**").permitAll()
                         .requestMatchers("/clients").permitAll()
                         .requestMatchers("/clients/*").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/scheduleAppointments/professional/*").permitAll()
                         .requestMatchers("/scheduleAppointments/client/*").permitAll()
                         .anyRequest().authenticated())
+                        //.anyRequest().permitAll())
                         .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

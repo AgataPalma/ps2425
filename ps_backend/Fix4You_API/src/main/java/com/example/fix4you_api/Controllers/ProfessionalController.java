@@ -3,6 +3,8 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
+import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
+import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,22 @@ public class ProfessionalController {
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "sort", required = false) String sort) {
         List<Professional> professionals = professionalService.getProfessionals(filter, sort);
+        return new ResponseEntity<>(professionals, HttpStatus.OK);
+    }
+
+    @GetMapping("/complete-data/{id}")
+    public ResponseEntity<ProfessionalData> getProfessionalCompleteData(@PathVariable("id") String id) {
+        ProfessionalData professional = professionalService.getAllProfessionalsCompleteData(id);
+        return new ResponseEntity<>(professional, HttpStatus.OK);
+    }
+
+    // its used for client dashboard
+    // returns a list of professionals according to their category
+    // Example: John has 2 categories (Plumber and CLEANING)
+    // return: [John  PLUMBER; John CLEANING]
+    @GetMapping("/category-data")
+    public ResponseEntity<List<ProfessionalCategoryData>> getAllProfessionalsCategoryData() {
+        List<ProfessionalCategoryData> professionals = professionalService.getAllProfessionalsCategoryData();
         return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
