@@ -180,20 +180,20 @@ function ClientProfile({ id }) {
             {showConfirmDeleteModal && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h2 className="text-2xl font-bold mb-4">Confirm Account Deletion</h2>
-                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                        <h2 className="text-2xl font-bold mb-4">Confirmação da eliminação de conta</h2>
+                        <p>Tem a certeza de que pretende apagar a conta? Esta acção é irreversível e os seus dados serão eliminados.</p>
                         <div className="mt-6 flex justify-end space-x-4">
                             <button
                                 onClick={() => setShowConfirmDeleteModal(false)} // Close modal without deleting
                                 className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                             >
-                                Cancel
+                                Cancelar
                             </button>
                             <button
                                 onClick={confirmDeleteAccount} // Call actual delete function
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg"
                             >
-                                Confirm
+                                Confirmar
                             </button>
                         </div>
                     </div>
@@ -204,7 +204,7 @@ function ClientProfile({ id }) {
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h2 className="text-2xl font-bold mb-4">Account Deleted</h2>
+                        <h2 className="text-2xl font-bold mb-4">Conta Apagada</h2>
                         <p>{successMessage}</p>
                         <div className="mt-6 flex justify-end">
                             <button
@@ -244,7 +244,7 @@ function ClientProfile({ id }) {
             {showAvatarModal && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h2 className="text-2xl font-bold mb-4">Select an Avatar</h2>
+                        <h2 className="text-2xl font-bold mb-4">Escolha um Avatar</h2>
                         <div className="grid grid-cols-3 gap-4 overflow-y-auto max-h-60">
                             {avatarList.map((avatarUrl, index) => (
                                 <img
@@ -276,7 +276,7 @@ function ClientProfile({ id }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
                 <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Phone Number</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Telemóvel</h3>
                     {editMode ? (
                         <input
                             type="text"
@@ -291,7 +291,7 @@ function ClientProfile({ id }) {
                 </div>
 
                 <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Member Since</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Membro desde</h3>
                     <p className="text-gray-600">{profileData?.dateCreation ? new Date(profileData.dateCreation).toLocaleDateString() : "N/A"}</p>
                 </div>
 
@@ -301,14 +301,14 @@ function ClientProfile({ id }) {
                         <Select
                             options={locationOptions}
                             onChange={handleLocationChange}
-                            placeholder="Select location"
+                            placeholder="Seleccione a freguesia"
                             value={locationOptions.find(option =>
                                 option.options.some(subOption => subOption.value === formData.location)
                             )}
                             className="w-full p-2 border rounded"
                         />
                     ) : (
-                        <p className="text-gray-600">{profileData?.location || "No location provided"}</p>
+                        <p className="text-gray-600">{profileData?.location || "Sem localização definida"}</p>
                     )}
                 </div>
                 <div>
@@ -331,13 +331,13 @@ function ClientProfile({ id }) {
             <div className="mt-8">
                 {editMode ? (
                     <div className="flex space-x-4">
-                        <button onClick={handleSave} className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Save</button>
-                        <button onClick={handleCancel} className="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                        <button onClick={handleSave} className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Guardar</button>
+                        <button onClick={handleCancel} className="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-300 transition">Cancelar</button>
                     </div>
                 ) : (
                     <div className="flex space-x-4">
-                        <button onClick={handleEdit} className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Edit Profile</button>
-                        <button onClick={handleDeleteAccount} className="px-6 py-3 bg-red-700 text-white rounded-lg hover:bg-red-600 transition">Delete Account</button>
+                        <button onClick={handleEdit} className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Editar</button>
+                        <button onClick={handleDeleteAccount} className="px-6 py-3 bg-red-700 text-white rounded-lg hover:bg-red-600 transition">Apagar</button>
                     </div>
                 )}
             </div>
