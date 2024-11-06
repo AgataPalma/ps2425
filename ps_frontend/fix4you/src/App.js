@@ -14,7 +14,6 @@ import Header from './components/Header';
 import 'tailwindcss/tailwind.css';
 import PrincipalPageClient from "./pages/PrincipalPageClient";
 import PrincipalPageProfessional from "./pages/PrincipalPageProfessional";
-import MyRequests from "./pages/MyRequests";
 import NewRequests from "./pages/NewRequests";
 import RequestService from "./pages/RequestService";
 
@@ -76,7 +75,7 @@ function App() {
                         path="/client-profile"
                         element={
                             <ProtectedRoute allowedUserType="client">
-                                <ClientProfile />
+                                <ClientProfile id="672a0106a8d9b243378a0e38" />
                             </ProtectedRoute>
                         }
                     />
@@ -122,12 +121,6 @@ function App() {
                         path="/PrincipalPageProfessional"
                         element={
                             <PrincipalPageProfessional />
-                        }
-                    />
-                    <Route
-                        path="/MyRequests"
-                        element={
-                            <MyRequests />
                         }
                     />
                     <Route
