@@ -45,39 +45,38 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public List<ProfessionalData> getAllProfessionalsCompleteData(){
+    public ProfessionalData getAllProfessionalsCompleteData(String id){
         List<Professional> professionalList = professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
-        List<ProfessionalData> professionalsData = new ArrayList<>();
+        //List<ProfessionalData> professionalsData = new ArrayList<>();
 
         for (Professional professional : professionalList) {
+            if(professional.getId().equals(id)){
+                List<CategoryDescription> categoriesProfessional = new ArrayList<>();
+                categoriesProfessional = categoryDescriptionRepository.findByProfessionalId(professional.getId());
+                List<PortfolioItem> portfolioItems = portfolioItemRepository.findByProfessionalId(professional.getId());
 
-            List<CategoryDescription> categoriesProfessional = new ArrayList<>();
-            categoriesProfessional = categoryDescriptionRepository.findByProfessionalId(professional.getId());
+                ProfessionalData data = new ProfessionalData(
+                        professional.getId(),
+                        professional.getEmail(),
+                        professional.getDateCreation(),
+                        professional.getUserType(),
+                        professional.getName(),
+                        professional.getPhoneNumber(),
+                        professional.getLocation(),
+                        professional.getProfileImage(),
+                        professional.getDescription(),
+                        professional.getNif(),
+                        professional.getLanguages(),
+                        professional.getLocationsRange(),
+                        professional.getAcceptedPayments(),
+                        categoriesProfessional,
+                        portfolioItems
+                );
 
-            List<PortfolioItem> portfolioItems = portfolioItemRepository.findByProfessionalId(professional.getId());
-
-            ProfessionalData data = new ProfessionalData(
-                    professional.getId(),
-                    professional.getEmail(),
-                    professional.getDateCreation(),
-                    professional.getUserType(),
-                    professional.getName(),
-                    professional.getPhoneNumber(),
-                    professional.getLocation(),
-                    professional.getProfileImage(),
-                    professional.getDescription(),
-                    professional.getNif(),
-                    professional.getLanguages(),
-                    professional.getLocationsRange(),
-                    professional.getAcceptedPayments(),
-                    categoriesProfessional,
-                    portfolioItems
-            );
-
-            professionalsData.add(data);
+                return data;
+            }
         }
-
-        return professionalsData;
+        return null;
     }
 
     @Override

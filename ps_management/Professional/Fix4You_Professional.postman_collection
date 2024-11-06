@@ -38,11 +38,11 @@
 					"response": []
 				},
 				{
-					"name": "Get Professionals complete",
+					"name": "Get Professional complete data (id)",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/professionals/complete-data"
+						"url": "http://localhost:8080/professionals/complete-data/672942c108ce7731a659317e"
 					},
 					"response": []
 				},

@@ -55,10 +55,10 @@ public class ProfessionalController {
         return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
-    @GetMapping("/complete-data")
-    public ResponseEntity<List<ProfessionalData>> getAllProfessionalsCompleteData() {
-        List<ProfessionalData> professionals = professionalService.getAllProfessionalsCompleteData();
-        return new ResponseEntity<>(professionals, HttpStatus.OK);
+    @GetMapping("/complete-data/{id}")
+    public ResponseEntity<ProfessionalData> getProfessionalCompleteData(@PathVariable("id") String id) {
+        ProfessionalData professional = professionalService.getAllProfessionalsCompleteData(id);
+        return new ResponseEntity<>(professional, HttpStatus.OK);
     }
 
     // its used for client dashboard

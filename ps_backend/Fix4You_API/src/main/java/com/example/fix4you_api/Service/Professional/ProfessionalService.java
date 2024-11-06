@@ -10,7 +10,7 @@ import java.util.Map;
 public interface ProfessionalService {
     List<Professional> getProfessionals(String filter, String sort);
 
-    List<ProfessionalData> getAllProfessionalsCompleteData();
+    ProfessionalData getAllProfessionalsCompleteData(String id);
 
     // its used for client dashboard
     List<ProfessionalCategoryData> getAllProfessionalsCategoryData();
