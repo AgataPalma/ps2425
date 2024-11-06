@@ -299,7 +299,7 @@ function ClientProfile({ id }) {
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Localização</h3>
                     {editMode ? (
                         <Select
-                            options={locationOptions} // Use the structured municipio and freguesia data
+                            options={locationOptions}
                             onChange={handleLocationChange}
                             placeholder="Select location"
                             value={locationOptions.find(option =>
@@ -331,7 +331,7 @@ function ClientProfile({ id }) {
             <div className="mt-8">
                 {editMode ? (
                     <div className="flex space-x-4">
-                        <button onClick={handleSave} className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">Save</button>
+                        <button onClick={handleSave} className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Save</button>
                         <button onClick={handleCancel} className="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-300 transition">Cancel</button>
                     </div>
                 ) : (
