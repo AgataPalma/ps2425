@@ -200,7 +200,7 @@ const PrincipalPageClient = ({ id }) => {
                                         <>
                                             <span
                                                 className="text-white">✓</span>
-                                            <span>Custo de viagem</span>
+                                            <span>Custos de deslocação</span>
                                         </>
                                     ) : (
                                         <>
