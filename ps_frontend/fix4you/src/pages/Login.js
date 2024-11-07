@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../index.css';
 import Footer from '../components/Footer';
 
-const Login = ({ onLogin }) => { // Receive onLogin as a prop from App.js
+const Login = ({ onLogin }) => { 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,17 +20,14 @@ const Login = ({ onLogin }) => { // Receive onLogin as a prop from App.js
 
             if (response.ok) {
                 const data = await response.json();
-                // Store the token in local storage
                 localStorage.setItem('token', data.token);
 
-                // Call onLogin with userType and userId from the response
                 onLogin(data.userType, data.userId);
 
-                // Redirect based on user type
                 if (data.userType === "PROFESSIONAL") {
-                    window.location.href = `/PrincipalPageProfessional/${data.userId}`;
+                    window.location.href = `/PrincipalPageProfessional`;
                 } else if (data.userType === "CLIENT") {
-                    window.location.href = `/PrincipalPageClient/${data.userId}`;
+                    window.location.href = `/PrincipalPageClient`;
                 }
             } else {
                 setError('Invalid email or password');

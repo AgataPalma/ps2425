@@ -3,7 +3,7 @@ import '../index.css';
 import user from '../images/user.png';
 import Footer from '../components/Footer';
 
-const PrincipalPageProfessional = () => {
+const PrincipalPageProfessional = ({ id }) => {
 
     const [requests, SetRequests] = useState([]);
     const [priceRange, setPriceRange] = useState('');
@@ -26,7 +26,7 @@ const PrincipalPageProfessional = () => {
             .then(response => response.json())
             .then(data => SetRequests(data))
             .catch(error => console.error('Error fetching professionals:', error));
-    }, []);
+    },[id] );
 
     const capitalizeFirstLetter = (text) => {
         return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());

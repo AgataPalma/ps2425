@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import axiosInstance from '../components/axiosInstance';
 import axios from 'axios';
 import { Tab } from '@headlessui/react';
 import Select from 'react-select';
@@ -34,7 +35,7 @@ function ProfessionalProfile({ id }) {
     });
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/professionals/${id}`)
+        axiosInstance.get(`/professionals/${id}`)
             .then(response => {
                 const data = response.data;
 
@@ -66,7 +67,7 @@ function ProfessionalProfile({ id }) {
                 setLoading(false);
             });
 
-        axios.get(`http://localhost:8080/portfolioItems/user/${id}`)
+        axiosInstance.get(`/portfolioItems/user/${id}`)
             .then(response => {
                 if (response.data.length > 0) {
                     setPortfolio(response.data);
@@ -76,17 +77,15 @@ function ProfessionalProfile({ id }) {
                 console.error('Error fetching portfolio:', error);
             });
 
-        axios.get(`http://localhost:8080/categoryDescriptions/user/${id}`)
+        axiosInstance.get(`/categoryDescriptions/user/${id}`)
             .then(response => {
                 const associatedCategories = response.data.map(cat => cat.category);
                 setCategories(response.data);
 
-                // Fetch all categories and filter out existing ones, then deduplicate
-                axios.get(`http://localhost:8080/categoryDescriptions`)
+                axiosInstance.get(`/categoryDescriptions`)
                     .then(allCategoriesResponse => {
                         const allCategories = allCategoriesResponse.data;
 
-                        // Extract unique categories not associated with the professional
                         const uniqueAvailableCategories = Array.from(
                             new Set(allCategories.map(category => category.category))
                         )
@@ -140,7 +139,7 @@ function ProfessionalProfile({ id }) {
                 mediumPricePerService: parseFloat(newCategoryData.mediumPricePerService),
             };
 
-            axios.post(`http://localhost:8080/categoryDescriptions`, categoryPayload)
+            axiosInstance.post(`/categoryDescriptions`, categoryPayload)
                 .then(response => {
                     setCategories([...categories, response.data]);
                     setSuccessMessage("New category added successfully!");
@@ -189,7 +188,7 @@ function ProfessionalProfile({ id }) {
             description: portfolioDescription,
         };
 
-        axios.post(`http://localhost:8080/portfolioItems`, portfolioPayload, {
+        axiosInstance.post(`http://localhost:8080/portfolioItems`, portfolioPayload, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -294,7 +293,7 @@ function ProfessionalProfile({ id }) {
         };
 
         try {
-            await axios.put(`http://localhost:8080/categoryDescriptions/${categoryId}`, updatedCategoryData);
+            await axiosInstance.put(`/categoryDescriptions/${categoryId}`, updatedCategoryData);
 
             setCategories((categories) =>
                 categories.map((category) =>
@@ -346,10 +345,7 @@ function ProfessionalProfile({ id }) {
             formDataToSend.password = profileData.password;
         }
 
-        axios.put(`http://localhost:8080/professionals/${id}`, formDataToSend, {
-            headers: {
-                "Content-Type": "application/json"
-            }
+        axiosInstance.put(`/professionals/${id}`, formDataToSend, {
         })
             .then(response => {
                 const updatedProfileData = {
@@ -380,7 +376,7 @@ function ProfessionalProfile({ id }) {
     };
 
     const confirmDeleteCategory = (categoryId) => {
-        axios.delete(`http://localhost:8080/categoryDescriptions/${selectedCategoryId}`)
+        axiosInstance.delete(`/categoryDescriptions/${selectedCategoryId}`)
             .then(() => {
                 setShowConfirmDeleteCategoryModal(false);
                 setShowDeleteCategoryModal(true);
@@ -396,7 +392,7 @@ function ProfessionalProfile({ id }) {
     };
 
     const confirmDeleteAccount = () => {
-        axios.delete(`http://localhost:8080/professionals/${id}`)
+        axiosInstance.delete(`/professionals/${id}`)
             .then(() => {
                 setShowConfirmDeleteModal(false); // Close confirmation modal
                 setShowDeleteModal(true); // Show success modal

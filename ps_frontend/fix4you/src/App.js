@@ -37,6 +37,7 @@ function App() {
         localStorage.removeItem('userType');
         localStorage.removeItem('userId');
         localStorage.removeItem('token');
+        window.location.href = '/Home';
     };
 
     useEffect(() => {
@@ -67,6 +68,7 @@ function App() {
     return (
         <Router>
             <div>
+
                 <Header userType={userType} handleLogout={handleLogout} />
                 <Routes>
                     <Route path="/" element={<Navigate to="/Home" />} />
@@ -132,7 +134,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/PrincipalPageProfessional/:id"
+                        path="/PrincipalPageProfessional"
                         element={
                             <PrincipalPageProfessional id={userId} />
                         }
