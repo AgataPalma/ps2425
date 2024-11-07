@@ -25,15 +25,15 @@ const Header = ({ userType, handleLogout }) => {
                         <>
                             <Link to="/RequestServiceGeneric" className="text-gray-800 hover:text-gray-900">Pedir um
                                 Serviço</Link>
-                            <Link to="/MyRequests" className="text-gray-800 hover:text-gray-900">Os meus pedidos</Link>
-                            <Link to="/client-requests-history" className="text-gray-800 hover:text-gray-900">Histórico de Pedidos</Link>
+                            <Link to="/ClientRequests" className="text-gray-800 hover:text-gray-900">Os meus pedidos</Link>
+                            <Link to="/ClientRequestsHistory" className="text-gray-800 hover:text-gray-900">Histórico</Link>
                         </>
                     )}
                     {userType === 'PROFESSIONAL' && (
                         <>
                             <Link to="/NewRequests" className="text-gray-600 hover:text-gray-900">Novos Pedidos</Link>
-                            <Link to="/professional-requests-history" className="text-gray-600 hover:text-gray-900">Histórico de Serviços</Link>
-                            <Link to="/professional-calendar" className="text-gray-600 hover:text-gray-900">Calendário</Link>
+                            <Link to="/ProfessionalRequests" className="text-gray-600 hover:text-gray-900">Histórico de Serviços</Link>
+                            <Link to="/ProfessionalCalendar" className="text-gray-600 hover:text-gray-900">Calendário</Link>
                         </>
                     )}
                 </div>
@@ -46,7 +46,7 @@ const Header = ({ userType, handleLogout }) => {
                         </>
                     ) : (
                         <>
-                            <Link to={userType === 'CLIENT' ? "/client-profile" : "/professional-profile"}>
+                            <Link to={userType === 'CLIENT' ? "/ClientProfile" : "/ProfessionalProfile"}>
                                 <img src={profileIcon} alt="profile" className="h-10" />
                             </Link>
                             <button

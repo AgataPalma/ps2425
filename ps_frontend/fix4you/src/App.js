@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import ClientProfile from './pages/ClientProfile';
 import ProfessionalProfile from './pages/ProfessionalProfile';
+import ClientRequests from './pages/ClientRequests';
 import ClientRequestsHistory from './pages/ClientRequestsHistory';
 import ProfessionalRequestsHistory from './pages/ProfessionalRequestsHistory';
 import ProfessionalCalendar from './pages/ProfessionalCalendar';
@@ -88,7 +89,7 @@ function App() {
                     />
                     <Route path="/RegisterProfessional" element={!userType ? <RegisterProfessional /> : <Navigate to="/Home" />} />
                     <Route
-                        path="/client-profile"
+                        path="/ClientProfile"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
                                 <ClientProfile id={userId}/>
@@ -96,7 +97,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/client-requests-history"
+                        path="/ClientRequestsHistory"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
                                 <ClientRequestsHistory id={userId}/>
@@ -104,7 +105,15 @@ function App() {
                         }
                     />
                     <Route
-                        path="/professional-profile"
+                        path="/ClientRequests"
+                        element={
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <ClientRequests id={userId}/>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/ProfessionalProfile"
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
                                 <ProfessionalProfile id={userId}/>
@@ -112,7 +121,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/professional-requests-history"
+                        path="/ProfessionalRequests"
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
                                 <ProfessionalRequestsHistory id={userId} />
@@ -120,7 +129,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/professional-calendar"
+                        path="/ProfessionalCalendar"
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
                                 <ProfessionalCalendar id={userId} />

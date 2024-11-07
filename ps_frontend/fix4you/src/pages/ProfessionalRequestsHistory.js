@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../components/axiosInstance';
 
-function ProfessionalRequestsHistory() {
+function ProfessionalRequestsHistory({ id }) {
     const [requests, setRequests] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch completed services
-        axios.get('/api/professional/requests')
+        // Fetch services for the professional
+        axiosInstance.get(`/services/professional/${id}`)
             .then(response => {
                 setRequests(response.data);
                 setLoading(false);
@@ -20,19 +20,20 @@ function ProfessionalRequestsHistory() {
             });
 
         // Fetch categories
-        axios.get('/api/professional/categories')
+        axiosInstance.get(`/categoryDescriptions/user/${id}`)
             .then(response => {
                 setCategories(response.data);
             })
             .catch(error => {
                 console.error('Error fetching categories:', error);
             });
-    }, []);
+    }, [id]);
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
     };
 
+    // Filter requests by selected category
     const filteredRequests = selectedCategory
         ? requests.filter(request => request.category === selectedCategory)
         : requests;
@@ -54,7 +55,7 @@ function ProfessionalRequestsHistory() {
                 >
                     <option value="">All Categories</option>
                     {categories.map(category => (
-                        <option key={category.id} value={category.name}>{category.name}</option>
+                        <option key={category.id} value={category.category}>{category.category}</option>
                     ))}
                 </select>
             </div>
@@ -62,21 +63,21 @@ function ProfessionalRequestsHistory() {
                 {filteredRequests.length > 0 ? (
                     filteredRequests.map(request => (
                         <div key={request.id} className="p-4 bg-gray-100 rounded-lg shadow-md">
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">{request.serviceName}</h3>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">{request.title}</h3>
                             <p className="text-gray-600">Category: {request.category}</p>
                             <p className="text-gray-600">Date: {new Date(request.date).toLocaleDateString()}</p>
                             <p className="text-gray-600">Price: ${request.price}</p>
-                            {request.review && (
-                                <div className="mt-4">
-                                    <h4 className="text-lg font-semibold text-gray-800">Review</h4>
-                                    <p className="text-gray-600">Rating: {request.review.rating} / 5</p>
-                                    <p className="text-gray-600">Comment: {request.review.comment}</p>
-                                </div>
+                            <p className="text-gray-600">Status: {request.state}</p>
+                            <p className="text-gray-600">Address: {request.address}, {request.postalCode}</p>
+                            {request.languages && (
+                                <p className="text-gray-600">Languages: {request.languages.join(', ')}</p>
                             )}
+                            <p className="text-gray-600">Location: {request.location || "Not specified"}</p>
+                            <p className="text-gray-600">Urgent: {request.urgent ? "Yes" : "No"}</p>
                         </div>
                     ))
                 ) : (
-                    <p className="text-gray-600">No completed services found.</p>
+                    <p className="text-gray-600">No services found.</p>
                 )}
             </div>
         </div>
