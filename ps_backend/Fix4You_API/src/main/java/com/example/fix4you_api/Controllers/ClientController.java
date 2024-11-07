@@ -2,6 +2,9 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Service.Client.ClientService;
+import com.example.fix4you_api.Service.Review.ReviewService;
+import com.example.fix4you_api.Service.Service.ServiceService;
+import com.example.fix4you_api.Service.Ticket.TicketService;
 import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,9 @@ public class ClientController {
 
     private final ClientService clientService;
     private final UserService userService;
+    private final ReviewService reviewService;
+    private final TicketService ticketService;
+    private final ServiceService serviceService;
 
     @PostMapping
     public ResponseEntity<?> createClient(@RequestBody Client client) {
@@ -51,6 +57,10 @@ public class ClientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable String id) {
+        reviewService.deleteReviewsForClient(id);
+        ticketService.deleteTickets(id);
+        serviceService.deleteServicesForClient(id);
+
         clientService.deleteClient(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

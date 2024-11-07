@@ -3,9 +3,14 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
+import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
+import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
+import com.example.fix4you_api.Service.Review.ReviewService;
+import com.example.fix4you_api.Service.Service.ServiceService;
+import com.example.fix4you_api.Service.Ticket.TicketService;
 import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +26,12 @@ import java.util.Map;
 public class ProfessionalController {
 
     private final ProfessionalService professionalService;
+    private final PortfolioItemService portfolioItemService;
     private final CategoryDescriptionService categoryDescriptionService;
+    private final ReviewService reviewService;
+    private final ProfessionalsFeeService professionalsFeeService;
+    private final TicketService ticketService;
+    private final ServiceService serviceService;
     private final UserService userService;
 
     @PostMapping
@@ -91,6 +101,13 @@ public class ProfessionalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
+        portfolioItemService.deletePortfolioItems(id);
+        categoryDescriptionService.deleteCategoryDescriptions(id);
+        reviewService.deleteReviewsForProfessional(id);
+        professionalsFeeService.deleteProfessionalFees(id);
+        ticketService.deleteTickets(id);
+        serviceService.deleteServicesFroProfessional(id);
+
         professionalService.deleteProfessional(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
