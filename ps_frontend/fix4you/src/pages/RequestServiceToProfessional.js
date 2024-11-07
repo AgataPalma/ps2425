@@ -1,31 +1,49 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Footer from "../components/Footer";
 import axiosInstance from "../components/axiosInstance";
 
+// Mapeamento dos idiomas do enum para o português
+const languageMap = {
+    ENGLISH: "Inglês",
+    PORTUGUESE: "Português",
+    SPANISH: "Espanhol",
+    FRENCH: "Francês",
+    GERMAN: "Alemão"
+};
 
 function RequestServiceToProfessional({ id }) {
-
+    const location = useLocation();
+    const { state } = location;
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
-    const [location, setLocation] = useState('Lisboa, Portugal');
+    const [local, setLocation] = useState('Lisboa, Portugal');
     const [category, setCategory] = useState('1');
     const [description, setDescription] = useState('');
+    const [professional, setProfessional] = useState(null);
+
+    useEffect(() => {
+        if (state) {
+            setProfessional(state);
+        }
+    }, [state]);
+
+    if (!professional) return <div>Loading...</div>;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const requestBody = {
             clientId: id,
-            professionalId: null,
+            professionalId: professional.professionalId,
             price: 0,
             address: "0",
             postalCode: "0000-000",
-            category: category,
+            category: professional.category,
             description: description,
             title: title,
-            location: location,
-            languages: ["ENGLISH"],
+            location: professional.location,
+            languages: professional.languages,
             state: 0
         };
 
@@ -40,7 +58,6 @@ function RequestServiceToProfessional({ id }) {
         } catch (error) {
             console.error("Error creating service:", error);
         }
-
     };
 
     return (
@@ -53,7 +70,7 @@ function RequestServiceToProfessional({ id }) {
                             <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir Um Serviço</h2>
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
-                                    <label className="block text-black font-semibold mb-2">Titulo *</label>
+                                    <label className="block text-black font-semibold mb-2">Título *</label>
                                     <input
                                         type="text"
                                         value={title}
@@ -67,7 +84,7 @@ function RequestServiceToProfessional({ id }) {
                                     <input
                                         type="text"
                                         disabled
-                                        value={location}
+                                        value={professional.location}
                                         onChange={(e) => setLocation(e.target.value)}
                                         placeholder="eg Lisboa, Portugal"
                                         className="w-full p-2 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-not-allowed"
@@ -76,20 +93,34 @@ function RequestServiceToProfessional({ id }) {
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Categoria *</label>
                                     <select
-                                        value={category}
+                                        value={professional.category}
                                         disabled
                                         onChange={(e) => setCategory(parseInt(e.target.value))}
                                         className="w-full p-2 placeholder-gray-600 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-not-allowed"
                                     >
                                         <option value="">Selecionar</option>
-                                        <option value="0">Limpeza</option>
-                                        <option value="1">Canalizador</option>
-                                        <option value="2">Eletricista</option>
-                                        <option value="3">Jardineiro</option>
-                                        <option value="4">Pintor</option>
-                                        <option value="5">Outro</option>
+                                        <option value="CLEANING">Limpeza</option>
+                                        <option value="PLUMBING">Canalizador</option>
+                                        <option value="ELECTRICAL">Eletricista</option>
+                                        <option value="GARDENING">Jardineiro</option>
+                                        <option value="PAINTING">Pintor</option>
+                                        <option value="OTHER">Outro</option>
                                     </select>
                                 </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-black font-semibold mb-2">Idiomas *</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {professional.languages.map((language, index) => (
+                                            <span
+                                                key={index}
+                                                className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-medium cursor-not-allowed">
+                                                {languageMap[language] || language}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="mb-6">
                                     <label className="block text-black font-semibold mb-2">Descrição *</label>
                                     <textarea
