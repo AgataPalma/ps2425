@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../index.css';
 import Footer from '../components/Footer';
 
-const RegisterChoice = () => {
+const Login = ({ onLogin }) => { // Receive onLogin as a prop from App.js
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,11 +20,18 @@ const RegisterChoice = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                // Armazene o token JWT no armazenamento local
+                // Store the token in local storage
                 localStorage.setItem('token', data.token);
-                alert("Login successful!");
-                // Redirecionar para uma página protegida ou inicial
-                window.location.href = "/dashboard"; // Substitua por sua página
+
+                // Call onLogin with userType and userId from the response
+                onLogin(data.userType, data.userId);
+
+                // Redirect based on user type
+                if (data.userType === "PROFESSIONAL") {
+                    window.location.href = `/PrincipalPageProfessional/${data.userId}`;
+                } else if (data.userType === "CLIENT") {
+                    window.location.href = `/PrincipalPageClient/${data.userId}`;
+                }
             } else {
                 setError('Invalid email or password');
             }
@@ -103,4 +110,4 @@ const RegisterChoice = () => {
     );
 };
 
-export default RegisterChoice;
+export default Login;

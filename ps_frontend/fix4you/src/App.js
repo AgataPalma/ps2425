@@ -20,29 +20,32 @@ import RequestServiceToProfessional from "./pages/RequestServiceToProfessional";
 
 function App() {
 
-    const [userType, setUserType] = useState(null); // 'client' or 'professional' or just null
+    const [userType, setUserType] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const handleLogin = (type) => {
+    const handleLogin = (type, id) => {
         setUserType(type);
+        setUserId(id);
         localStorage.setItem('userType', type);
+        localStorage.setItem('userId', id);
     };
 
     const handleLogout = () => {
         setUserType(null);
+        setUserId(null);
         localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
         localStorage.removeItem('token');
     };
 
     useEffect(() => {
-        handleLogin('professional'); //log in as a client or professional for testing
-
-
         const type = localStorage.getItem('userType');
+        const id = localStorage.getItem('userId');
 
-        if (type) {
-
+        if (type && id) {
             setUserType(type);
+            setUserId(id);
         }
         setLoading(false);
     }, []);
@@ -69,71 +72,81 @@ function App() {
                     <Route path="/" element={<Navigate to="/Home" />} />
                     <Route path="/Home" element={<Home />} />
                     <Route path="/RegisterChoice" element={!userType ? <RegisterChoice /> : <Navigate to="/Home" />} />
-                    <Route path="/Login" element={!userType ? <Login /> : <Navigate to="/Home" />} />
-                    <Route path="/RegisterClient" element={!userType ? <RegisterClient /> : <Navigate to="/Home" />} />
+                    <Route
+                        path="/Login"
+                        element={
+                            !userType ? <Login onLogin={handleLogin} /> : <Navigate to="/Home"  />
+                        }
+                    />
+                    <Route
+                        path="/RegisterClient"
+                        element={
+                            !userType ? <RegisterClient /> : <Navigate to="/Home" />
+                        }
+                    />
                     <Route path="/RegisterProfessional" element={!userType ? <RegisterProfessional /> : <Navigate to="/Home" />} />
                     <Route
-                        path="/client-profile/:id"
+                        path="/client-profile"
                         element={
-                            <ProtectedRoute allowedUserType="client">
-                                {/*<ClientProfile id="672a0106a8d9b243378a0e38" />*/}
-                                <ClientProfile/>
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <ClientProfile id={userId}/>
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/client-requests-history"
                         element={
-                            <ProtectedRoute allowedUserType="client">
-                                <ClientRequestsHistory />
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <ClientRequestsHistory id={userId}/>
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/professional-profile"
                         element={
-                            <ProtectedRoute allowedUserType="professional">
-                                <ProfessionalProfile id="672bc00b8df74a6a477f6405" />
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <ProfessionalProfile id={userId}/>
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/professional-requests-history"
                         element={
-                            <ProtectedRoute allowedUserType="professional">
-                                <ProfessionalRequestsHistory />
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <ProfessionalRequestsHistory id={userId} />
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/professional-calendar"
                         element={
-                            <ProtectedRoute allowedUserType="professional">
-                                <ProfessionalCalendar />
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <ProfessionalCalendar id={userId} />
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/PrincipalPageClient"
                         element={
-                            <PrincipalPageClient />
+                            <PrincipalPageClient id={userId}/>
                         }
                     />
                     <Route
-                        path="/PrincipalPageProfessional"
+                        path="/PrincipalPageProfessional/:id"
                         element={
-                            <PrincipalPageProfessional />
+                            <PrincipalPageProfessional id={userId} />
                         }
                     />
                     <Route
                         path="/NewRequests"
                         element={
-                            <NewRequests />
+                            <NewRequests id={userId}/>
                         }
                     />
                     <Route
                         path="/RequestServiceGeneric"
                         element={
+<<<<<<< Updated upstream
                             <RequestServiceGeneric />
                         }
                     />
@@ -141,6 +154,9 @@ function App() {
                         path="/RequestServiceToProfessional"
                         element={
                             <RequestServiceToProfessional />
+=======
+                            <RequestService id={userId}/>
+>>>>>>> Stashed changes
                         }
                     />
                 </Routes>
