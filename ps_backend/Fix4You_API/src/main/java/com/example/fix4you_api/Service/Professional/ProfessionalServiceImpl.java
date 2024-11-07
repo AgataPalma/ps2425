@@ -1,12 +1,10 @@
 package com.example.fix4you_api.Service.Professional;
 
+import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
-import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.Models.PortfolioItem;
-import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.User;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
@@ -14,12 +12,17 @@ import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryDat
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -37,6 +40,37 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         if (isEmpty(filter) && isEmpty(sort)) {
             return professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
         }
+
+        if (filter.contains("category")) {
+            String category = extractCategoryFromFilter(filter);
+            EnumCategories enumCategory = EnumCategories.valueOf(category);
+
+            List<String> professionalIds = rsqlQueryService.getProfessionalIdsByCategory(enumCategory);
+
+            if(professionalIds.isEmpty()) {
+                professionalIds.add("null");
+            }
+
+            String categoryFilter = "id=in=(" + String.join(",", professionalIds) + ")";
+            filter = filter.replaceAll("category==\"[^\"]+\"", categoryFilter);
+
+        }
+
+        if (filter.contains("availability")) {
+            String targetDateStr = extractAvailabilityFromFilter(filter);
+            LocalDateTime targetDate = LocalDateTime.parse(targetDateStr);
+
+            List<String> unavailableProfessionalIds  = rsqlQueryService.getUnavailableProfessionalIdsByAvailability(targetDate);
+
+            if(unavailableProfessionalIds.isEmpty()) {
+                unavailableProfessionalIds.add("null");
+            }
+
+            String availabilityFilter = "id=out=(" + String.join(",", unavailableProfessionalIds) + ")";
+            filter = filter.replaceAll("availability==\"[^\"]+\"", availabilityFilter);
+
+        }
+
         filter = !isEmpty(filter)
                 ? "(" + filter + ");userType==\"PROFESSIONAL\""
                 : "userType==\"PROFESSIONAL\"";
@@ -122,7 +156,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     public Professional createProfessional(Professional professional) {
-        professional.setDateCreation(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("UTC")));
+        professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
         return professionalRepository.save(professional);
@@ -200,7 +234,30 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     private Professional findOrThrow(String id) {
         return professionalRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Professional %s not found", id)));
+                .filter(professional -> professional.getUserType() == EnumUserType.PROFESSIONAL)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Professional %s not found or user is not a professional", id)));
+    }
+
+    private String extractCategoryFromFilter(String filter) {
+        String regex = "category==\"([^\"]+)\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(filter);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private String extractAvailabilityFromFilter(String filter) {
+        String regex = "availability==\"([^\"]+)\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(filter);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 
 }

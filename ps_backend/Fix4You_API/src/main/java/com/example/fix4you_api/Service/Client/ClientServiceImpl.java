@@ -2,6 +2,7 @@ package com.example.fix4you_api.Service.Client;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -49,7 +50,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private Client findOrThrow(String id) {
-        return clientRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException(String.format("Client %s not found", id)));
+        return clientRepository.findById(id)
+                .filter(client -> client.getUserType() == EnumUserType.CLIENT)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Client %s not found or user is not a client", id)));
     }
+
 }
