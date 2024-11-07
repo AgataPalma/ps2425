@@ -34,7 +34,7 @@ function App() {
     };
 
     useEffect(() => {
-        handleLogin('client'); //log in as a client or professional for testing
+        handleLogin('professional'); //log in as a client or professional for testing
 
 
         const type = localStorage.getItem('userType');
@@ -72,10 +72,11 @@ function App() {
                     <Route path="/RegisterClient" element={!userType ? <RegisterClient /> : <Navigate to="/Home" />} />
                     <Route path="/RegisterProfessional" element={!userType ? <RegisterProfessional /> : <Navigate to="/Home" />} />
                     <Route
-                        path="/client-profile"
+                        path="/client-profile/:id"
                         element={
                             <ProtectedRoute allowedUserType="client">
-                                <ClientProfile id="672a0106a8d9b243378a0e38" />
+                                {/*<ClientProfile id="672a0106a8d9b243378a0e38" />*/}
+                                <ClientProfile/>
                             </ProtectedRoute>
                         }
                     />
@@ -91,7 +92,7 @@ function App() {
                         path="/professional-profile"
                         element={
                             <ProtectedRoute allowedUserType="professional">
-                                <ProfessionalProfile />
+                                <ProfessionalProfile id="672bc00b8df74a6a477f6405" />
                             </ProtectedRoute>
                         }
                     />
