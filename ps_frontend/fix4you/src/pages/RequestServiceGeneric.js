@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from "../components/Footer";
+import axiosInstance from "../components/axiosInstance";
 
 function RequestServiceGeneric() {
   const navigate = useNavigate();
@@ -10,7 +11,6 @@ function RequestServiceGeneric() {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,16 +29,9 @@ function RequestServiceGeneric() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/services", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestBody)
-      });
+      const response = await axiosInstance.post('/services', requestBody);
 
-      if (response.ok) {
-        // Navigate to client page on success
+      if (response.status === 200) {
         navigate('/PrincipalPageClient');
       } else {
         console.error("Failed to create service:", response.statusText);
@@ -46,6 +39,7 @@ function RequestServiceGeneric() {
     } catch (error) {
       console.error("Error creating service:", error);
     }
+
   };
 
   return (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../index.css';
 import user from '../images/user.png';
 import Footer from '../components/Footer';
+import axiosInstance from "../components/axiosInstance";
 
 const PrincipalPageProfessional = ({ id }) => {
 
@@ -21,12 +22,14 @@ const PrincipalPageProfessional = ({ id }) => {
     });
 
     useEffect(() => {
-        // Fetch data from backend
-        fetch('http://localhost:8080/services')
-            .then(response => response.json())
-            .then(data => SetRequests(data))
-            .catch(error => console.error('Error fetching professionals:', error));
-    },[id] );
+        axiosInstance.get('/services')
+            .then(response => {
+                SetRequests(response.data); // Set data with axios response
+            })
+            .catch(error => {
+                console.error('Error fetching professionals:', error);
+            });
+    }, [id]);
 
     const capitalizeFirstLetter = (text) => {
         return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
@@ -132,7 +135,9 @@ const PrincipalPageProfessional = ({ id }) => {
                 </section>
                 <br/><br/>
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                    {requests.map(request => (
+                    {requests
+                        .filter(request => request.professionalId === null)
+                        .map(request => (
                         <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
                             <div className="flex items-center space-x-4">
                                 <img src={user} alt="Profile" className="w-20 h-20"/>

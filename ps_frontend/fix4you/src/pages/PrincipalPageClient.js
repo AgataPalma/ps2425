@@ -4,6 +4,7 @@ import user from '../images/user.png';
 import { FaStar } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from "../components/axiosInstance";
 
 const PrincipalPageClient = () => {
     const [professionals, setProfessionals] = useState([]);
@@ -20,11 +21,15 @@ const PrincipalPageClient = () => {
     };
 
     useEffect(() => {
-        fetch('http://localhost:8080/professionals/category-data')
-            .then(response => response.json())
-            .then(data => setProfessionals(data))
-            .catch(error => console.error('Error fetching professionals:', error));
+        axiosInstance.get('/professionals/category-data')
+            .then(response => {
+                setProfessionals(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching professionals:', error);
+            });
     }, []);
+
 
     const handleShowDescription = (description) => {
         setActiveModalDescription(description);

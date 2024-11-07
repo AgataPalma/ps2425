@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from "../components/Footer";
+import axiosInstance from "../components/axiosInstance";
+
 
 function RequestServiceToProfessional() {
 
@@ -29,15 +31,9 @@ function RequestServiceToProfessional() {
         };
 
         try {
-            const response = await fetch("http://localhost:8080/services", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(requestBody)
-            });
+            const response = await axiosInstance.post('/services', requestBody);
 
-            if (response.ok) {
+            if (response.status === 200) {
                 navigate('/PrincipalPageClient');
             } else {
                 console.error("Failed to create service:", response.statusText);
@@ -45,6 +41,7 @@ function RequestServiceToProfessional() {
         } catch (error) {
             console.error("Error creating service:", error);
         }
+
     };
 
     return (
