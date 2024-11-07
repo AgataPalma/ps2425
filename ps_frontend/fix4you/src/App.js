@@ -146,17 +146,13 @@ function App() {
                     <Route
                         path="/RequestServiceGeneric"
                         element={
-<<<<<<< Updated upstream
-                            <RequestServiceGeneric />
+                            <RequestServiceGeneric id={userId}/>
                         }
                     />
                     <Route
                         path="/RequestServiceToProfessional"
                         element={
-                            <RequestServiceToProfessional />
-=======
-                            <RequestService id={userId}/>
->>>>>>> Stashed changes
+                            <RequestServiceToProfessional id={userId}/>
                         }
                     />
                 </Routes>

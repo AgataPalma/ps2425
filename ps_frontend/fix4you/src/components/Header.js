@@ -46,7 +46,6 @@ const Header = ({ userType, handleLogout }) => {
                         </>
                     ) : (
                         <>
-<<<<<<< Updated upstream
                             <Link to={userType === 'client' ? "/client-profile" : "/professional-profile"}>
                                 <img src={profileIcon} alt="profile" className="h-10" />
                             </Link>
@@ -56,7 +55,6 @@ const Header = ({ userType, handleLogout }) => {
                             >
                                 Logout
                             </button>
-=======
                             {userType === 'CLIENT' && (
                                 <>
                                     {/*<Link to="/client-profile" className="text-gray-800 hover:text-gray-900">Perfil</Link>*/}
@@ -82,7 +80,6 @@ const Header = ({ userType, handleLogout }) => {
                             )}
                             <button onClick={handleLogout}
                                     className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">Logout</button>
->>>>>>> Stashed changes
                         </>
                     )}
                 </div>
