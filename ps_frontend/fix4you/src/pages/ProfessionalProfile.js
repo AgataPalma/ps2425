@@ -237,20 +237,20 @@ function ProfessionalProfile({ id }) {
         setSelectedIndex(index);
     };
 
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Set the preview URL for display in the UI (this won't be sent to the backend)
             setImagePreview(URL.createObjectURL(file));
 
+            // Read the file as a base64 string for submission
             const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
             reader.onload = () => {
-                const byteArray = new Uint8Array(reader.result);
-                setFormData({ ...formData, profileImage: Array.from(byteArray) });
+                const base64Image = reader.result.replace(/^data:image\/\w+;base64,/, ''); // Remove the prefix
+                setFormData({ ...formData, profileImage: base64Image }); // Set only base64 data for backend
             };
-            reader.onerror = (error) => {
-                console.error("Error reading file:", error);
-            };
+            reader.onerror = (error) => console.error("Error reading file:", error);
+            reader.readAsDataURL(file); // Read file as base64
         }
     };
 
@@ -331,13 +331,13 @@ function ProfessionalProfile({ id }) {
 
     const handleSavePersonalInformation = async () => {
 
-        const profileImageBytes = (imagePreview && imagePreview !== profileData.profileImage)
-            ? imagePreview.replace(/^data:image\/\w+;base64,/, '') // Remove base64 prefix for new image
-            : profileData.profileImage.replace(/^data:image\/\w+;base64,/, ''); // Ensure existing image is raw base64
+        const profileImageBase64 = formData.profileImage?.startsWith('data:image')
+            ? formData.profileImage.replace(/^data:image\/\w+;base64,/, '') // Strip base64 prefix
+            : formData.profileImage;
 
         const formDataToSend = {
             ...formData,
-            profileImage: profileImageBytes,
+            profileImage: profileImageBase64,
             userType: "PROFESSIONAL"
         };
 
@@ -345,25 +345,27 @@ function ProfessionalProfile({ id }) {
             formDataToSend.password = profileData.password;
         }
 
-        axiosInstance.put(`/professionals/${id}`, formDataToSend, {
-        })
-            .then(response => {
-                const updatedProfileData = {
-                    ...response.data,
-                    profileImage: profileData.profileImage,
-                };
-                setProfileData(updatedProfileData);
-                setFormData(updatedProfileData);
-                setEditMode(false);
+        try {
+            const response = await axiosInstance.put(`/professionals/${id}`, formDataToSend);
+            const updatedProfileData = {
+                ...response.data,
+                profileImage: `data:image/jpeg;base64,${profileImageBase64}`
+            };
+
+            setProfileData(updatedProfileData);
+            setFormData(updatedProfileData);
+            if (!imagePreview) {
                 setImagePreview(null);
-                setSuccessMessage("Personal information updated successfully!");
-                setTimeout(() => setSuccessMessage(''), 3000);
-            })
-            .catch(error => {
-                console.error('Error updating professional profile data:', error);
-                setErrorMessage("Failed to update personal information. Please try again.");
-                setTimeout(() => setErrorMessage(''), 3000);
-            });
+            }
+
+            setEditMode(false);
+            setSuccessMessage("Personal information updated successfully!");
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (error) {
+            console.error('Error updating professional profile data:', error);
+            setErrorMessage("Failed to update personal information. Please try again.");
+            setTimeout(() => setErrorMessage(''), 3000);
+        }
     };
 
     const handleDeleteCategory = (categoryId) => {
