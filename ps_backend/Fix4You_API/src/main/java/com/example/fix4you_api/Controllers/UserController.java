@@ -6,6 +6,7 @@ import com.example.fix4you_api.Data.Models.PasswordResetToken;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
+import com.example.fix4you_api.Service.Login.DTOs.ResponseLogin;
 import com.example.fix4you_api.Service.Login.LoginRequest;
 import com.example.fix4you_api.Service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,9 +103,10 @@ public class UserController {
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getEmail());
         final String jwt = jwtUtil.generateToken(userLogin.getEmail());
-        JwtResponse jwtResponse = new JwtResponse(jwt);
+        ResponseLogin response = new ResponseLogin(jwt, userLogin.getId(), userLogin.getUserType());
+        //JwtResponse jwtResponse = new JwtResponse(jwt);
 
-        return ResponseEntity.ok(jwtResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/send-email-verification/{email}")
