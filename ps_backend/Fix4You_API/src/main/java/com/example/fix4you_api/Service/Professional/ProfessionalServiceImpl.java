@@ -120,7 +120,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         List<ProfessionalCategoryData> data = new ArrayList<>();
 
         for (CategoryDescription categoryDescription : categoriesProfessional) {
-            Professional professional = getProfessionalById(categoryDescription.getProfessionalId());
+            Professional professional = getProfessionalByIdNoException(categoryDescription.getProfessionalId());
             if(professional == null) continue;
 
             ProfessionalCategoryData professionalCategoryData = new ProfessionalCategoryData(
@@ -152,6 +152,11 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Override
     public Professional getProfessionalById(String id) {
         return findOrThrow(id);
+    }
+
+    @Override
+    public Professional getProfessionalByIdNoException(String id) {
+        return professionalRepository.findById(id).orElse(null);
     }
 
     @Override

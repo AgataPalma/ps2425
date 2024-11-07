@@ -17,6 +17,8 @@ public interface ProfessionalService {
 
     Professional getProfessionalById(String id);
 
+    Professional getProfessionalByIdNoException(String id);
+
     Professional createProfessional(Professional professional);
 
     Professional updateProfessional(String id, Professional professional);
