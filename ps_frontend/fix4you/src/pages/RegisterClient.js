@@ -10,7 +10,7 @@ const RegisterClient = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        navigate('/PrincipalPageClient');
+        navigate('/Login');
     };
 
     return (

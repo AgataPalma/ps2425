@@ -15,7 +15,8 @@ import 'tailwindcss/tailwind.css';
 import PrincipalPageClient from "./pages/PrincipalPageClient";
 import PrincipalPageProfessional from "./pages/PrincipalPageProfessional";
 import NewRequests from "./pages/NewRequests";
-import RequestService from "./pages/RequestService";
+import RequestServiceGeneric from "./pages/RequestServiceGeneric";
+import RequestServiceToProfessional from "./pages/RequestServiceToProfessional";
 
 function App() {
 
@@ -131,12 +132,17 @@ function App() {
                         }
                     />
                     <Route
-                        path="/RequestService"
+                        path="/RequestServiceGeneric"
                         element={
-                            <RequestService />
+                            <RequestServiceGeneric />
                         }
                     />
-
+                    <Route
+                        path="/RequestServiceToProfessional"
+                        element={
+                            <RequestServiceToProfessional />
+                        }
+                    />
                 </Routes>
             </div>
         </Router>

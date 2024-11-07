@@ -32,7 +32,7 @@ const RegisterProfessional = () => {
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault(); // Impede o comportamento padrão de recarregar a página
-    navigate('/PrincipalPageProfessional'); // Redireciona para a página desejada
+    navigate('/Login'); // Redireciona para a página desejada
   };
 
   return (
