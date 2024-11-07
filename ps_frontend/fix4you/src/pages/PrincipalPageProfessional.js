@@ -12,14 +12,15 @@ const PrincipalPageProfessional = ({ id }) => {
     const [includeTravelCost, setIncludeTravelCost] = useState(false);
     const [includeInvoice, setIncludeInvoice] = useState(false);
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null); // To manage which request's description to show in the modal
 
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
     };
 
-    const filteredServices = Array(6).fill(0).filter((_, index) => {
-        return true;
-    });
+    const handleShowDescription = (request) => {
+        setSelectedRequest(request); // Show the full description in the modal
+    };
 
     useEffect(() => {
         axiosInstance.get('/services')
@@ -138,47 +139,71 @@ const PrincipalPageProfessional = ({ id }) => {
                     {requests
                         .filter(request => request.professionalId === null)
                         .map(request => (
-                        <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
-                            <div className="flex items-center space-x-4">
-                                <img src={user} alt="Profile" className="w-20 h-20"/>
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title)}</h3>
-                                    <p className="text-sm">{capitalizeFirstLetter(request.category)}</p>
+                            <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
+                                <div className="flex items-center space-x-4">
+                                    <img src={user} alt="Profile" className="w-20 h-20"/>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title)}</h3>
+                                        <p className="text-sm">{capitalizeFirstLetter(request.category)}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <p className="text-sm font-semibold flex items-center">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 mr-2"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M12 2C8.134 2 5 5.134 5 9c0 4 5 11 7 11s7-7 7-11c0-3.866-3.134-7-7-7zm0 7a2 2 0 11-4 0 2 2 0 014 0z"
+                                            />
+                                        </svg>
+                                        {request.location}
+                                    </p>
+
+                                    <div className="mb-4">
+                                        <p className="text-gray-800 text-sm inline">{request.description.length > 100 ? `${request.description.slice(0, 100)}...` : request.description}</p>
+
+                                        {request.description.length > 100 && (
+                                            <button
+                                                className="text-yellow-600 text-sm inline ml-2"
+                                                onClick={() => handleShowDescription(request)} // Passing the full request object
+                                            >Mostrar mais
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="mt-4 flex justify-center">
+                                    <button
+                                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
+                                        Aceitar
+                                    </button>
                                 </div>
                             </div>
-                            <div className="mt-4">
-                                <p className="text-sm font-semibold flex items-center">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-4 w-4 mr-2"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M12 2C8.134 2 5 5.134 5 9c0 4 5 11 7 11s7-7 7-11c0-3.866-3.134-7-7-7zm0 7a2 2 0 11-4 0 2 2 0 014 0z"
-                                        />
-                                    </svg>
-                                    {request.location}
-                                </p>
-                                <div
-                                    className="w-full bg-white mt-2 p-2 h-20 placeholder-black border border-black"
-                                >
-                                    {request.description}
-                                </div>
-                            </div>
-                            <div className="mt-4 flex justify-center">
-                                <button
-                                    className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
-                                    Aceitar
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+
                 </section>
+
+                {selectedRequest && (
+                    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-lg max-h-96 overflow-auto">
+                            <h2 className="text-2xl font-bold mb-4">Descrição</h2>
+                            <p className="text-sm">{selectedRequest.description}</p>
+                            <button
+                                onClick={() => setSelectedRequest(null)}
+                                className="mt-4 px-4 py-2 bg-gray-400 text-white rounded-lg"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <Footer/>
             </div>
         </div>

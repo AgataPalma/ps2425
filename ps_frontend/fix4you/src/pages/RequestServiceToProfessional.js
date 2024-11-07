@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import axiosInstance from "../components/axiosInstance";
 
 
-function RequestServiceToProfessional() {
+function RequestServiceToProfessional({ id }) {
 
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
@@ -17,7 +17,7 @@ function RequestServiceToProfessional() {
         e.preventDefault();
 
         const requestBody = {
-            clientId: "6726a9628eb1fe556ec92198",
+            clientId: id,
             professionalId: null,
             price: 0,
             address: "0",

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import Footer from "../components/Footer";
 import axiosInstance from "../components/axiosInstance";
-import axios from 'axios'; // Para a requisição das localidades
+import axios from 'axios';
 
-function RequestServiceGeneric() {
+function RequestServiceGeneric({ id }) {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
@@ -14,18 +14,16 @@ function RequestServiceGeneric() {
   const [description, setDescription] = useState('');
   const [locationOptions, setLocationOptions] = useState([]); // Opções para o seletor de localização
 
-  // Buscar dados de freguesias e municípios
   useEffect(() => {
     const fetchLocationData = async () => {
       try {
         const response = await axios.get('https://json.geoapi.pt/municipios/freguesias');
 
-        // Se a API devolver a lista corretamente organizada
         const organizedData = response.data.map((municipio) => ({
-          label: municipio.nome, // Nome do município
+          label: municipio.nome,
           options: municipio.freguesias.map((freguesia) => ({
-            label: freguesia, // Nome da freguesia
-            value: `${municipio.nome}, ${freguesia}` // Valor completo do município + freguesia
+            label: freguesia,
+            value: `${municipio.nome}, ${freguesia}`
           }))
         }));
 
@@ -42,7 +40,7 @@ function RequestServiceGeneric() {
     e.preventDefault();
 
     const requestBody = {
-      clientId: "6726a9628eb1fe556ec92198", // ALTERAR conforme necessário
+      clientId: id,
       professionalId: null,
       price: 0,
       address: "0",
@@ -50,8 +48,8 @@ function RequestServiceGeneric() {
       category: category,
       description: description,
       title: title,
-      location: location, // Usando o valor selecionado do Select
-      languages: ["ENGLISH"], // ALTERAR conforme necessário
+      location: location,
+      languages: ["ENGLISH"], // ALTERAR
       state: 0
     };
 
@@ -98,7 +96,7 @@ function RequestServiceGeneric() {
                         styles={{
                           control: (provided) => ({
                             ...provided,
-                            border: 'none',  // Removendo o border padrão do Select
+                            border: 'none',
                           }),
                         }}
                     />

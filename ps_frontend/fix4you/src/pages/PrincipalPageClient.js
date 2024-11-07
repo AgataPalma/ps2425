@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../components/axiosInstance";
 
-const PrincipalPageClient = () => {
+const PrincipalPageClient = ({ id }) => {
     const [professionals, setProfessionals] = useState([]);
     const [priceRange, setPriceRange] = useState('');
     const [rating, setRating] = useState(null);
@@ -239,7 +239,7 @@ const PrincipalPageClient = () => {
                                 <div
                                     className="fixed inset-0 bg-gray-800 bg-opacity-15 flex justify-center items-center z-50">
                                     <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
-                                        <h2 className="text-2xl font-bold mb-4">Descrição Completa</h2>
+                                        <h2 className="text-2xl font-bold mb-4">Descrição</h2>
                                         <p className="text-sm">{activeModalDescription}</p>
                                         <button
                                             onClick={() => setActiveModalDescription(null)}
