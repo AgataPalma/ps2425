@@ -9,10 +9,11 @@ function RequestServiceGeneric({ id }) {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
-  const [location, setLocation] = useState('');  // Armazena o valor da freguesia selecionada
+  const [location, setLocation] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [locationOptions, setLocationOptions] = useState([]); // Opções para o seletor de localização
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [languages, setLanguages] = useState([]);  // Novo estado para múltiplos idiomas
 
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -49,7 +50,7 @@ function RequestServiceGeneric({ id }) {
       description: description,
       title: title,
       location: location,
-      languages: ["ENGLISH"], // ALTERAR
+      languages: languages.map(language => language.value),  // Passando os idiomas selecionados
       state: 0
     };
 
@@ -65,6 +66,13 @@ function RequestServiceGeneric({ id }) {
       console.error("Error creating service:", error);
     }
   };
+
+  const languageOptions = [
+    { value: 'PORTUGUESE', label: 'Português' },
+    { value: 'FRENCH', label: 'Francês' },
+    { value: 'ENGLISH', label: 'Inglês' },
+    { value: 'SPANISH', label: 'Espanhol' }
+  ];
 
   return (
       <div className="h-screen bg-gray-200 text-black font-sans">
@@ -92,7 +100,7 @@ function RequestServiceGeneric({ id }) {
                         options={locationOptions}
                         onChange={(selectedOption) => setLocation(selectedOption.value)}
                         placeholder="Selecione a sua freguesia"
-                        className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black" // Removendo o border
+                        className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
                         styles={{
                           control: (provided) => ({
                             ...provided,
@@ -119,6 +127,23 @@ function RequestServiceGeneric({ id }) {
                     </select>
                   </div>
 
+                  <div className="mb-4">
+                    <label className="block text-black font-semibold mb-2">Idioma(s) *</label>
+                    <Select
+                        isMulti  // Permitir múltiplas seleções
+                        options={languageOptions}
+                        onChange={(selectedOptions) => setLanguages(selectedOptions)}  // Armazenar múltiplos idiomas
+                        placeholder="Selecione o(s) idioma(s)"
+                        className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: 'none',
+                          }),
+                        }}
+                    />
+                  </div>
+
                   <div className="mb-6">
                     <label className="block text-black font-semibold mb-2">Descrição *</label>
                     <textarea
@@ -131,7 +156,8 @@ function RequestServiceGeneric({ id }) {
 
                   <button
                       type="submit"
-                      className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
+                      className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                  >
                     Publicar
                   </button>
                 </form>

@@ -12,7 +12,6 @@ function RequestServiceToProfessional({ id }) {
     const [category, setCategory] = useState('1');
     const [description, setDescription] = useState('');
 
-    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
