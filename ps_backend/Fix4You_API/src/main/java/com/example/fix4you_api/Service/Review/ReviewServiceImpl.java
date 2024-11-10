@@ -45,7 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
         Client reviwedUser;     // could be either a professional or a client
 
         if(review.getClassification() < 1 && review.getClassification() > 5) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid classification");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid classification [1-5]");
         }
 
         // check if service exists
