@@ -89,6 +89,30 @@ public class ScheduleAppointmentController {
         }
     }
 
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<?> approveScheduleAppointment(@PathVariable("id") String id) {
+        try {
+            Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
+            scheduleAppointment.get().setState(ScheduleStateEnum.CONFIRMED);
+            return ResponseEntity.ok(scheduleAppointment);
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/disapprove/{id}")
+    public ResponseEntity<?> disapproveScheduleAppointment(@PathVariable("id") String id) {
+        try {
+            Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
+            scheduleAppointment.get().setState(ScheduleStateEnum.CANCELED);
+            return ResponseEntity.ok(scheduleAppointment);
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getScheduleAppointment(@PathVariable String id) {
         try {
