@@ -9,4 +9,5 @@ public interface ServiceService {
     List<Service> getServicesByClientId(String clientId);
     void deleteServicesForClient(String clientId);
     void deleteServicesFroProfessional(String professionalId);
+    boolean serviceExists(String serviceId);
 }

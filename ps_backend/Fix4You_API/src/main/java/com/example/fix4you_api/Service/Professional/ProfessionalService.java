@@ -28,4 +28,6 @@ public interface ProfessionalService {
     void deleteProfessional(String id);
 
     boolean nifExists(String nif);
+
+    void setRating(float rating, Professional professional);
 }
