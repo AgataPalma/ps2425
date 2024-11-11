@@ -1,12 +1,11 @@
 package com.example.fix4you_api.Service.Review;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.Review;
-import com.example.fix4you_api.Data.Models.User;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.ReviewRepository;
+import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
@@ -33,6 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ProfessionalService professionalService;
     private final ClientService clientService;
     private final ServiceRepository serviceRepository;
+    private final ScheduleAppointmentRepository scheduleAppointmentRepository;
 
     @Override
     public List<Review> getAllReviews() {
@@ -56,6 +56,23 @@ public class ReviewServiceImpl implements ReviewService {
 
         if(!service.get().getState().equals(ServiceStateEnum.COMPLETED)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Service is not completed yet");
+        }
+
+        List<ScheduleAppointment> scheduleAppointmentList = scheduleAppointmentRepository.findByServiceId(review.getServiceId());
+        LocalDateTime scheduleDate = null;
+        for(ScheduleAppointment scheduleAppointment : scheduleAppointmentList) {
+            if(scheduleAppointment.getState().equals(ScheduleStateEnum.COMPLETED)) {
+                scheduleDate = scheduleAppointment.getDateFinish();
+            }
+        }
+
+        if(scheduleDate == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Schedule appointment not found");
+        }
+
+        // check if review date is valid (can only be made within 3 months)
+        if(review.getDate().isAfter(scheduleDate.plusMonths(3))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Date to make the review as expired");
         }
 
         // check if reviewer exists
@@ -87,7 +104,6 @@ public class ReviewServiceImpl implements ReviewService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Users type can't be the same");
         }
 
-        //
         if(CheckIfUserAlreadyMakeReviewToService(review, reviewer.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already make review to this service");
         }

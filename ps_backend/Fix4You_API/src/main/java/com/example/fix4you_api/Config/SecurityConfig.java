@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")   // if only the role USER is allowed (hasRole("CLIENT"))
                         .requestMatchers("/users/admins").hasAnyRole("ADMIN","PROFESSIONAL")
                         .requestMatchers("/users/email-confirmation/**").permitAll()
+                        .requestMatchers("/users/send-email-verification/**").permitAll()
                         .requestMatchers("/professionals").permitAll()
                         .requestMatchers("/professionals/**").permitAll()
                         .requestMatchers("/clients").permitAll()
