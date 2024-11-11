@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Service.ProfessionalCategory;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class ProfessionalCategoryViewService {
         return mongoTemplate.findAll(ProfessionalCategoryView.class);
     }
 
+    @Transactional
     public List<ProfessionalCategoryView> createProfessionalCategoryView() {
         mongoTemplate.dropCollection(ProfessionalCategoryView.class);
 
@@ -64,6 +67,7 @@ public class ProfessionalCategoryViewService {
                 .and("languages").as("languages")
                 .and("locationsRange").as("locationsRange")
                 .and("acceptedPayments").as("acceptedPayments")
+                .and("rating").as("rating")
                 .and("categoryDescriptions").as("categoryDescriptions");
 
         // Step 4: Define and execute the aggregation

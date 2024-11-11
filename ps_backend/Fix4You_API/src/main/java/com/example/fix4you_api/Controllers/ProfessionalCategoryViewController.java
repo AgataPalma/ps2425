@@ -1,5 +1,7 @@
-package com.example.fix4you_api.Service.ProfessionalCategory;
+package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
+import com.example.fix4you_api.Service.ProfessionalCategory.ProfessionalCategoryViewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

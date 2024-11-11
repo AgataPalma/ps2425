@@ -1,4 +1,4 @@
-package com.example.fix4you_api.Service.ProfessionalCategory;
+package com.example.fix4you_api.Data.Models.Views;
 
 import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
@@ -26,15 +26,16 @@ public class ProfessionalCategoryView {
     private String description;
     private String nif;
     private List<LanguageEnum> languages;
-    private int locationsRange;
+    private Integer locationsRange;
     private List<PaymentTypesEnum> acceptedPayments;
+    private Float rating;
     private List<CategoryDescription> categoryDescriptions;
 
     @Data
     public static class CategoryDescription {
         private EnumCategories category;
-        private boolean chargesTravels;
-        private boolean providesInvoices;
-        private float mediumPricePerService;
+        private Boolean chargesTravels;
+        private Boolean providesInvoices;
+        private Float mediumPricePerService;
     }
 }
