@@ -90,6 +90,7 @@ const RegisterClient = () => {
             });
 
             if (response.ok) {
+                alert('Conta criada com sucesso!');
                 navigate('/Login');
             } else {
                 const errorData = await response.json();
@@ -106,7 +107,7 @@ const RegisterClient = () => {
         <div className="bg-gray-200">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm py-12">
                 <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Register to Contact a Professional
+                    Registar para contactar profissional
                 </h2>
             </div>
 
@@ -119,7 +120,7 @@ const RegisterClient = () => {
                     )}
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                            Name
+                            Nome
                         </label>
                         <div className="mt-2">
                             <input
@@ -139,7 +140,7 @@ const RegisterClient = () => {
 
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                            Email address
+                            Email
                         </label>
                         <div className="mt-2">
                             <input
@@ -179,7 +180,7 @@ const RegisterClient = () => {
 
                     <div>
                         <label htmlFor="phoneNumber" className="block text-sm font-medium leading-6 text-gray-900">
-                            Phone Number
+                            Telefone
                         </label>
                         <div className="mt-2">
                             <input
@@ -199,7 +200,7 @@ const RegisterClient = () => {
 
                     <div>
                         <label htmlFor="dateOfBirth" className="block text-sm font-medium leading-6 text-gray-900">
-                            Date of Birth
+                            Data de Nascimento
                         </label>
                         <div className="mt-2">
                             <input
@@ -235,6 +236,69 @@ const RegisterClient = () => {
                     </div>
 
                     <br />
+
+                    <div className="mt-6">
+                        <h2>Termos e Condições de Serviço</h2>
+                        <br></br>
+                        <div className="border p-4 rounded-md max-h-40 overflow-y-auto bg-gray-100">
+                            <p className="text-sm text-gray-700">
+
+                                Bem-vindo à Fix4You! Ao utilizar nossa plataforma, você concorda com os Termos e Condições abaixo. Por favor, leia atentamente antes de utilizar nossos serviços.
+
+                                1. Aceitação dos Termos
+                                Ao acessar ou utilizar a plataforma Fix4You você concorda com estes Termos e Condições e com nossa Política de Privacidade. Se você não concorda com qualquer parte dos Termos, não utilize nossos serviços.
+
+                                2. Descrição do Serviço
+                                A Fix4You conecta clientes a profissionais para a contratação de serviços específicos, como limpeza, eletricidade, pintura e outros. A plataforma serve apenas como intermediário entre profissionais e clientes e não assume qualquer responsabilidade pelos serviços prestados pelos profissionais.
+                                3. Cadastro e Conta
+                                3.1. Elegibilidade: Para se cadastrar, você deve ter pelo menos 18 anos de idade.
+                                3.2. Informações de Cadastro: Você concorda em fornecer informações precisas e completas durante o processo de cadastro e manter essas informações atualizadas.  3.3. Segurança da Conta: Você é responsável por manter a segurança de sua conta e senha. A Fix4You não será responsável por qualquer perda ou dano resultante do uso não autorizado da sua conta.
+
+                                4. Uso da Plataforma
+                                4.1. Clientes: Os clientes podem utilizar a plataforma para solicitar serviços de profissionais. Ao contratar um profissional, o cliente concorda em pagar pelo serviço prestado e cumprir os termos acordados com o profissional. 4.2. Profissionais: Profissionais podem utilizar a plataforma para oferecer seus serviços e se comprometem a realizar os serviços com profissionalismo e qualidade.  4.3. Restrições de Uso: Você concorda em não utilizar a plataforma para fins ilícitos, incluindo, mas não se limitando a, falsificação de identidade, spam, fraude, ou qualquer outro uso que infrinja as leis aplicáveis.
+
+                                5. Pagamentos e Taxas
+                                A plataforma pode cobrar taxas pelos serviços de conexão entre clientes e profissionais. Todas as taxas e comissões, se aplicáveis, serão descritas no momento da contratação ou em outros materiais de comunicação. A Fix4You reserva-se o direito de modificar as taxas e métodos de pagamento a qualquer momento.
+
+                                6. Cancelamento e Reembolso
+                                O cancelamento e reembolso devem ser acordados entre o cliente e o profissional. A Fix4You não oferece reembolsos, pois atua apenas como intermediário e não é responsável pela execução do serviço.
+
+                                7. Limitação de Responsabilidade
+                                A Fix4You não é responsável pela qualidade, segurança, legalidade ou pontualidade dos serviços realizados pelos profissionais. A plataforma não será responsabilizada por quaisquer danos diretos, indiretos, incidentais ou consequentes relacionados ao uso dos serviços prestados pelos profissionais.
+
+                                8. Privacidade
+                                A Fix4You coleta e utiliza informações pessoais conforme descrito em nossa Política de Privacidade. Ao utilizar a plataforma, você concorda com a coleta e o uso de informações de acordo com esta política.
+
+                                9. Direitos de Propriedade Intelectual
+                                Todos os direitos, títulos e interesses relacionados à plataforma e seu conteúdo são de propriedade da Fix4You ou de seus licenciadores. É proibido reproduzir, modificar, distribuir ou criar trabalhos derivados sem autorização prévia.
+
+                                10. Modificações aos Termos
+                                A Fix4You reserva-se o direito de modificar estes Termos e Condições a qualquer momento. Quaisquer alterações serão comunicadas e entrarão em vigor imediatamente após a publicação. O uso contínuo da plataforma após tais mudanças constitui aceitação das modificações.
+
+                                11. Rescisão
+                                A Fix4You reserva-se o direito de suspender ou encerrar sua conta e o acesso à plataforma a qualquer momento, sem aviso prévio, caso você viole estes Termos.
+
+                                12. Lei Aplicável e Foro Competente
+                                Estes Termos e Condições são regidos pelas leis de Portual. Em caso de controvérsia, você concorda em se submeter à jurisdição dos tribunais de Coimbra.
+
+                                13. Contato
+                                Caso tenha dúvidas sobre estes Termos e Condições, entre em contato conosco
+
+                            </p>
+                        </div>
+                        <div className="mt-4 flex items-center">
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                required
+                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                                Eu li e aceito os Termos e Condições
+                            </label>
+                        </div>
+                    </div>
+
                     <div>
                         <button
                             type="submit"
@@ -242,7 +306,7 @@ const RegisterClient = () => {
                                        leading-6 text-white shadow-sm hover:bg-yellow-600 focus-visible:outline
                                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
-                            Register
+                            Registar
                         </button>
                     </div>
                 </form>

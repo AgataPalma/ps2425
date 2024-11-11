@@ -16,14 +16,14 @@ const RegisterChoice = () => {
                     className="bg-yellow-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
                     style={{ backgroundImage: `url(${professionalImage})` }}
                 >
-                    <h2 className="text-3xl font-bold mb-4">Register as a professional</h2>
+                    <h2 className="text-3xl font-bold mb-4">Registar como profissional</h2>
                     <p className="mb-4">
-                        Looking for a place to promote your services? ⛏️<br />
-                        Whether you're a carpenter, plumber, electrician, or any other skilled professional, Fix4You is the right platform for you! 🌟
+                        Procuras um lugar para promover os teus serviços? ⛏️<br />
+                        Seja carpinteiro, canalizador, eletricista ou outro profissional qualificado, a Fix4You é a plataforma certa para ti! 🌟
                     </p>
-                    <p className="mb-6">Join today and start growing your business!</p>
+                    <p className="mb-6">Junta-te hoje e começa a crescer o teu negócio!</p>
                     <Link to="/RegisterProfessional">
-                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
+                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Registar</button>
                     </Link>
                 </div>
 
@@ -32,14 +32,14 @@ const RegisterChoice = () => {
                     className="bg-yellow-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
                     style={{ backgroundImage: `url(${clientImage})` }}
                 >
-                    <h2 className="text-3xl font-bold mb-4">Contact professionals</h2>
+                    <h2 className="text-3xl font-bold mb-4">Contactar profissionais</h2>
                     <p className="mb-4">
-                        Ready to find the perfect professional for your request? 🤝<br />
-                        At Fix4You, we connect you with skilled professionals in carpentry, plumbing, electrical work, and much more.
+                        Pronto para encontrar o profissional perfeito para a tua necessidade? 🤝<br />
+                        Na Fix4You, conectamos-te com profissionais qualificados em carpintaria, canalização, trabalhos elétricos e muito mais.
                     </p>
-                    <p className="mb-6">It's simple, fast, and free! 🔧</p>
+                    <p className="mb-6">É simples, rápido e gratuito! 🔧</p>
                     <Link to="/RegisterClient">
-                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Register</button>
+                    <button className="bg-gray-800 text-white py-2 px-4 rounded hover:bg-yellow-500">Registar</button>
                     </Link>
                 </div>
             </div>
