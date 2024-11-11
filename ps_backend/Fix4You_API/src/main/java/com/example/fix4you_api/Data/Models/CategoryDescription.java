@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +24,8 @@ public class CategoryDescription {
     private String professionalId;
 
     @Field
-    @NotNull(message = "Category cannot be null")
-    private EnumCategories category;
+    @NotNull(message = "Category ID cannot be null")
+    private String categoryId;
 
     @Field
     @NotNull(message = "Charges travels cannot be null")
