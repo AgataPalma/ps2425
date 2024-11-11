@@ -57,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers("/scheduleAppointments/disapprove/*").hasAnyRole("ADMIN","PROFESSIONAL")
                         .requestMatchers("/scheduleAppointments/professional/*").permitAll()
                         .requestMatchers("/scheduleAppointments/client/*").permitAll()
+                        .requestMatchers("/professional-category-views").permitAll()
+                        .requestMatchers("/professional-category-views/*").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                         //.anyRequest().permitAll())
                         .sessionManagement(session -> session

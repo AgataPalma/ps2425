@@ -9,21 +9,16 @@ import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionReposit
 import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
-import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -117,50 +112,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public List<ProfessionalCategoryData> getAllProfessionalsCategoryData() {
-        List<CategoryDescription> categoriesProfessional = categoryDescriptionRepository.findAll();
-
-        List<ProfessionalCategoryData> data = new ArrayList<>();
-
-        for (CategoryDescription categoryDescription : categoriesProfessional) {
-            Professional professional = getProfessionalByIdNoException(categoryDescription.getProfessionalId());
-            if(professional == null) continue;
-
-            ProfessionalCategoryData professionalCategoryData = new ProfessionalCategoryData(
-                    professional.getId(),
-                    professional.getEmail(),
-                    professional.getDateCreation(),
-                    professional.getUserType(),
-                    professional.getName(),
-                    professional.getPhoneNumber(),
-                    professional.getLocation(),
-                    professional.getProfileImage(),
-                    professional.getDescription(),
-                    professional.getNif(),
-                    professional.getLanguages(),
-                    professional.getLocationsRange(),
-                    professional.getAcceptedPayments(),
-                    categoryDescription.getCategory(),
-                    categoryDescription.isChargesTravels(),
-                    categoryDescription.isProvidesInvoices(),
-                    categoryDescription.getMediumPricePerService(),
-                    professional.getRating()
-            );
-
-            data.add(professionalCategoryData);
-        }
-
-        return data;
-    }
-
-    @Override
     public Professional getProfessionalById(String id) {
         return findOrThrow(id);
-    }
-
-    @Override
-    public Professional getProfessionalByIdNoException(String id) {
-        return professionalRepository.findById(id).orElse(null);
     }
 
     @Override
