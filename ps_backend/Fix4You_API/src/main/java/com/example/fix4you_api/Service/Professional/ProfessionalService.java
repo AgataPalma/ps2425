@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 
 import java.util.List;
@@ -12,12 +11,7 @@ public interface ProfessionalService {
 
     ProfessionalData getAllProfessionalsCompleteData(String id);
 
-    // its used for client dashboard
-    List<ProfessionalCategoryData> getAllProfessionalsCategoryData();
-
     Professional getProfessionalById(String id);
-
-    Professional getProfessionalByIdNoException(String id);
 
     Professional createProfessional(Professional professional);
 

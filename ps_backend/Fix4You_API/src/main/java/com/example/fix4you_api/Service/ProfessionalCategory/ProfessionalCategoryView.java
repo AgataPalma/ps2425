@@ -1,4 +1,4 @@
-package com.example.fix4you_api.Service.Professional.DTOs;
+package com.example.fix4you_api.Service.ProfessionalCategory;
 
 import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
@@ -6,13 +6,15 @@ import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ProfessionalCategoryData {
+@Document(collection = "ProfessionalCategoryView")
+public class ProfessionalCategoryView {
     private String id;
     private String email;
     private LocalDateTime dateCreation;
@@ -26,8 +28,17 @@ public class ProfessionalCategoryData {
     private List<LanguageEnum> languages;
     private int locationsRange;
     private List<PaymentTypesEnum> acceptedPayments;
-    private EnumCategories category;
-    private boolean chargesTravels;
-    private boolean providesInvoices;
-    private float mediumPricePerService;
+    private List<CategoryDescription> categoryDescriptions;
+
+    @Data
+    public static class CategoryDescription {
+
+        private EnumCategories category;
+
+        private boolean chargesTravels;
+
+        private boolean providesInvoices;
+
+        private float mediumPricePerService;
+    }
 }

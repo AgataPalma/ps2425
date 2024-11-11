@@ -4,7 +4,6 @@ import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
-import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalCategoryData;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
@@ -69,16 +68,6 @@ public class ProfessionalController {
     public ResponseEntity<ProfessionalData> getProfessionalCompleteData(@PathVariable("id") String id) {
         ProfessionalData professional = professionalService.getAllProfessionalsCompleteData(id);
         return new ResponseEntity<>(professional, HttpStatus.OK);
-    }
-
-    // its used for client dashboard
-    // returns a list of professionals according to their category
-    // Example: John has 2 categories (Plumber and CLEANING)
-    // return: [John  PLUMBER; John CLEANING]
-    @GetMapping("/category-data")
-    public ResponseEntity<List<ProfessionalCategoryData>> getAllProfessionalsCategoryData() {
-        List<ProfessionalCategoryData> professionals = professionalService.getAllProfessionalsCategoryData();
-        return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
