@@ -19,7 +19,6 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<?> addReview(@RequestBody Review review) {
-        review.setDate(LocalDateTime.now());
         return new ResponseEntity<>(reviewService.createReview(review), HttpStatus.CREATED);
     }
 
