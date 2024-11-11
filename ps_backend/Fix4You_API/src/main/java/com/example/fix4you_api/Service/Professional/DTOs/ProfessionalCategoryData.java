@@ -30,4 +30,5 @@ public class ProfessionalCategoryData {
     private boolean chargesTravels;
     private boolean providesInvoices;
     private float mediumPricePerService;
+    private float rating;
 }

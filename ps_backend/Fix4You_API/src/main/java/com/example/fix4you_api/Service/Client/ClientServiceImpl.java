@@ -23,6 +23,7 @@ public class ClientServiceImpl implements ClientService {
     public Client createClient(Client client) {
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
+        client.setRating(0);
         return clientRepository.save(client);
     }
 
@@ -40,13 +41,19 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public Client updateClient(String id, Client client) {
         Client existingClient = findOrThrow(id);
-        BeanUtils.copyProperties(client, existingClient, "id");
+        BeanUtils.copyProperties(client, existingClient, "id","rating");
         return clientRepository.save(existingClient);
     }
 
     @Override
     public void deleteClient(String id) {
         clientRepository.deleteById(id);
+    }
+
+    @Override
+    public void setRating(float rating, Client client){
+        client.setRating(rating);
+        clientRepository.save(client);
     }
 
     private Client findOrThrow(String id) {

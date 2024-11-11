@@ -10,4 +10,5 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
 
     List<Service> findByClientId(String id);
 
+    boolean existsById(String id);
 }

@@ -1,0 +1,52 @@
+{
+	"info": {
+		"_postman_id": "2469c1c8-c1fd-482d-9eb9-dd5c131fa690",
+		"name": "Fix4You_Review",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31211363",
+		"_collection_link": "https://haupper.postman.co/workspace/Haupper~3db697c2-0c13-493b-b6e5-1b01af711100/collection/31211363-2469c1c8-c1fd-482d-9eb9-dd5c131fa690?action=share&source=collection_link&creator=31211363"
+	},
+	"item": [
+		{
+			"name": "Review",
+			"item": [
+				{
+					"name": "Create review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"classification\" : 5,\r\n    \"reviewDescription\" : \"The CLIENT was GREAT\",\r\n    \"serviceId\" : \"6730d799d6f40420b05d1f83\",\r\n    \"reviewerId\" : \"672b87a4b87dc266a9ba970a\",\r\n    \"reviewedId\" : \"672d0069f157e752715d04f3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/reviews"
+					},
+					"response": []
+				},
+				{
+					"name": "user review",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/reviews/user/672d0069f157e752715d04f3"
+					},
+					"response": []
+				},
+				{
+					"name": "get review",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/reviews/6730d8482e2f1662c4b20fa5"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
