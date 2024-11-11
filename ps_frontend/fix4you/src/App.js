@@ -139,31 +139,42 @@ function App() {
                     <Route
                         path="/PrincipalPageClient"
                         element={
-                            <PrincipalPageClient id={userId}/>
+                        <ProtectedRoute allowedUserType="CLIENT">
+                            <PrincipalPageClient id={userId} />
+                        </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/PrincipalPageProfessional"
                         element={
-                            <PrincipalPageProfessional id={userId} />
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <PrincipalPageProfessional id={userId} />
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/NewRequests"
                         element={
-                            <NewRequests id={userId}/>
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <NewRequests id={userId}/>
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/RequestServiceGeneric"
+
                         element={
-                            <RequestServiceGeneric id={userId}/>
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <RequestServiceGeneric id={userId}/>
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/RequestServiceToProfessional"
                         element={
-                            <RequestServiceToProfessional id={userId}/>
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <RequestServiceToProfessional id={userId}/>
+                            </ProtectedRoute>
                         }
                     />
                 </Routes>
