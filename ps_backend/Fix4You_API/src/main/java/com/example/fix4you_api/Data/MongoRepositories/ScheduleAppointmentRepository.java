@@ -9,6 +9,7 @@ public interface ScheduleAppointmentRepository extends MongoRepository<ScheduleA
     List<ScheduleAppointment> findByProfessionalId(String id);
 
     List<ScheduleAppointment> findByClientId(String id);
+    List<ScheduleAppointment>  findByServiceId(String serviceId);
 
     void deleteByServiceId(String serviceId);
 }
