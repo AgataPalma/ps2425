@@ -29,6 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(Category category) {
+        category.setMinValue(0);
+        category.setMaxValue(0);
         return categoryRepository.save(category);
     }
 
