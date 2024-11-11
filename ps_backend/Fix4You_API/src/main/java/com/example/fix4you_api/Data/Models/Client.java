@@ -40,4 +40,8 @@ public class Client extends User {
 
     @Field
     private boolean ageValidation;
+
+    @Field
+    @NotNull(message = "Rating cannot be null")
+    private float rating;
 }

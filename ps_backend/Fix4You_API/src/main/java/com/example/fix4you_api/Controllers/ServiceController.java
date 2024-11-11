@@ -29,6 +29,9 @@ public class ServiceController {
     @PostMapping
     public ResponseEntity<String> addService(@RequestBody Service service) {
         try {
+            if(service.getClientId().equals(service.getProfessionalId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+            }
             this.serviceRepository.save(service);
             return ResponseEntity.ok("Service Added!");
         } catch (Exception e) {

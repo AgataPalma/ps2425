@@ -29,4 +29,5 @@ public class ProfessionalData {
     private List<PaymentTypesEnum> acceptedPayments;
     private List<CategoryDescription> categories;
     private List<PortfolioItem> portfolioItems;
+    private float rating;
 }

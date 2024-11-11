@@ -32,13 +32,9 @@ public class ProfessionalCategoryView {
 
     @Data
     public static class CategoryDescription {
-
         private EnumCategories category;
-
         private boolean chargesTravels;
-
         private boolean providesInvoices;
-
         private float mediumPricePerService;
     }
 }

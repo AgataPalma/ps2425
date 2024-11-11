@@ -92,7 +92,7 @@ public class ProfessionalController {
     public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
         portfolioItemService.deletePortfolioItems(id);
         categoryDescriptionService.deleteCategoryDescriptions(id);
-        reviewService.deleteReviewsForProfessional(id);
+        reviewService.deleteReviewsForUser(id);
         professionalsFeeService.deleteProfessionalFees(id);
         ticketService.deleteTickets(id);
         serviceService.deleteServicesFroProfessional(id);

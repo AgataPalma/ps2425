@@ -57,7 +57,7 @@ public class ClientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable String id) {
-        reviewService.deleteReviewsForClient(id);
+        reviewService.deleteReviewsForUser(id);
         ticketService.deleteTickets(id);
         serviceService.deleteServicesForClient(id);
 

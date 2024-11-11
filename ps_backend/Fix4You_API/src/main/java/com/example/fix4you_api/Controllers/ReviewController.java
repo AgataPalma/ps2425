@@ -18,10 +18,9 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<Review> addReview(@RequestBody Review review) {
+    public ResponseEntity<?> addReview(@RequestBody Review review) {
         review.setDate(LocalDateTime.now());
-        Review createdReview = reviewService.createReview(review);
-        return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
+        return new ResponseEntity<>(reviewService.createReview(review), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -30,4 +29,15 @@ public class ReviewController {
         return new ResponseEntity<>(professionalsFee, HttpStatus.OK);
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<Review>> GetUserReviews(@PathVariable String id) {
+        List<Review> list = reviewService.getAllReviewsOfReviwedId(id);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Review> getReview(@PathVariable String id) {
+        Review review = reviewService.getReview(id);
+        return new ResponseEntity<>(review, HttpStatus.OK);
+    }
 }

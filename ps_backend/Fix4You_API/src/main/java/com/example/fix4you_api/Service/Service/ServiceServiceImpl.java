@@ -62,4 +62,9 @@ public class ServiceServiceImpl implements ServiceService {
         }
     }
 
+    @Override
+    public boolean serviceExists(String serviceId) {
+        return this.serviceRepository.existsById(serviceId);
+    }
+
 }

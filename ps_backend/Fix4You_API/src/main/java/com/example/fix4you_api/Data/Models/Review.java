@@ -34,15 +34,13 @@ public class Review {
     private String serviceId;
 
     @Field
-    @NotNull(message = "Client ID cannot be null")
-    private String clientId;
+    @NotNull(message = "Reviewer ID cannot be null")
+    private String reviewerId;              // user that makes a review (professional or a client)
 
     @Field
     @NotNull(message = "Professional ID cannot be null")
-    private String professionalId;
+    private String reviewedId;              // user that receives a review (could be a professional or a client)
 
     @Field
-    @NotNull(message = "Date cannot be null")
-    @PastOrPresent(message = "Review date must be in the past or present")
     private LocalDateTime date;
 }

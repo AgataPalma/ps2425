@@ -6,6 +6,7 @@ import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
+import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
@@ -30,6 +31,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     private final CategoryDescriptionRepository categoryDescriptionRepository;
     private final PortfolioItemRepository portfolioItemRepository;
     private final RsqlQueryService rsqlQueryService;
+    private final ClientRepository clientRepository;
 
     @Override
     public List<Professional> getProfessionals(String filter, String sort) {
@@ -100,7 +102,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                         professional.getLocationsRange(),
                         professional.getAcceptedPayments(),
                         categoriesProfessional,
-                        portfolioItems
+                        portfolioItems,
+                        professional.getRating()
                 );
 
                 return data;
@@ -119,6 +122,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
+        professional.setRating(0);
         return professionalRepository.save(professional);
     }
 
@@ -190,6 +194,12 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         }
 
         return false;
+    }
+
+    @Override
+    public void setRating(float rating, Professional professional){
+        professional.setRating(rating);
+        professionalRepository.save(professional);
     }
 
     private Professional findOrThrow(String id) {
