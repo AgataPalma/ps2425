@@ -31,18 +31,20 @@ public class PortfolioItemController {
     @PostMapping
     public ResponseEntity<String> addPortfolioItem(@RequestParam String professionalId,
                                                    @RequestParam String description,
-                                                   @Validated @RequestParam("file") MultipartFile file) {
+                                                   @RequestParam("file") MultipartFile file) {
         try {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
             PortfolioItem portfolioItem = new PortfolioItem();
             portfolioItem.setProfessionalId(professionalId);
             portfolioItem.setDescription(description);
-            portfolioItem.setFilename(fileName);
-            portfolioItem.setContentType(contentType);
-            portfolioItem.setFileData(bytes);
+
+            if(!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                String contentType = file.getContentType();
+                byte[] bytes = file.getBytes();
+                portfolioItem.setFilename(fileName);
+                portfolioItem.setContentType(contentType);
+                portfolioItem.setFileData(bytes);
+            }
 
             this.portfolioItemRepository.save(portfolioItem);
             return ResponseEntity.ok("Portfolio item Added!");
@@ -102,19 +104,26 @@ public class PortfolioItemController {
     public ResponseEntity<?> updatePortfolioItem(@PathVariable String id,
                                                  @RequestParam String professionalId,
                                                  @RequestParam String description,
-                                                 @Validated @RequestParam("file") MultipartFile file ){
+                                                 @RequestParam("file") MultipartFile file ){
         try {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
-                String fileName = file.getOriginalFilename();
-                String contentType = file.getContentType();
-                byte[] bytes = file.getBytes();
+                if(!file.isEmpty()) {
+                    String fileName = file.getOriginalFilename();
+                    String contentType = file.getContentType();
+                    byte[] bytes = file.getBytes();
+
+                    portfolioItemOpt.get().setFilename(fileName);
+                    portfolioItemOpt.get().setContentType(contentType);
+                    portfolioItemOpt.get().setFileData(bytes);
+                } else {
+                    portfolioItemOpt.get().setFilename("");
+                    portfolioItemOpt.get().setContentType("");
+                    portfolioItemOpt.get().setFileData(null);
+                }
 
                 portfolioItemOpt.get().setProfessionalId(professionalId);
                 portfolioItemOpt.get().setDescription(description);
-                portfolioItemOpt.get().setFilename(fileName);
-                portfolioItemOpt.get().setContentType(contentType);
-                portfolioItemOpt.get().setFileData(bytes);
 
                 this.portfolioItemRepository.save(portfolioItemOpt.get());
                 return ResponseEntity.ok(portfolioItemOpt);

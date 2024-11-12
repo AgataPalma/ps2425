@@ -24,15 +24,12 @@ public class PortfolioItem {
     private String professionalId;
 
     @Field
-    @NotNull(message = "File name cannot be null")
     private String filename;
 
     @Field
-    @NotNull(message = "Content type cannot be null")
     private String contentType;
 
     @Field
-    @NotNull(message = "File Data type cannot be null")
     private byte[] fileData;
 
     @Field

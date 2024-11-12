@@ -51,7 +51,7 @@ public class ProfessionalController {
                                                 @RequestParam List<LanguageEnum> languages,
                                                 @RequestParam Integer locationsRange,
                                                 @RequestParam List<PaymentTypesEnum> acceptedPayments,
-                                                @Validated @RequestParam("file") MultipartFile file) throws IOException {
+                                                @RequestParam("file") MultipartFile file) throws IOException {
         // verify if the email and nif are unique
         if(userService.emailExists(email)){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
@@ -69,6 +69,16 @@ public class ProfessionalController {
         professional.setUserType(userType);
         professional.setPassword(password);
         professional.setEmail(email);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            professional.setFilename(fileName);
+            professional.setContentType(contentType);
+            professional.setFileData(bytes);
+        }
 
         Professional createdProfessional = professionalService.createProfessional(professional);
 
@@ -112,7 +122,7 @@ public class ProfessionalController {
                                                            @RequestParam Integer locationsRange,
                                                            @RequestParam Boolean IsEmailConfirmed,
                                                            @RequestParam List<PaymentTypesEnum> acceptedPayments,
-                                                           @Validated @RequestParam("file") MultipartFile file) throws IOException {
+                                                           @RequestParam("file") MultipartFile file) throws IOException {
         Professional professional = professionalService.getProfessionalById(id);
         professional.setEmail(email);
         professional.setPassword(password);
@@ -128,13 +138,19 @@ public class ProfessionalController {
         professional.setAcceptedPayments(acceptedPayments);
         professional.setIsEmailConfirmed(IsEmailConfirmed);
 
-        String fileName = file.getOriginalFilename();
-        String contentType = file.getContentType();
-        byte[] bytes = file.getBytes();
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
 
-        professional.setFilename(fileName);
-        professional.setContentType(contentType);
-        professional.setFileData(bytes);
+            professional.setFilename(fileName);
+            professional.setContentType(contentType);
+            professional.setFileData(bytes);
+        } else {
+            professional.setFilename("");
+            professional.setContentType("");
+            professional.setFileData(null);
+        }
 
         Professional updatedProfessional = professionalService.updateProfessional(professional);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);

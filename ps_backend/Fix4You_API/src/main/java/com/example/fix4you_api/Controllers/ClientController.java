@@ -44,9 +44,6 @@ public class ClientController {
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        String fileName = file.getOriginalFilename();
-        String contentType = file.getContentType();
-        byte[] bytes = file.getBytes();
 
         Client client = new Client();
         client.setName(name);
@@ -55,10 +52,17 @@ public class ClientController {
         client.setAgeValidation(ageValidation);
         client.setUserType(userType);
         client.setPassword(password);
-        client.setFilename(fileName);
-        client.setContentType(contentType);
-        client.setFileData(bytes);
         client.setEmail(email);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            client.setFilename(fileName);
+            client.setContentType(contentType);
+            client.setFileData(bytes);
+            client.setEmail(email);
+        }
 
         Client createdClient = clientService.createClient(client);
         // send verification email
@@ -88,9 +92,6 @@ public class ClientController {
                                                @RequestParam String password,
                                                @RequestParam String email,
                                                @Validated @RequestParam("file") MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename();
-        String contentType = file.getContentType();
-        byte[] bytes = file.getBytes();
 
         Client client = clientService.getClientById(id);
         client.setName(name);
@@ -99,10 +100,20 @@ public class ClientController {
         client.setAgeValidation(ageValidation);
         client.setUserType(userType);
         client.setPassword(password);
-        client.setFilename(fileName);
-        client.setContentType(contentType);
-        client.setFileData(bytes);
         client.setEmail(email);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            client.setFilename(fileName);
+            client.setContentType(contentType);
+            client.setFileData(bytes);
+        } else {
+            client.setFilename("");
+            client.setContentType("");
+            client.setFileData(null);
+        }
 
         Client updatedClient = clientService.updateClient(id, client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
