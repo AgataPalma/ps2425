@@ -50,7 +50,7 @@ function RequestServiceGeneric({ id }) {
       description: description,
       title: title,
       location: location,
-      languages: languages.map(language => language.value),  // Passando os idiomas selecionados
+      languages: languages.map(language => language.value),
       state: 0
     };
 
@@ -58,7 +58,9 @@ function RequestServiceGeneric({ id }) {
       const response = await axiosInstance.post('/services', requestBody);
 
       if (response.status === 200) {
-        navigate('/PrincipalPageClient');
+        const serviceId = response.data;
+        navigate(`/ScheduleAppointments?clientId=${id}&professionalId=${null}&serviceId=${serviceId}`);
+
       } else {
         console.error("Failed to create service:", response.statusText);
       }
@@ -158,7 +160,7 @@ function RequestServiceGeneric({ id }) {
                       type="submit"
                       className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
                   >
-                    Publicar
+                    Avançar
                   </button>
                 </form>
               </div>

@@ -3,8 +3,8 @@ import '../index.css';
 import user from '../images/user.png';
 import { FaStar } from 'react-icons/fa';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../components/axiosInstance";
+import { useNavigate } from 'react-router-dom';
 
 const PrincipalPageClient = ({ id }) => {
     const [professionals, setProfessionals] = useState([]);

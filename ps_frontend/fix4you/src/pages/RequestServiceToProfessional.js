@@ -51,7 +51,9 @@ function RequestServiceToProfessional({ id }) {
             const response = await axiosInstance.post('/services', requestBody);
 
             if (response.status === 200) {
-                navigate('/PrincipalPageClient');
+                const serviceId = response.data;
+                const professionalId = professional.professionalId
+                navigate(`/ScheduleAppointments?clientId=${id}&professionalId=${professionalId}&serviceId=${serviceId}`);
             } else {
                 console.error("Failed to create service:", response.statusText);
             }

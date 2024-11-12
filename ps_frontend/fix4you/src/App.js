@@ -18,6 +18,7 @@ import PrincipalPageProfessional from "./pages/PrincipalPageProfessional";
 import NewRequests from "./pages/NewRequests";
 import RequestServiceGeneric from "./pages/RequestServiceGeneric";
 import RequestServiceToProfessional from "./pages/RequestServiceToProfessional";
+import ScheduleAppointments from "./pages/ScheduleAppointments";
 
 function App() {
 
@@ -175,6 +176,13 @@ function App() {
                             <ProtectedRoute allowedUserType="CLIENT">
                                 <RequestServiceToProfessional id={userId}/>
                             </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/ScheduleAppointments"
+                        element={
+                                <ScheduleAppointments id={userId}/>
+
                         }
                     />
                 </Routes>
