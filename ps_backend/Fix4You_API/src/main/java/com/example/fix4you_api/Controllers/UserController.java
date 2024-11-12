@@ -82,8 +82,8 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        User existingUser = userService.deleteUser(id);
+        return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 
     @PostMapping("/login")

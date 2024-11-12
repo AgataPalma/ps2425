@@ -89,16 +89,16 @@ public class ProfessionalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
-        portfolioItemService.deletePortfolioItems(id);
-        categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
-        reviewService.deleteReviewsForUser(id);
-        professionalsFeeService.deleteProfessionalFees(id);
-        ticketService.deleteTickets(id);
-        serviceService.deleteServicesFroProfessional(id);
+    public ResponseEntity<Professional> deleteProfessional(@PathVariable String id) {
+        //portfolioItemService.deletePortfolioItems(id);
+        //categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
+        //reviewService.deleteReviewsForUser(id);
+        //professionalsFeeService.deleteProfessionalFees(id);
+        //ticketService.deleteTickets(id);
+        //serviceService.deleteServicesFroProfessional(id);
 
-        professionalService.deleteProfessional(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Professional existingProfessional = professionalService.deleteProfessional(id);
+        return new ResponseEntity<>(existingProfessional, HttpStatus.OK);
     }
 
 }

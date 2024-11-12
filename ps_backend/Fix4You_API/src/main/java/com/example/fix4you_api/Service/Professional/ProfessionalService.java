@@ -19,7 +19,7 @@ public interface ProfessionalService {
 
     Professional partialUpdateProfessional(String id, Map<String, Object> updates);
 
-    void deleteProfessional(String id);
+    Professional deleteProfessional(String id);
 
     boolean nifExists(String nif);
 

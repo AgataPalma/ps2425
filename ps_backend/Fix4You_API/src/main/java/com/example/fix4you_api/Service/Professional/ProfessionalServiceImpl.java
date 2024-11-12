@@ -176,9 +176,12 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     @Transactional
-    public void deleteProfessional(String id) {
-        Professional professional = findOrThrow(id);
-        professionalRepository.delete(professional);
+    public Professional deleteProfessional(String id) {
+        Professional existingProfessional = findOrThrow(id);
+        existingProfessional.setIsDeleted(true);
+        return professionalRepository.save(existingProfessional);
+
+        //professionalRepository.delete(professional);
     }
 
 
