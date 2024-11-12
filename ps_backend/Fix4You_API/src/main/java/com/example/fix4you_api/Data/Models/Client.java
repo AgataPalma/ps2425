@@ -34,14 +34,22 @@ public class Client extends User {
     private String location;
 
     @Field
-    @NotNull(message = "Profile image cannot be null")
-    @Size(max = 1048576, message = "Profile image must be less than 1 MB")
-    private byte[] profileImage;
-
-    @Field
     private boolean ageValidation;
 
     @Field
     @NotNull(message = "Rating cannot be null")
     private float rating;
+
+    @Field
+    @NotNull(message = "File name cannot be null")
+    private String filename;
+
+    @Field
+    @NotNull(message = "Content type cannot be null")
+    private String contentType;
+
+    @Field
+    @NotNull(message = "File Data type cannot be null")
+    private byte[] fileData;
+
 }

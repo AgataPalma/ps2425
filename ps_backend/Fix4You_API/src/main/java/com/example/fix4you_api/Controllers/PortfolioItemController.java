@@ -1,14 +1,21 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
+import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("portfolioItems")
@@ -22,8 +29,21 @@ public class PortfolioItemController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addPortfolioItem(@RequestBody PortfolioItem portfolioItem) {
+    public ResponseEntity<String> addPortfolioItem(@RequestParam String professionalId,
+                                                   @RequestParam String description,
+                                                   @Validated @RequestParam("file") MultipartFile file) {
         try {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            PortfolioItem portfolioItem = new PortfolioItem();
+            portfolioItem.setProfessionalId(professionalId);
+            portfolioItem.setDescription(description);
+            portfolioItem.setFilename(fileName);
+            portfolioItem.setContentType(contentType);
+            portfolioItem.setFileData(bytes);
+
             this.portfolioItemRepository.save(portfolioItem);
             return ResponseEntity.ok("Portfolio item Added!");
         } catch (Exception e) {
@@ -79,12 +99,25 @@ public class PortfolioItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePortfolioItem(@PathVariable String id, @RequestBody PortfolioItem portfolioItem) {
+    public ResponseEntity<?> updatePortfolioItem(@PathVariable String id,
+                                                 @RequestParam String professionalId,
+                                                 @RequestParam String description,
+                                                 @Validated @RequestParam("file") MultipartFile file ){
         try {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
-                this.portfolioItemRepository.save(portfolioItem);
-                return ResponseEntity.ok(portfolioItem);
+                String fileName = file.getOriginalFilename();
+                String contentType = file.getContentType();
+                byte[] bytes = file.getBytes();
+
+                portfolioItemOpt.get().setProfessionalId(professionalId);
+                portfolioItemOpt.get().setDescription(description);
+                portfolioItemOpt.get().setFilename(fileName);
+                portfolioItemOpt.get().setContentType(contentType);
+                portfolioItemOpt.get().setFileData(bytes);
+
+                this.portfolioItemRepository.save(portfolioItemOpt.get());
+                return ResponseEntity.ok(portfolioItemOpt);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any portfolio item with the id: '" + id + "'!");
             }
