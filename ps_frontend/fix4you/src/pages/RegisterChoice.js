@@ -8,10 +8,12 @@ import { Link } from 'react-router-dom';
 
 const RegisterChoice = () => {
     return (
-        <div className="h-screen bg-gray-200 text-black font-sans">
+        <div className="bg-gray-200 text-black font-sans">
+            <br></br>
+            <br></br>
 
-
-            <div className="flex justify-center space-x-8 my-16">
+            <div className="flex justify-center space-x-8 bg-gray-200 mb-20">
+                
                 <div
                     className="bg-yellow-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
                     style={{ backgroundImage: `url(${professionalImage})` }}

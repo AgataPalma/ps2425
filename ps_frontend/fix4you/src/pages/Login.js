@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../index.css';
 import Footer from '../components/Footer';
+import { Link } from 'react-router-dom';
 
 const Login = ({ onLogin }) => { 
     const [email, setEmail] = useState('');
@@ -48,7 +49,7 @@ const Login = ({ onLogin }) => {
             <div className="p-8 w-1/3 bg-gray-100 shadow-lg rounded-lg bg-cover bg-center mt-10 sm:mx-auto sm:w-full sm:max-w-sm mb-40">
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
+                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email</label>
                         <div className="mt-2">
                             <input
                                 id="email"
@@ -67,7 +68,9 @@ const Login = ({ onLogin }) => {
                         <div className="flex items-center justify-between">
                             <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
                             <div className="text-sm">
-                                <a href="#" className="font-semibold text-yellow-500 mx-2 hover:underline">Forgot password?</a>
+                                <Link to="/Recover">
+                                <a href="/Recover" className="font-semibold text-yellow-500 mx-2 hover:underline">Esqueceu-se da password?</a>
+                                </Link>
                             </div>
                         </div>
                         <div className="mt-2 mb-10">
@@ -91,14 +94,14 @@ const Login = ({ onLogin }) => {
                             type="submit"
                             className="flex w-full justify-center rounded-md bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
-                            Sign in
+                            Log in
                         </button>
                     </div>
                 </form>
 
                 <p className="mt-10 text-center text-sm text-gray-800">
-                    You don’t have an account?<br />
-                    <a href="/RegisterChoice" className="font-semibold leading-6 text-yellow-500 mx-2 hover:underline">Register</a>
+                    Não tem uma conta?<br />
+                    <a href="/RegisterChoice" className="font-semibold leading-6 text-yellow-500 mx-2 hover:underline">Registar</a>
                 </p>
                 <br />
             </div>
