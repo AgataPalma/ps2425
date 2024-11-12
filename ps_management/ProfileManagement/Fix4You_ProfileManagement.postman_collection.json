@@ -51,16 +51,56 @@
 								"key": "token",
 								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZHVAZ21haWwuY29tIiwiaWF0IjoxNzMwMjI1MDE3LCJleHAiOjE3MzAyMjg2MTd9.9TqAmFTKSmPGzdNgi8jtnhdAYC_FfBLUiviDkFuLEWc",
 								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"67212390aaed522ce3777269\",\r\n    \"professionalId\": \"671fdf62a68b216e6101b20f\",\r\n    \"mediaContent\": [],\r\n    \"description\": \"description\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "67212390aaed522ce3777269",
+									"type": "text"
+								},
+								{
+									"key": "professionalId",
+									"value": "671fdf62a68b216e6101b20f",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "description",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/andre/OneDrive/Imagens/Capturas de Ecrã/Captura de Ecrã (6).png"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "localhost:8080/portfolioItems/67212390aaed522ce3777269",
@@ -71,6 +111,28 @@
 							"path": [
 								"portfolioItems",
 								"67212390aaed522ce3777269"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
