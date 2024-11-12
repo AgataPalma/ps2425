@@ -11,6 +11,7 @@ public interface CategoryService {
     Category createCategory(Category category);
     Category updateCategory(String id, Category category);
     Category partialUpdateCategory(String id, Map<String, Object> updates);
+    void updateCategoryMinMaxValue(String id, float mediumPricePerService);
     void deleteCategory(String id);
 
     boolean nameExists(String name);

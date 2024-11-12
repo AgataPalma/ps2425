@@ -1,8 +1,10 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Service.Category.CategoryService;
+import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,87 +14,47 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/categoryDescriptions")
+@RequiredArgsConstructor
 public class CategoryDescriptionController {
 
-    @Autowired
-    private CategoryDescriptionRepository categoryDescriptionRepository;
-
-    @Autowired
-    public CategoryDescriptionController(CategoryDescriptionRepository categoryDescriptionRepository) {
-        this.categoryDescriptionRepository = categoryDescriptionRepository;
-    }
+    private final CategoryDescriptionService categoryDescriptionService;
+    private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<String> addCategoryDescription(@RequestBody CategoryDescription categoryDescription) {
-        try {
-            this.categoryDescriptionRepository.save(categoryDescription);
-            return ResponseEntity.ok("Category Description Added!");
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<CategoryDescription> addCategoryDescription(@RequestBody CategoryDescription categoryDescription) {
+        CategoryDescription categoryDescriptionCreated = categoryDescriptionService.createCategoryDescription(categoryDescription);
+        categoryService.updateCategoryMinMaxValue(categoryDescriptionCreated.getCategoryId(), categoryDescriptionCreated.getMediumPricePerService());
+        return new ResponseEntity<>(categoryDescriptionCreated, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<?> getCategoryDescription() {
-        try {
-            List<CategoryDescription> categoryDescriptions = this.categoryDescriptionRepository.findAll();
-            return ResponseEntity.ok(categoryDescriptions);
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<List<CategoryDescription>> getAllCategoriesDescription() {
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getAllCategoriesDescription();
+        return new ResponseEntity<>(categoryDescriptions, HttpStatus.OK);
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<?> getUserCategoryDescriptions(@PathVariable("id") String idProfessional) {
-        try {
-            List<CategoryDescription> categoryDescriptions = this.categoryDescriptionRepository.findByProfessionalId(idProfessional);
-            return ResponseEntity.ok(categoryDescriptions);
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<List<CategoryDescription>> getUserCategoryDescriptions(@PathVariable("id") String professionalId) {
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByProfessionalId(professionalId);
+        return new ResponseEntity<>(categoryDescriptions, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryDescription(@PathVariable String id) {
-        try {
-            Optional<CategoryDescription> categoryDescriptions = this.categoryDescriptionRepository.findById(id);
-            return (categoryDescriptions.isPresent() ? ResponseEntity.ok(categoryDescriptions.get()) : ResponseEntity.ok("Couldn't find any Category Description with the id: '" + id + "'!"));
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategoryDescription(@PathVariable String id) {
-        try {
-            Optional<CategoryDescription> categoryDescription = this.categoryDescriptionRepository.findById(id);
-            this.categoryDescriptionRepository.deleteById(id);
-            String msg = (categoryDescription.isPresent() ? "Category description with id '" + id + "' was deleted!" : "Couldn't find any category description with the id: '" + id + "'!");
-            return ResponseEntity.ok(msg);
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was an error trying to delete the category description with id: '" + id + "'!");
-        }
+    public ResponseEntity<CategoryDescription> getCategoryDescription(@PathVariable String id) {
+            CategoryDescription categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionById(id);
+            return new ResponseEntity<>(categoryDescriptions, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategoryDescription(@PathVariable String id, @RequestBody CategoryDescription categoryDescription) {
-        try {
-            Optional<CategoryDescription> categoryDescriptionOpt = this.categoryDescriptionRepository.findById(id);
-            if (categoryDescriptionOpt.isPresent()) {
-                this.categoryDescriptionRepository.save(categoryDescription);
-                return ResponseEntity.ok(categoryDescription);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any category description with the id: '" + id + "'!");
-            }
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<CategoryDescription> updateCategoryDescription(@PathVariable String id, @RequestBody CategoryDescription categoryDescription) {
+        CategoryDescription updatedCategoryDescription = categoryDescriptionService.updatecategoryDescription(id, categoryDescription);
+        return new ResponseEntity<>(updatedCategoryDescription, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategoryDescription(@PathVariable String id) {
+        categoryDescriptionService.deleteCategoryDescriptionsById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -1,12 +1,14 @@
 package com.example.fix4you_api.Service.Category;
 
 import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -57,6 +59,29 @@ public class CategoryServiceImpl implements CategoryService {
         });
 
         return categoryRepository.save(existingCategory);
+    }
+
+    @Override
+    @Transactional
+    public void updateCategoryMinMaxValue(String id, float mediumPricePerService) {
+        Category existingCategory = findOrThrow(id);
+        Map<String, Object> updates = new HashMap<>();
+
+        if(existingCategory.getMinValue() == 0 && existingCategory.getMaxValue() == 0) {
+            updates.put("minValue", mediumPricePerService);
+            updates.put("maxValue", mediumPricePerService);
+        } else {
+
+            if (mediumPricePerService < existingCategory.getMinValue()) {
+                updates.put("minValue", mediumPricePerService);
+            }
+
+            if (mediumPricePerService > existingCategory.getMaxValue()) {
+                updates.put("maxValue", mediumPricePerService);
+            }
+        }
+
+        partialUpdateCategory(id, updates);
     }
 
     @Override

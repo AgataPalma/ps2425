@@ -91,7 +91,7 @@ public class ProfessionalController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
         portfolioItemService.deletePortfolioItems(id);
-        categoryDescriptionService.deleteCategoryDescriptions(id);
+        categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
         reviewService.deleteReviewsForUser(id);
         professionalsFeeService.deleteProfessionalFees(id);
         ticketService.deleteTickets(id);
