@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -23,8 +24,13 @@ public class PortfolioItem {
     private String professionalId;
 
     @Field
-    @NotNull(message = "Media content cannot be null")
-    private byte[] mediaContent;
+    private String filename;
+
+    @Field
+    private String contentType;
+
+    @Field
+    private byte[] fileData;
 
     @Field
     @NotBlank(message = "Description cannot be blank")

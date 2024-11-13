@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/clients").permitAll()
                         .requestMatchers("/clients/*").permitAll()
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
-                        .requestMatchers("/users/resetPassword").hasAnyRole("ADMIN","PROFESSIONAL","CLIENT")
+                        .requestMatchers("/users/resetPassword").permitAll()
                         .requestMatchers("/categories").permitAll()
                         .requestMatchers("/categoryDescriptions").permitAll()
                         .requestMatchers("/categoryDescriptions/*").permitAll()

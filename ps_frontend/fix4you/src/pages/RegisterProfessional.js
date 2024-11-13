@@ -80,6 +80,8 @@ const RegisterProfessional = () => {
   const paymentOptions = [
     { value: 'CASH', label: 'Dinheiro' },
     { value: 'CARD', label: 'Cartão' },
+    { value: 'MBWAY', label: 'MBWAY' },
+    { value: 'TRANSFER', label: 'Transferência' },
     // Adicione outros métodos de pagamento conforme necessário
   ];
 
@@ -654,7 +656,7 @@ const RegisterProfessional = () => {
                            hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2
                            focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       >
-                        Registrar
+                        Registar
                       </button>
                     </div>
                   </div>

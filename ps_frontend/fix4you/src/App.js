@@ -18,6 +18,8 @@ import PrincipalPageProfessional from "./pages/PrincipalPageProfessional";
 import NewRequests from "./pages/NewRequests";
 import RequestServiceGeneric from "./pages/RequestServiceGeneric";
 import RequestServiceToProfessional from "./pages/RequestServiceToProfessional";
+import Recover from "./pages/Recover";
+import PasswordReset from "./pages/PasswordReset";
 
 function App() {
 
@@ -75,6 +77,8 @@ function App() {
                     <Route path="/" element={<Navigate to="/Home" />} />
                     <Route path="/Home" element={<Home />} />
                     <Route path="/RegisterChoice" element={!userType ? <RegisterChoice /> : <Navigate to="/Home" />} />
+                    <Route path="/Recover" element={!userType ? <Recover /> : <Navigate to="/Home" />} />
+                    <Route path="/PasswordReset" element={!userType ? <PasswordReset /> : <Navigate to="/Home" />} />
                     <Route
                         path="/Login"
                         element={

@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "ccbbaae8-6b4f-4377-9ce6-46cf0f0e07af",
+		"_postman_id": "b2675993-7efa-4ccc-bbc6-927d1e5b17f6",
 		"name": "PS",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "31211363",
-		"_collection_link": "https://haupper.postman.co/workspace/Haupper~3db697c2-0c13-493b-b6e5-1b01af711100/collection/31211363-ccbbaae8-6b4f-4377-9ce6-46cf0f0e07af?action=share&source=collection_link&creator=31211363"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31975943"
 	},
 	"item": [
 		{
@@ -24,7 +23,17 @@
 								}
 							}
 						},
-						"url": "http://localhost:8080/professionals"
+						"url": {
+							"raw": "http://localhost:8080/professionals",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals"
+							]
+						}
 					},
 					"response": []
 				},
@@ -33,7 +42,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/professionals"
+						"url": {
+							"raw": "http://localhost:8080/professionals",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals"
+							]
+						}
 					},
 					"response": []
 				},
@@ -42,7 +61,19 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/professionals/complete-data/672942c108ce7731a659317e"
+						"url": {
+							"raw": "http://localhost:8080/professionals/complete-data/672942c108ce7731a659317e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"complete-data",
+								"672942c108ce7731a659317e"
+							]
+						}
 					},
 					"response": []
 				},
@@ -51,7 +82,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/professionals/category-data"
+						"url": {
+							"raw": "http://localhost:8080/professionals/category-data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"category-data"
+							]
+						}
 					},
 					"response": []
 				},
@@ -60,7 +102,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+						"url": {
+							"raw": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"67293a402ed3f728b4913fe6"
+							]
+						}
 					},
 					"response": []
 				},
@@ -78,7 +131,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+						"url": {
+							"raw": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"67293a402ed3f728b4913fe6"
+							]
+						}
 					},
 					"response": []
 				},
@@ -96,7 +160,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6"
+						"url": {
+							"raw": "http://localhost:8080/professionals/67293a402ed3f728b4913fe6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"67293a402ed3f728b4913fe6"
+							]
+						}
 					},
 					"response": []
 				},
@@ -105,7 +180,18 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:8080/professionals/67293d2edf04b14b7ebd2fe4"
+						"url": {
+							"raw": "http://localhost:8080/professionals/67293d2edf04b14b7ebd2fe4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"professionals",
+								"67293d2edf04b14b7ebd2fe4"
+							]
+						}
 					},
 					"response": []
 				}
