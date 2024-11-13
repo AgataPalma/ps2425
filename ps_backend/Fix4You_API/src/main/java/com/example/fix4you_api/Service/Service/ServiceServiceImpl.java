@@ -1,5 +1,7 @@
 package com.example.fix4you_api.Service.Service;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
@@ -30,6 +32,11 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public List<com.example.fix4you_api.Data.Models.Service> getServicesByClientId(String clientId) {
         return this.serviceRepository.findByClientId(clientId);
+    }
+
+    @Override
+    public List<com.example.fix4you_api.Data.Models.Service> getServicesByProfessionalIdAndState(String professionalId, ServiceStateEnum state) {
+        return this.serviceRepository.findByProfessionalIdAndState(professionalId, state);
     }
 
     @Override

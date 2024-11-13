@@ -9,6 +9,8 @@ import java.util.Map;
 public interface ProfessionalService {
     List<Professional> getProfessionals(String filter, String sort);
 
+    List<Professional> getAllActiveProfessionals();
+
     ProfessionalData getAllProfessionalsCompleteData(String id);
 
     Professional getProfessionalById(String id);
