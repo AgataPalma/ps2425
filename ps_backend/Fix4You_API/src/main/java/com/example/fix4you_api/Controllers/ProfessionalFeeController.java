@@ -69,6 +69,7 @@ public class ProfessionalFeeController {
         updates.put("paymentDate", LocalDateTime.now());
 
         ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.partialUpdateProfessionalsFee(id, updates);
+        //Generate invoice
         return new ResponseEntity<>(updatedProfessionalsFee, HttpStatus.OK);
     }
 
