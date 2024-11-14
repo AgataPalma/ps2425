@@ -76,6 +76,11 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
+    public List<Professional> getAllActiveProfessionals() {
+        return professionalRepository.findActiveProfessionalsByUserType(EnumUserType.PROFESSIONAL);
+    }
+
+    @Override
     public ProfessionalData getAllProfessionalsCompleteData(String id){
         List<Professional> professionalList = professionalRepository.findByUserType(EnumUserType.PROFESSIONAL);
         //List<ProfessionalData> professionalsData = new ArrayList<>();

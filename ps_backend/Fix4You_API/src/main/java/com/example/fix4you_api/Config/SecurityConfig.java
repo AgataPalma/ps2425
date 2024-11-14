@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/professionalFees").permitAll()
                         .requestMatchers("/professionalFees/*").permitAll()
                         .requestMatchers("/professionalFees/user/*").permitAll()
+                        .requestMatchers("/professionalFees/*/pay").permitAll()
                         .requestMatchers("/services").permitAll()
                         .requestMatchers("/services/*").permitAll()
                         .requestMatchers("/services/professional/*").permitAll()

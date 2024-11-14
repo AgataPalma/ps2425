@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,8 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

@@ -2,7 +2,6 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.PortfolioItem;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Review.ReviewService;
 import com.example.fix4you_api.Service.Service.ServiceService;
