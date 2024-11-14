@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,13 +25,7 @@ public class PortfolioItem {
     private String professionalId;
 
     @Field
-    private String filename;
-
-    @Field
-    private String contentType;
-
-    @Field
-    private byte[] fileData;
+    private List<PortfolioFile> files;
 
     @Field
     @NotBlank(message = "Description cannot be blank")
