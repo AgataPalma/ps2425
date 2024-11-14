@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Data.MongoRepositories;
 
+import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Service;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -9,6 +10,8 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
     List<Service> findByProfessionalId(String id);
 
     List<Service> findByClientId(String id);
+
+    List<Service> findByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
 
     boolean existsById(String id);
 }

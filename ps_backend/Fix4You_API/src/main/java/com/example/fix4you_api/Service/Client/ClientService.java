@@ -14,7 +14,7 @@ public interface ClientService {
 
     Client updateClient(String id, Client client);
 
-    void deleteClient(String id);
+    Client deleteClient(String id);
 
     void setRating(float rating, Client client);
 }

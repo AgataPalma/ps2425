@@ -17,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+import java.util.Map;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,8 +84,8 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        User existingUser = userService.deleteUser(id);
+        return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -123,32 +125,60 @@ public class UserController {
     }
 
     @GetMapping("/resetPasswordToken/{token}")
-    public String resetPasswordForm(@PathVariable String token) {
+    public RedirectView resetPasswordForm(@PathVariable String token) {
         List<PasswordResetToken> listToken = passwordResetTokenRepository.findAll();
         PasswordResetToken passwordResetToken = null;
         for (PasswordResetToken currentToken : listToken) {
-            if(currentToken.getToken().equals(token)) {
+            if (currentToken.getToken().equals(token)) {
                 passwordResetToken = currentToken;
+                break;
             }
         }
-        // token valid
+
+        // Se o token é válido e ainda não expirou
         if (passwordResetToken != null && passwordResetToken.getExpiryDateTime().isAfter(LocalDateTime.now())) {
-            // redirect to the page to forget Password
-            return "resetPassword";
+            String redirectUrl = "http://localhost:3000/PasswordReset?token="+token;  // URL frontend para resetar senha
+            return new RedirectView(redirectUrl);
         }
 
-        return "redirect:/forgotPassword?error";
+        return new RedirectView("http://localhost:3000/forgot-password?error=invalidToken");
     }
+
 
     @PostMapping("/resetPassword")
-    public String passwordResetProcess(@RequestBody LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
-        if(user != null) {
-            user.setPassword(request.getPassword());
-            userRepository.save(user);
+    public ResponseEntity<String> passwordResetProcess(@RequestBody Map<String, String> requestBody) {
+        // Extrai os parâmetros do corpo da solicitação
+        String email = requestBody.get("email");
+        String token = requestBody.get("token");
+        String password = requestBody.get("password");
+
+        // Busca o token no repositório
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token);
+        if (resetToken == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
         }
-        return "redirect:/login";
+
+        // Verifica se o token ainda é válido
+        if (resetToken.getExpiryDateTime().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token has expired");
+        }
+
+        // Usa o userId do token para encontrar o usuário no repositório
+        User user = userRepository.findById(resetToken.getUserId()).orElse(null);
+        if (user == null || !user.getEmail().equals(email)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email or token");
+        }
+
+        // Redefine a senha do usuário e salva
+        user.setPassword(password); // Certifique-se de aplicar hash na senha antes de salvar
+        userRepository.save(user);
+
+        // Remove o token após o uso
+        passwordResetTokenRepository.delete(resetToken);
+
+        return ResponseEntity.ok("Password reset successfully");
     }
+
 
     @GetMapping("/email-confirmation/{email}")
     public ResponseEntity<?> emailConfirmation(@PathVariable String email) {
