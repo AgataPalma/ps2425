@@ -60,12 +60,11 @@ public class ClientController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             client.setPortfolioFile(portfolioFile);
         }
@@ -79,12 +78,31 @@ public class ClientController {
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable String id) {
         Client client = clientService.getClientById(id);
+        if(client.getPortfolioFile() != null) {
+            byte[] bytes = client.getPortfolioFile().getBytes();
+            if (bytes != null) {
+                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                client.getPortfolioFile().setBase64Encoder(Base64Encoder);
+                client.getPortfolioFile().setBytes(null);
+            }
+        }
+
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Client>> getAllClients() {
         List<Client> clients = clientService.getAllClients();
+        for (var i=0; i < clients.size(); i++){
+            if(clients.get(i).getPortfolioFile() != null) {
+                byte[] bytes = clients.get(i).getPortfolioFile().getBytes();
+                if (bytes != null) {
+                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                    clients.get(i).getPortfolioFile().setBase64Encoder(Base64Encoder);
+                    clients.get(i).getPortfolioFile().setBytes(null);
+                }
+            }
+        }
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
@@ -112,12 +130,11 @@ public class ClientController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             client.setPortfolioFile(portfolioFile);
         } else {
@@ -138,12 +155,11 @@ public class ClientController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             client.setPortfolioFile(portfolioFile);
         } else {

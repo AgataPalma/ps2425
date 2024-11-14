@@ -38,12 +38,11 @@ public class PortfolioItemController {
                     String fileName = files[i].getOriginalFilename();
                     String contentType = files[i].getContentType();
                     byte[] bytes = files[i].getBytes();
-                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
                     PortfolioFile portfolioFile = new PortfolioFile();
                     portfolioFile.setFilename(fileName);
                     portfolioFile.setContentType(contentType);
-                    portfolioFile.setBase64Encoder(Base64Encoder);
+                    portfolioFile.setBytes(bytes);
 
                     portfolioFiles.add(portfolioFile);
 
@@ -63,6 +62,20 @@ public class PortfolioItemController {
     public ResponseEntity<?> getPortfolioItem() {
         try {
             List<PortfolioItem> portfolioItems = this.portfolioItemRepository.findAll();
+            for (var i=0; i < portfolioItems.size(); i++){
+                if(portfolioItems.get(i).getFiles() != null) {
+                    for (var y = 0; y < portfolioItems.get(i).getFiles().size(); y++) {
+                        if(portfolioItems.get(i).getFiles().get(y) != null) {
+                            byte[] bytes = portfolioItems.get(i).getFiles().get(y).getBytes();
+                            if (bytes != null) {
+                                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                                portfolioItems.get(i).getFiles().get(y).setBase64Encoder(Base64Encoder);
+                                portfolioItems.get(i).getFiles().get(y).setBytes(null);
+                            }
+                        }
+                    }
+                }
+            }
             return ResponseEntity.ok(portfolioItems);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -74,6 +87,20 @@ public class PortfolioItemController {
     public ResponseEntity<?> getUserPortfolioItem(@PathVariable("id") String idProfessional) {
         try {
             List<PortfolioItem> portfolioItems = this.portfolioItemRepository.findByProfessionalId(idProfessional);
+            for (var i=0; i < portfolioItems.size(); i++){
+                if(portfolioItems.get(i).getFiles() != null) {
+                    for (var y = 0; y < portfolioItems.get(i).getFiles().size(); y++) {
+                        if(portfolioItems.get(i).getFiles().get(y) != null) {
+                            byte[] bytes = portfolioItems.get(i).getFiles().get(y).getBytes();
+                            if (bytes != null) {
+                                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                                portfolioItems.get(i).getFiles().get(y).setBase64Encoder(Base64Encoder);
+                                portfolioItems.get(i).getFiles().get(y).setBytes(null);
+                            }
+                        }
+                    }
+                }
+            }
             return ResponseEntity.ok(portfolioItems);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -85,6 +112,18 @@ public class PortfolioItemController {
     public ResponseEntity<?> getPortfolioItem(@PathVariable String id) {
         try {
             Optional<PortfolioItem> portfolioItems = this.portfolioItemRepository.findById(id);
+            if(portfolioItems.get().getFiles() != null) {
+                for (var y = 0; y < portfolioItems.get().getFiles().size(); y++) {
+                    if(portfolioItems.get().getFiles().get(y) != null) {
+                        byte[] bytes = portfolioItems.get().getFiles().get(y).getBytes();
+                        if (bytes != null) {
+                            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                            portfolioItems.get().getFiles().get(y).setBase64Encoder(Base64Encoder);
+                            portfolioItems.get().getFiles().get(y).setBytes(null);
+                        }
+                    }
+                }
+            }
             return (portfolioItems.isPresent() ? ResponseEntity.ok(portfolioItems.get()) : ResponseEntity.ok("Couldn't find any portfolio item with the id: '" + id + "'!"));
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -119,12 +158,11 @@ public class PortfolioItemController {
                         String fileName = files[i].getOriginalFilename();
                         String contentType = files[i].getContentType();
                         byte[] bytes = files[i].getBytes();
-                        String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
                         PortfolioFile portfolioFile = new PortfolioFile();
                         portfolioFile.setFilename(fileName);
                         portfolioFile.setContentType(contentType);
-                        portfolioFile.setBase64Encoder(Base64Encoder);
+                        portfolioFile.setBytes(bytes);
 
                         portfolioFiles.add(portfolioFile);
 
@@ -161,12 +199,11 @@ public class PortfolioItemController {
                         String fileName = files[i].getOriginalFilename();
                         String contentType = files[i].getContentType();
                         byte[] bytes = files[i].getBytes();
-                        String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
                         PortfolioFile portfolioFile = new PortfolioFile();
                         portfolioFile.setFilename(fileName);
                         portfolioFile.setContentType(contentType);
-                        portfolioFile.setBase64Encoder(Base64Encoder);
+                        portfolioFile.setBytes(bytes);
 
                         portfolioFiles.add(portfolioFile);
 

@@ -76,12 +76,11 @@ public class ProfessionalController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             professional.setPortfolioFile(portfolioFile);
         }
@@ -98,6 +97,16 @@ public class ProfessionalController {
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "sort", required = false) String sort) {
         List<Professional> professionals = professionalService.getProfessionals(filter, sort);
+        for (var i=0; i < professionals.size(); i++){
+            if(professionals.get(i).getPortfolioFile() != null) {
+                byte[] bytes = professionals.get(i).getPortfolioFile().getBytes();
+                if (bytes != null) {
+                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                    professionals.get(i).getPortfolioFile().setBase64Encoder(Base64Encoder);
+                    professionals.get(i).getPortfolioFile().setBytes(null);
+                }
+            }
+        }
         return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 
@@ -110,6 +119,15 @@ public class ProfessionalController {
     @GetMapping("/{id}")
     public ResponseEntity<Professional> getProfessionalById(@PathVariable("id") String id) {
         Professional professional = professionalService.getProfessionalById(id);
+        if(professional.getPortfolioFile() != null) {
+            byte[] bytes = professional.getPortfolioFile().getBytes();
+            if (bytes != null) {
+                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+                professional.getPortfolioFile().setBase64Encoder(Base64Encoder);
+                professional.getPortfolioFile().setBytes(null);
+            }
+        }
+
         return new ResponseEntity<>(professional, HttpStatus.OK);
     }
 
@@ -148,12 +166,11 @@ public class ProfessionalController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             professional.setPortfolioFile(portfolioFile);
         } else {
@@ -173,12 +190,11 @@ public class ProfessionalController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
             PortfolioFile portfolioFile = new PortfolioFile();
             portfolioFile.setFilename(fileName);
             portfolioFile.setContentType(contentType);
-            portfolioFile.setBase64Encoder(Base64Encoder);
+            portfolioFile.setBytes(bytes);
 
             professional.setPortfolioFile(portfolioFile);
         } else {

@@ -16,5 +16,8 @@ public class PortfolioFile {
     private String contentType;
 
     @Field
+    byte[] bytes;
+
+    @Field
     private String base64Encoder;
 }
