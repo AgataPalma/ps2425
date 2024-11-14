@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
+import com.example.fix4you_api.Data.Models.PortfolioFile;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,6 @@ public class ProfessionalData {
     private String name;
     private String phoneNumber;
     private String location;
-    private byte[] profileImage;
     private String description;
     private String nif;
     private List<LanguageEnum> languages;

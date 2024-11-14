@@ -38,12 +38,6 @@ public class Client extends User {
     private float rating;
 
     @Field
-    private String filename;
-
-    @Field
-    private String contentType;
-
-    @Field
-    private byte[] fileData;
+    private PortfolioFile portfolioFile;
 
 }

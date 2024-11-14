@@ -124,6 +124,14 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Client Image",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		}

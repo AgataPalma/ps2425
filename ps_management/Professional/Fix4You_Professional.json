@@ -194,6 +194,14 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Professional Image",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		}
