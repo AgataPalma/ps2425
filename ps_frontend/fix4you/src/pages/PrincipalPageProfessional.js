@@ -23,16 +23,6 @@ const PrincipalPageProfessional = ({ id }) => {
         urgent: false
     });
 
-    const translateLanguage = (language) => {
-        const translations = {
-            'ENGLISH': 'Inglês',
-            'PORTUGUESE': 'Português',
-            'SPANISH': 'Espanhol',
-            'FRENCH': 'Francês'
-        };
-        return translations[language.toUpperCase()] || language.toLowerCase();
-    };
-
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
     };
@@ -50,10 +40,6 @@ const PrincipalPageProfessional = ({ id }) => {
                 console.error('Error fetching professionals:', error);
             });
     }, [id]);
-
-    const capitalizeFirstLetter = (text) => {
-        return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-    };
 
     return (
         <div className="flex flex-col min-h-screen text-black font-sans">
@@ -115,7 +101,7 @@ const PrincipalPageProfessional = ({ id }) => {
                                             key={lang}
                                             className={`px-4 py-2 rounded-full ${languages.includes(lang) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
                                         >
-                                            {translateLanguage(lang)}
+                                            {lang}
                                         </button>
                                     ))}
                                 </div>
@@ -199,8 +185,8 @@ const PrincipalPageProfessional = ({ id }) => {
                                 <div className="flex items-center space-x-4">
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title)}</h3>
-                                        <p className="text-sm">{capitalizeFirstLetter(request.category)}</p>
+                                        <h3 className="text-xl font-semibold">{request.title}</h3>
+                                        <p className="text-sm">{request.category}</p>
                                     </div>
                                 </div>
                                 <div className="mt-4">
