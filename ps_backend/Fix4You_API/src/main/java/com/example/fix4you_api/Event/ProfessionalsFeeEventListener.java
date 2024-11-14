@@ -1,6 +1,6 @@
 package com.example.fix4you_api.Event;
 
-import com.example.fix4you_api.Controllers.NotificationController;
+import com.example.fix4you_api.Controllers.SseNotificationController;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProfessionalsFeeEventListener {
 
-    private final NotificationController notificationController;
+    private final SseNotificationController sseNotificationController;
 
-    public ProfessionalsFeeEventListener(NotificationController notificationController) {
-        this.notificationController = notificationController;
+    public ProfessionalsFeeEventListener(SseNotificationController sseNotificationController) {
+        this.sseNotificationController = sseNotificationController;
     }
 
     @EventListener
@@ -29,7 +29,7 @@ public class ProfessionalsFeeEventListener {
                 fee.getValue(), fee.getNumberServices(), fee.getRelatedMonthYear(), fee.getPaymentDate(), fee.getPaymentStatus());
 
         if (fee.getProfessionalId().equals(currentUserId)) {
-            notificationController.sendNotificationToClients(notification);
+            sseNotificationController.sendNotificationToClients(notification);
         }
     }
 

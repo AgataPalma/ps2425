@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 
 @RestController
-public class NotificationController {
+public class SseNotificationController {
 
     // Store all active emitters
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
