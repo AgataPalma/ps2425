@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/scheduleAppointments/client/*").permitAll()
                         .requestMatchers("/professional-category-views").permitAll()
                         .requestMatchers("/professional-category-views/*").permitAll()
+                        .requestMatchers("/sse/notifications").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                         //.anyRequest().permitAll())

@@ -7,11 +7,13 @@ import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
+import com.example.fix4you_api.Event.ProfessionalsFeeEvent;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     private final ProfessionalService professionalService;
     private final ServiceService serviceService;
     private final ScheduleAppointmentService scheduleAppointmentService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<ProfessionalsFee> getAllProfessionalsFee() {
@@ -47,12 +50,15 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     @Override
     public ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee) {
-       return professionalFeeRepository.save(professionalsFee);
+        ProfessionalsFee fee = professionalFeeRepository.save(professionalsFee);
+        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, fee));
+        return fee;
     }
 
     @Override
     public ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear) {
         ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(professionalId, 20, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
+        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, newProfessionalsFee));
         return professionalFeeRepository.save(newProfessionalsFee);
     }
 
@@ -61,6 +67,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     public ProfessionalsFee updateProfessionalsFee(String id, ProfessionalsFee professionalsFee) {
         ProfessionalsFee existingProfessionalsFee = findOrThrow(id);
         BeanUtils.copyProperties(professionalsFee, existingProfessionalsFee, "id");
+        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, existingProfessionalsFee));
         return professionalFeeRepository.save(existingProfessionalsFee);
     }
 
@@ -80,6 +87,8 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
+
+        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, existingProfessionalsFee));
 
         return professionalFeeRepository.save(existingProfessionalsFee);
     }
