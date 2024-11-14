@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Review.ReviewService;
@@ -9,7 +10,11 @@ import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,11 +29,38 @@ public class ClientController {
     private final ServiceService serviceService;
 
     @PostMapping
-    public ResponseEntity<?> createClient(@RequestBody Client client) {
+    public ResponseEntity<?> createClient(@RequestParam String name,
+                                          @RequestParam String phoneNumber,
+                                          @RequestParam String location,
+                                          @RequestParam Boolean ageValidation,
+                                          @RequestParam EnumUserType userType,
+                                          @RequestParam String password,
+                                          @RequestParam String email,
+                                          @Validated @RequestParam("file") MultipartFile file) throws IOException {
 
         // check if email already exists
-        if(userService.emailExists(client.getEmail())){
+        if(userService.emailExists(email)){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
+        }
+
+
+        Client client = new Client();
+        client.setName(name);
+        client.setPhoneNumber(phoneNumber);
+        client.setLocation(location);
+        client.setAgeValidation(ageValidation);
+        client.setUserType(userType);
+        client.setPassword(password);
+        client.setEmail(email);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            client.setFilename(fileName);
+            client.setContentType(contentType);
+            client.setFileData(bytes);
+            client.setEmail(email);
         }
 
         Client createdClient = clientService.createClient(client);
@@ -50,18 +82,49 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable String id, @RequestBody Client client) {
+    public ResponseEntity<Client> updateClient(@PathVariable String id,
+                                               @RequestParam String name,
+                                               @RequestParam String phoneNumber,
+                                               @RequestParam String location,
+                                               @RequestParam Boolean ageValidation,
+                                               @RequestParam EnumUserType userType,
+                                               @RequestParam String password,
+                                               @RequestParam String email,
+                                               @Validated @RequestParam("file") MultipartFile file) throws IOException {
+
+        Client client = clientService.getClientById(id);
+        client.setName(name);
+        client.setPhoneNumber(phoneNumber);
+        client.setLocation(location);
+        client.setAgeValidation(ageValidation);
+        client.setUserType(userType);
+        client.setPassword(password);
+        client.setEmail(email);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            client.setFilename(fileName);
+            client.setContentType(contentType);
+            client.setFileData(bytes);
+        } else {
+            client.setFilename("");
+            client.setContentType("");
+            client.setFileData(null);
+        }
+
         Client updatedClient = clientService.updateClient(id, client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String id) {
-        reviewService.deleteReviewsForUser(id);
-        ticketService.deleteTickets(id);
-        serviceService.deleteServicesForClient(id);
+    public ResponseEntity<Client> deleteClient(@PathVariable String id) {
+        //reviewService.deleteReviewsForUser(id);
+        //ticketService.deleteTickets(id);
+        //serviceService.deleteServicesForClient(id);
 
-        clientService.deleteClient(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Client existingClient = clientService.deleteClient(id);
+        return new ResponseEntity<>(existingClient ,HttpStatus.OK);
     }
 }

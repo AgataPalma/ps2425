@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,8 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -34,14 +31,19 @@ public class Client extends User {
     private String location;
 
     @Field
-    @NotNull(message = "Profile image cannot be null")
-    @Size(max = 1048576, message = "Profile image must be less than 1 MB")
-    private byte[] profileImage;
-
-    @Field
     private boolean ageValidation;
 
     @Field
     @NotNull(message = "Rating cannot be null")
     private float rating;
+
+    @Field
+    private String filename;
+
+    @Field
+    private String contentType;
+
+    @Field
+    private byte[] fileData;
+
 }

@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import jakarta.validation.constraints.*;
@@ -45,8 +44,8 @@ public class Service {
     private String postalCode;
 
     @Field
-    @NotNull(message = "Category cannot be null")
-    private EnumCategories category;
+    @NotNull(message = "Category ID cannot be null")
+    private String categoryId;
 
     @Field
     @NotBlank(message = "Description cannot be blank")

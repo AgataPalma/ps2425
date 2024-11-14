@@ -1,9 +1,10 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
+import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
+import com.example.fix4you_api.Service.Category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/services")
@@ -21,10 +21,7 @@ public class ServiceController {
     @Autowired
     private ServiceRepository serviceRepository;
 
-    @Autowired
-    public ServiceController(ServiceRepository serviceRepository) {
-        this.serviceRepository = serviceRepository;
-    }
+    private final CategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<String> addService(@RequestBody Service service) {
@@ -115,7 +112,7 @@ public class ServiceController {
                     case "price" -> service.setPrice(((Double) value).floatValue());
                     case "address" -> service.setAddress((String) value);
                     case "postalCode" -> service.setPostalCode((String) value);
-                    case "category" -> service.setCategory((EnumCategories) value);
+                    case "categoryId" -> service.setCategoryId((String) value);
                     case "title" -> service.setTitle((String) value);
                     case "state" -> service.setState((ServiceStateEnum) value);
                     default -> throw new RuntimeException("Invalid field update request");
@@ -143,8 +140,9 @@ public class ServiceController {
             }
 
             if (updates.containsKey("category")) {
-                String category = (String) updates.get("category");
-                filteredServices.removeIf(service -> !service.getCategory().contains(category));
+                String categoryName = (String) updates.get("category");
+                Category category = categoryService.getCategoryByName(categoryName);
+                filteredServices.removeIf(service -> !service.getCategoryId().contains(category.getId()));
             }
 
             if (updates.containsKey("price")) {

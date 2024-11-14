@@ -43,4 +43,7 @@ public class User {
     @Field
     @NotNull(message = "email confirmation cannot be null")
     private boolean IsEmailConfirmed;
+
+    @Field
+    private boolean IsDeleted;
 }

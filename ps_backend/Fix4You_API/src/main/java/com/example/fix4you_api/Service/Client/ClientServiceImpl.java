@@ -46,8 +46,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void deleteClient(String id) {
-        clientRepository.deleteById(id);
+    public Client deleteClient(String id) {
+        Client existingClient = findOrThrow(id);
+        existingClient.setIsDeleted(true);
+        return clientRepository.save(existingClient);
+
+        //clientRepository.deleteById(id);
     }
 
     @Override

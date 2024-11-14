@@ -1,7 +1,9 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
+import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.ProfessionalRegistrationRequest;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
@@ -15,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,26 +38,52 @@ public class ProfessionalController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createProfessional(@RequestBody ProfessionalRegistrationRequest professionalRegistrationRequest) {
+    public ResponseEntity<?> createProfessional(@RequestParam String name,
+                                                @RequestParam String phoneNumber,
+                                                @RequestParam String location,
+                                                @RequestParam Boolean ageValidation,
+                                                @RequestParam EnumUserType userType,
+                                                @RequestParam String password,
+                                                @RequestParam String email,
+                                                @RequestParam String description,
+                                                @RequestParam String nif,
+                                                @RequestParam List<LanguageEnum> languages,
+                                                @RequestParam Integer locationsRange,
+                                                @RequestParam List<PaymentTypesEnum> acceptedPayments,
+                                                @RequestParam("file") MultipartFile file) throws IOException {
         // verify if the email and nif are unique
-        if(userService.emailExists(professionalRegistrationRequest.getProfessional().getEmail())){
+        if(userService.emailExists(email)){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        if(professionalService.nifExists(professionalRegistrationRequest.getProfessional().getNif())) {
+        if(professionalService.nifExists(nif)) {
             return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
         }
 
-        Professional createdProfessioanl = professionalService.createProfessional(professionalRegistrationRequest.getProfessional());
+        Professional professional = new Professional(description, nif,languages,locationsRange,acceptedPayments, 0);
+        professional.setName(name);
+        professional.setPhoneNumber(phoneNumber);
+        professional.setLocation(location);
+        professional.setAgeValidation(ageValidation);
+        professional.setUserType(userType);
+        professional.setPassword(password);
+        professional.setEmail(email);
 
-        professionalRegistrationRequest.getCategoryDescriptions().forEach(categoryDescription -> {
-            categoryDescription.setProfessionalId(createdProfessioanl.getId());
-            categoryDescriptionService.createCategoryDescription(categoryDescription);
-        });
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            professional.setFilename(fileName);
+            professional.setContentType(contentType);
+            professional.setFileData(bytes);
+        }
+
+        Professional createdProfessional = professionalService.createProfessional(professional);
 
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
-        return new ResponseEntity<>(createdProfessioanl, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdProfessional, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -77,8 +107,51 @@ public class ProfessionalController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Professional> updateProfessional(@PathVariable String id, @RequestBody Professional professional) {
-        Professional updatedProfessional = professionalService.updateProfessional(id, professional);
+    public ResponseEntity<Professional> updateProfessional(@PathVariable String id,
+                                                           @RequestParam String name,
+                                                           @RequestParam String phoneNumber,
+                                                           @RequestParam String location,
+                                                           @RequestParam Boolean ageValidation,
+                                                           @RequestParam EnumUserType userType,
+                                                           @RequestParam String password,
+                                                           @RequestParam String email,
+                                                           @RequestParam String description,
+                                                           @RequestParam String nif,
+                                                           @RequestParam List<LanguageEnum> languages,
+                                                           @RequestParam Integer locationsRange,
+                                                           @RequestParam Boolean IsEmailConfirmed,
+                                                           @RequestParam List<PaymentTypesEnum> acceptedPayments,
+                                                           @RequestParam("file") MultipartFile file) throws IOException {
+        Professional professional = professionalService.getProfessionalById(id);
+        professional.setEmail(email);
+        professional.setPassword(password);
+        professional.setUserType(userType);
+        professional.setName(name);
+        professional.setPhoneNumber(phoneNumber);
+        professional.setLanguages(languages);
+        professional.setAgeValidation(ageValidation);
+        professional.setDescription(description);
+        professional.setNif(nif);
+        professional.setLocation(location);
+        professional.setLocationsRange(locationsRange);
+        professional.setAcceptedPayments(acceptedPayments);
+        professional.setIsEmailConfirmed(IsEmailConfirmed);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            professional.setFilename(fileName);
+            professional.setContentType(contentType);
+            professional.setFileData(bytes);
+        } else {
+            professional.setFilename("");
+            professional.setContentType("");
+            professional.setFileData(null);
+        }
+
+        Professional updatedProfessional = professionalService.updateProfessional(professional);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 
@@ -89,16 +162,16 @@ public class ProfessionalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
-        portfolioItemService.deletePortfolioItems(id);
-        categoryDescriptionService.deleteCategoryDescriptions(id);
-        reviewService.deleteReviewsForUser(id);
-        professionalsFeeService.deleteProfessionalFees(id);
-        ticketService.deleteTickets(id);
-        serviceService.deleteServicesFroProfessional(id);
+    public ResponseEntity<Professional> deleteProfessional(@PathVariable String id) {
+        //portfolioItemService.deletePortfolioItems(id);
+        //categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
+        //reviewService.deleteReviewsForUser(id);
+        //professionalsFeeService.deleteProfessionalFees(id);
+        //ticketService.deleteTickets(id);
+        //serviceService.deleteServicesFroProfessional(id);
 
-        professionalService.deleteProfessional(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Professional existingProfessional = professionalService.deleteProfessional(id);
+        return new ResponseEntity<>(existingProfessional, HttpStatus.OK);
     }
 
 }

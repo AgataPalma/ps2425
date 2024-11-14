@@ -37,7 +37,7 @@ public class ProfessionalsFee {
 
     @Field
     @NotBlank(message = "Related month cannot be blank")
-    private String relatedMonth;
+    private String relatedMonthYear;
 
     @Field
     private LocalDateTime paymentDate;
@@ -45,4 +45,12 @@ public class ProfessionalsFee {
     @Field
     @NotNull(message = "Payment status cannot be null")
     private PaymentStatusEnum paymentStatus;
+
+    public ProfessionalsFee(String professionalId, float value, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
+        this.professionalId = professionalId;
+        this.value = value;
+        this.numberServices = numberServices;
+        this.relatedMonthYear = relatedMonthYear;
+        this.paymentStatus = paymentStatus;
+    }
 }
