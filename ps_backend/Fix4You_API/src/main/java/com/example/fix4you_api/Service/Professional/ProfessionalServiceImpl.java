@@ -96,7 +96,6 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                         professional.getName(),
                         professional.getPhoneNumber(),
                         professional.getLocation(),
-                        professional.getFileData(),
                         professional.getDescription(),
                         professional.getNif(),
                         professional.getLanguages(),
@@ -145,7 +144,6 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "name" -> professional.setName((String) value);
                 case "phoneNumber" -> professional.setPhoneNumber((String) value);
                 case "languages" -> professional.setLanguages((List<LanguageEnum>) value);
-                case "profileImage" -> professional.setFileData((byte[]) value);
                 case "description" -> professional.setDescription((String) value);
                 case "location" -> professional.setLocation((String) value);
                 case "locationsRange" -> professional.setLocationsRange((Integer) value);

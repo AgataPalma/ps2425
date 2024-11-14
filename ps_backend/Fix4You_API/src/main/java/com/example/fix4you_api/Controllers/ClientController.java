@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
+import com.example.fix4you_api.Data.Models.PortfolioFile;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Review.ReviewService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -58,10 +60,14 @@ public class ClientController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            client.setFilename(fileName);
-            client.setContentType(contentType);
-            client.setFileData(bytes);
-            client.setEmail(email);
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            client.setPortfolioFile(portfolioFile);
         }
 
         Client createdClient = clientService.createClient(client);
@@ -106,13 +112,42 @@ public class ClientController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
-            client.setFilename(fileName);
-            client.setContentType(contentType);
-            client.setFileData(bytes);
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            client.setPortfolioFile(portfolioFile);
         } else {
-            client.setFilename("");
-            client.setContentType("");
-            client.setFileData(null);
+            client.setPortfolioFile(null);
+        }
+
+        Client updatedClient = clientService.updateClient(id, client);
+        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
+    }
+
+    @PutMapping("/image/{id}")
+    public ResponseEntity<Client> updateClientImage(@PathVariable String id,
+                                               @Validated @RequestParam("file") MultipartFile file) throws IOException {
+
+        Client client = clientService.getClientById(id);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            client.setPortfolioFile(portfolioFile);
+        } else {
+            client.setPortfolioFile(null);
         }
 
         Client updatedClient = clientService.updateClient(id, client);

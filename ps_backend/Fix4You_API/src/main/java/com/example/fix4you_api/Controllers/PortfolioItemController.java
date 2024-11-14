@@ -1,21 +1,16 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
+import com.example.fix4you_api.Data.Models.PortfolioFile;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
-import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("portfolioItems")
@@ -31,19 +26,29 @@ public class PortfolioItemController {
     @PostMapping
     public ResponseEntity<String> addPortfolioItem(@RequestParam String professionalId,
                                                    @RequestParam String description,
-                                                   @RequestParam("file") MultipartFile file) {
+                                                   @RequestParam("files") MultipartFile[] files) {
         try {
             PortfolioItem portfolioItem = new PortfolioItem();
             portfolioItem.setProfessionalId(professionalId);
             portfolioItem.setDescription(description);
 
-            if(!file.isEmpty()) {
-                String fileName = file.getOriginalFilename();
-                String contentType = file.getContentType();
-                byte[] bytes = file.getBytes();
-                portfolioItem.setFilename(fileName);
-                portfolioItem.setContentType(contentType);
-                portfolioItem.setFileData(bytes);
+            if(files.length > 0) {
+                List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                for (var i=0; i< files.length; i++) {
+                    String fileName = files[i].getOriginalFilename();
+                    String contentType = files[i].getContentType();
+                    byte[] bytes = files[i].getBytes();
+                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+                    PortfolioFile portfolioFile = new PortfolioFile();
+                    portfolioFile.setFilename(fileName);
+                    portfolioFile.setContentType(contentType);
+                    portfolioFile.setBase64Encoder(Base64Encoder);
+
+                    portfolioFiles.add(portfolioFile);
+
+                }
+                portfolioItem.setFiles(portfolioFiles);
             }
 
             this.portfolioItemRepository.save(portfolioItem);
@@ -104,26 +109,73 @@ public class PortfolioItemController {
     public ResponseEntity<?> updatePortfolioItem(@PathVariable String id,
                                                  @RequestParam String professionalId,
                                                  @RequestParam String description,
-                                                 @RequestParam("file") MultipartFile file ){
+                                                 @RequestParam("files") MultipartFile[] files ){
         try {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
-                if(!file.isEmpty()) {
-                    String fileName = file.getOriginalFilename();
-                    String contentType = file.getContentType();
-                    byte[] bytes = file.getBytes();
+                if(files.length > 0) {
+                    List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                    for (var i=0; i< files.length; i++) {
+                        String fileName = files[i].getOriginalFilename();
+                        String contentType = files[i].getContentType();
+                        byte[] bytes = files[i].getBytes();
+                        String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
-                    portfolioItemOpt.get().setFilename(fileName);
-                    portfolioItemOpt.get().setContentType(contentType);
-                    portfolioItemOpt.get().setFileData(bytes);
+                        PortfolioFile portfolioFile = new PortfolioFile();
+                        portfolioFile.setFilename(fileName);
+                        portfolioFile.setContentType(contentType);
+                        portfolioFile.setBase64Encoder(Base64Encoder);
+
+                        portfolioFiles.add(portfolioFile);
+
+                    }
+                    portfolioItemOpt.get().setFiles(portfolioFiles);
+
                 } else {
-                    portfolioItemOpt.get().setFilename("");
-                    portfolioItemOpt.get().setContentType("");
-                    portfolioItemOpt.get().setFileData(null);
+                    portfolioItemOpt.get().setFiles(null);
                 }
 
                 portfolioItemOpt.get().setProfessionalId(professionalId);
                 portfolioItemOpt.get().setDescription(description);
+
+                this.portfolioItemRepository.save(portfolioItemOpt.get());
+                return ResponseEntity.ok(portfolioItemOpt);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any portfolio item with the id: '" + id + "'!");
+            }
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/images/{id}")
+    public ResponseEntity<?> updatePortfolioItemImages(@PathVariable String id,
+                                                 @RequestParam("files") MultipartFile[] files ){
+        try {
+            Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
+            if (portfolioItemOpt.isPresent()) {
+                if(files.length > 0) {
+                    List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                    for (var i=0; i< files.length; i++) {
+                        String fileName = files[i].getOriginalFilename();
+                        String contentType = files[i].getContentType();
+                        byte[] bytes = files[i].getBytes();
+                        String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+                        PortfolioFile portfolioFile = new PortfolioFile();
+                        portfolioFile.setFilename(fileName);
+                        portfolioFile.setContentType(contentType);
+                        portfolioFile.setBase64Encoder(Base64Encoder);
+
+                        portfolioFiles.add(portfolioFile);
+
+                    }
+                    portfolioItemOpt.get().setFiles(portfolioFiles);
+
+                } else {
+                    portfolioItemOpt.get().setFiles(null);
+                }
 
                 this.portfolioItemRepository.save(portfolioItemOpt.get());
                 return ResponseEntity.ok(portfolioItemOpt);

@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
+import com.example.fix4you_api.Data.Models.PortfolioFile;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -74,10 +76,14 @@ public class ProfessionalController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
-            professional.setFilename(fileName);
-            professional.setContentType(contentType);
-            professional.setFileData(bytes);
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            professional.setPortfolioFile(portfolioFile);
         }
 
         Professional createdProfessional = professionalService.createProfessional(professional);
@@ -142,14 +148,41 @@ public class ProfessionalController {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
 
-            professional.setFilename(fileName);
-            professional.setContentType(contentType);
-            professional.setFileData(bytes);
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            professional.setPortfolioFile(portfolioFile);
         } else {
-            professional.setFilename("");
-            professional.setContentType("");
-            professional.setFileData(null);
+            professional.setPortfolioFile(null);
+        }
+
+        Professional updatedProfessional = professionalService.updateProfessional(professional);
+        return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
+    }
+
+    @PutMapping("/image/{id}")
+    public ResponseEntity<Professional> updateProfessionalImage(@PathVariable String id,
+                                                           @RequestParam("file") MultipartFile file) throws IOException {
+        Professional professional = professionalService.getProfessionalById(id);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
+
+            PortfolioFile portfolioFile = new PortfolioFile();
+            portfolioFile.setFilename(fileName);
+            portfolioFile.setContentType(contentType);
+            portfolioFile.setBase64Encoder(Base64Encoder);
+
+            professional.setPortfolioFile(portfolioFile);
+        } else {
+            professional.setPortfolioFile(null);
         }
 
         Professional updatedProfessional = professionalService.updateProfessional(professional);
