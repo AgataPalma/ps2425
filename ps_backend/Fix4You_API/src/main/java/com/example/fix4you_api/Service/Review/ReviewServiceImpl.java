@@ -9,12 +9,9 @@ import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentReposit
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
-import com.example.fix4you_api.Service.Service.ServiceService;
 import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
-import org.springframework.boot.autoconfigure.couchbase.ClusterEnvironmentBuilderCustomizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

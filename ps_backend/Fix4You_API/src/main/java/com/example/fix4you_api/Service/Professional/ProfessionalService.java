@@ -2,7 +2,6 @@ package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +20,7 @@ public interface ProfessionalService {
 
     Professional partialUpdateProfessional(String id, Map<String, Object> updates);
 
-    void deleteProfessional(String id);
+    Professional deleteProfessional(String id);
 
     boolean nifExists(String nif);
 

@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models.Views;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
@@ -33,7 +32,7 @@ public class ProfessionalCategoryView {
 
     @Data
     public static class CategoryDescription {
-        private EnumCategories category;
+        private String categoryId;
         private Boolean chargesTravels;
         private Boolean providesInvoices;
         private Float mediumPricePerService;

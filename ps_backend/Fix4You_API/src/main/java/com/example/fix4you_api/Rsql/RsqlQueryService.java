@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Rsql;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.github.rutledgepaulv.qbuilders.builders.GeneralQueryBuilder;
@@ -59,8 +58,8 @@ public class RsqlQueryService {
         return mongoSort;
     }
 
-    public List<String> getProfessionalIdsByCategory(EnumCategories enumCategory) {
-        Criteria criteria = Criteria.where("category").is(enumCategory);
+    public List<String> getProfessionalIdsByCategory(String categoryId) {
+        Criteria criteria = Criteria.where("categoryId").is(categoryId);
 
         Query query = new Query(criteria);
 

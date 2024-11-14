@@ -1,20 +1,18 @@
 package com.example.fix4you_api.Service.Professional;
 
-import com.example.fix4you_api.Data.Enums.EnumCategories;
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
-import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
+import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -31,8 +29,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     private final ProfessionalRepository professionalRepository;
     private final CategoryDescriptionRepository categoryDescriptionRepository;
     private final PortfolioItemRepository portfolioItemRepository;
+    private final CategoryService categoryService;
     private final RsqlQueryService rsqlQueryService;
-    private final ClientRepository clientRepository;
 
     @Override
     public List<Professional> getProfessionals(String filter, String sort) {
@@ -41,10 +39,10 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         }
 
         if (filter.contains("category")) {
-            String category = extractCategoryFromFilter(filter);
-            EnumCategories enumCategory = EnumCategories.valueOf(category);
+            String categoryName = extractCategoryFromFilter(filter);
+            Category category = categoryService.getCategoryByName(categoryName);
 
-            List<String> professionalIds = rsqlQueryService.getProfessionalIdsByCategory(enumCategory);
+            List<String> professionalIds = rsqlQueryService.getProfessionalIdsByCategory(category.getId());
 
             if(professionalIds.isEmpty()) {
                 professionalIds.add("null");
@@ -160,9 +158,12 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     @Transactional
-    public void deleteProfessional(String id) {
-        Professional professional = findOrThrow(id);
-        professionalRepository.delete(professional);
+    public Professional deleteProfessional(String id) {
+        Professional existingProfessional = findOrThrow(id);
+        existingProfessional.setIsDeleted(true);
+        return professionalRepository.save(existingProfessional);
+
+        //professionalRepository.delete(professional);
     }
 
 

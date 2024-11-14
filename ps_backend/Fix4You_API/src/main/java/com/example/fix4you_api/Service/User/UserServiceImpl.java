@@ -60,9 +60,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(String id) {
-        User user = findOrThrow(id);
-        userRepository.delete(user);
+    public User deleteUser(String id) {
+        User existingUser = findOrThrow(id);
+        existingUser.setIsDeleted(true);
+        return userRepository.save(existingUser);
+
+        //userRepository.delete(user);
     }
 
     private User findOrThrow(String id) {
