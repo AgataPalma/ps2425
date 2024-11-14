@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -99,7 +100,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                         professional.getName(),
                         professional.getPhoneNumber(),
                         professional.getLocation(),
-                        professional.getProfileImage(),
+                        professional.getFileData(),
                         professional.getDescription(),
                         professional.getNif(),
                         professional.getLanguages(),
@@ -122,7 +123,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public Professional createProfessional(Professional professional) {
+    public Professional createProfessional(Professional professional) throws IOException {
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
@@ -132,27 +133,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     @Transactional
-    public Professional updateProfessional(String id, Professional professional) {
-        Professional existingProfessional = findOrThrow(id);
-
-        existingProfessional.setEmail(professional.getEmail());
-        existingProfessional.setPassword(professional.getPassword());
-        existingProfessional.setDateCreation(professional.getDateCreation());
-        existingProfessional.setUserType(professional.getUserType());
-        existingProfessional.setName(professional.getName());
-        existingProfessional.setPhoneNumber(professional.getPhoneNumber());
-        existingProfessional.setLanguages(professional.getLanguages());
-        existingProfessional.setProfileImage(professional.getProfileImage());
-        existingProfessional.setAgeValidation(professional.isAgeValidation());
-        existingProfessional.setDescription(professional.getDescription());
-        existingProfessional.setNif(professional.getNif());
-        existingProfessional.setLocation(professional.getLocation());
-        existingProfessional.setLocationsRange(professional.getLocationsRange());
-        existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
-        existingProfessional.setStrikes(professional.getStrikes());
-        existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
-
-        return professionalRepository.save(existingProfessional);
+    public Professional updateProfessional(Professional professional) throws IOException {
+        return professionalRepository.save(professional);
     }
 
     @Override
@@ -167,7 +149,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "name" -> professional.setName((String) value);
                 case "phoneNumber" -> professional.setPhoneNumber((String) value);
                 case "languages" -> professional.setLanguages((List<LanguageEnum>) value);
-                case "profileImage" -> professional.setProfileImage((byte[]) value);
+                case "profileImage" -> professional.setFileData((byte[]) value);
                 case "description" -> professional.setDescription((String) value);
                 case "location" -> professional.setLocation((String) value);
                 case "locationsRange" -> professional.setLocationsRange((Integer) value);

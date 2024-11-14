@@ -23,8 +23,13 @@ public class PortfolioItem {
     private String professionalId;
 
     @Field
-    @NotNull(message = "Media content cannot be null")
-    private byte[] mediaContent;
+    private String filename;
+
+    @Field
+    private String contentType;
+
+    @Field
+    private byte[] fileData;
 
     @Field
     @NotBlank(message = "Description cannot be blank")

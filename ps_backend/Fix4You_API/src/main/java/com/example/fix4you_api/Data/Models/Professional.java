@@ -40,6 +40,5 @@ public class Professional extends Client {
     private List<PaymentTypesEnum> acceptedPayments;
 
     @Field
-    @NotNull(message = "strikes cannot be null")
     private int strikes;
 }
