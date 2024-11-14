@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Service.ProfessionalsFee;
 
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
+import com.itextpdf.text.DocumentException;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,6 @@ public interface ProfessionalsFeeService {
     void deleteProfessionalFee(String id);
     void deleteProfessionalFees(String professionalId);
     void checkAndCreateMonthlyFees();
+
+    ProfessionalsFee setFeeAsPaid(String id) throws DocumentException;
 }

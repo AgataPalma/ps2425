@@ -7,16 +7,22 @@ import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
-import com.example.fix4you_api.Event.ProfessionalsFeeEvent;
+import com.example.fix4you_api.Event.ProfessionalFee.FeeCreationEvent;
+import com.example.fix4you_api.Event.ProfessionalFee.FeePaymentCompletionEvent;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
@@ -51,14 +57,14 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     public ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee) {
         ProfessionalsFee fee = professionalFeeRepository.save(professionalsFee);
-        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, fee));
+        eventPublisher.publishEvent(new FeeCreationEvent(this, fee));
         return fee;
     }
 
     @Override
     public ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear) {
         ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(professionalId, 20, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
-        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, newProfessionalsFee));
+        eventPublisher.publishEvent(new FeeCreationEvent(this, newProfessionalsFee));
         return professionalFeeRepository.save(newProfessionalsFee);
     }
 
@@ -67,7 +73,6 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     public ProfessionalsFee updateProfessionalsFee(String id, ProfessionalsFee professionalsFee) {
         ProfessionalsFee existingProfessionalsFee = findOrThrow(id);
         BeanUtils.copyProperties(professionalsFee, existingProfessionalsFee, "id");
-        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, existingProfessionalsFee));
         return professionalFeeRepository.save(existingProfessionalsFee);
     }
 
@@ -87,8 +92,6 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
-
-        eventPublisher.publishEvent(new ProfessionalsFeeEvent(this, existingProfessionalsFee));
 
         return professionalFeeRepository.save(existingProfessionalsFee);
     }
@@ -133,6 +136,39 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
             }
 
         }
+    }
+
+    @Transactional
+    @Override
+    public ProfessionalsFee setFeeAsPaid(String id) throws DocumentException {
+        ProfessionalsFee fee = findOrThrow(id);
+        Professional professional = professionalService.getProfessionalById(fee.getProfessionalId());
+
+        fee.setPaymentStatus(PaymentStatusEnum.COMPLETED);
+        fee.setPaymentDate(LocalDateTime.now());
+        fee.setInvoice(generateInvoice(fee, professional));
+        ProfessionalsFee updatedFee = professionalFeeRepository.save(fee);
+
+        eventPublisher.publishEvent(new FeePaymentCompletionEvent(this, updatedFee, professional));
+
+        return fee;
+    }
+
+    private byte[] generateInvoice(ProfessionalsFee fee, Professional professional) throws DocumentException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Document document = new Document();
+        PdfWriter.getInstance(document, byteArrayOutputStream);
+
+        document.open();
+        document.add(new Paragraph("Invoice"));
+        document.add(new Paragraph("Amount paid: " + fee.getValue()));
+        document.add(new Paragraph("Name: " + professional.getName()));
+        document.add(new Paragraph("NIF: " + professional.getNif()));
+        document.add(new Paragraph("Invoice Date: " + LocalDateTime.now()));
+
+        document.close();
+
+        return byteArrayOutputStream.toByteArray();
     }
 
     private ProfessionalsFee findOrThrow(String id) {

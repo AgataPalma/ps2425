@@ -1,15 +1,15 @@
-package com.example.fix4you_api.Event;
+package com.example.fix4you_api.Event.ProfessionalFee;
 
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class ProfessionalsFeeEvent extends ApplicationEvent {
+public class FeeCreationEvent extends ApplicationEvent {
 
     private final ProfessionalsFee professionalsFee;
 
-    public ProfessionalsFeeEvent(Object source, ProfessionalsFee professionalsFee) {
+    public FeeCreationEvent(Object source, ProfessionalsFee professionalsFee) {
         super(source);
         this.professionalsFee = professionalsFee;
     }

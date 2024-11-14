@@ -7,12 +7,8 @@ import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenReposito
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.Login.LoginRequest;
-import com.example.fix4you_api.Utils.Encrypt;
-import com.example.fix4you_api.Utils.RandomDigitStringGenerator;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.apache.tomcat.util.descriptor.tagplugin.TagPluginParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,7 +96,7 @@ public class UserServiceImpl implements UserService {
         String resetLink = generateResetToken(user);
         String body = "Hello \n\n" + "Please click on this link to Reset your Password :" + resetLink + ". \n\n";
 
-        emailSenderService.sendSimpleEmail(user.getEmail(),
+        emailSenderService.sendEmail(user.getEmail(),
                 "Verify OTP Fix4You",
                 body);
 
@@ -113,7 +109,7 @@ public class UserServiceImpl implements UserService {
             String endpointURL = "http://localhost:8080/users/email-confirmation/" + email;
             String body = "Hello \n\n" + "Please Click on this link to confirm your email address and complete your registration at Fix4You:" + endpointURL + ". \n\n";
 
-            emailSenderService.sendSimpleEmail(email,
+            emailSenderService.sendEmail(email,
                     "Email confirmation Fix4You",
                     body);
         } catch (Exception e) {

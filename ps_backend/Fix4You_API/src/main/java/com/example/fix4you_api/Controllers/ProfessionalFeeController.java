@@ -1,15 +1,13 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
+import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,14 +61,9 @@ public class ProfessionalFeeController {
     }
 
     @PutMapping("/{id}/pay")
-    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("paymentStatus", PaymentStatusEnum.COMPLETED);
-        updates.put("paymentDate", LocalDateTime.now());
-
-        ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.partialUpdateProfessionalsFee(id, updates);
-        //Generate invoice
-        return new ResponseEntity<>(updatedProfessionalsFee, HttpStatus.OK);
+    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id) throws DocumentException {
+        ProfessionalsFee fee = professionalsFeeService.setFeeAsPaid(id);
+        return new ResponseEntity<>(fee, HttpStatus.OK);
     }
 
 }
