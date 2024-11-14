@@ -33,6 +33,7 @@ const NewRequests = ({ id }) => {
     }, [id]);
 
     const capitalizeFirstLetter = (text) => {
+        if (!text) return ''; // Return an empty string if text is undefined or null
         return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
