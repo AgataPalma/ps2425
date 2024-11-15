@@ -2,9 +2,11 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Service.Category.CategoryService;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class ServiceController {
 
     @Autowired
     private ServiceRepository serviceRepository;
+
+    @Autowired
+    private ProfessionalService professionalService;
 
     private final CategoryService categoryService;
 
@@ -90,6 +95,41 @@ public class ServiceController {
                 return ResponseEntity.ok(service);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any service with the id: '" + id + "'!");
+            }
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/accept-service")
+    public ResponseEntity<?> acceptService(@RequestParam String professionalId, @RequestParam String serviceId) {
+        try {
+            Optional<Service> serviceOpt = this.serviceRepository.findById(serviceId);
+            if (serviceOpt.isPresent()) {
+                Service service = serviceOpt.get();
+
+                if(service.getProfessionalId() != null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This service is already assigned to other professional");
+                }
+
+                // check if the professional is suspended
+                Professional professional = professionalService.getProfessionalById(professionalId);
+                if(professional == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional not found!");
+                }
+
+                if(professional.isSupended()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional is suspended!");
+                }
+
+                service.setProfessionalId(professionalId);
+                service.setState(ServiceStateEnum.ACCEPTED);
+                serviceRepository.save(service);
+
+                return ResponseEntity.ok(service);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any service with the id: '" + serviceId + "'!");
             }
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);

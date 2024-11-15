@@ -53,6 +53,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     public ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear) {
         ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(professionalId, 20, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
+        professionalService.setProfessionalIsSuspended(professionalId, true);
         return professionalFeeRepository.save(newProfessionalsFee);
     }
 
