@@ -188,6 +188,13 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         professionalRepository.save(professional);
     }
 
+    @Override
+    public void setProfessionalIsSuspended(String professionalId, boolean isSuspended) {
+        Professional existingProfessional = findOrThrow(professionalId);
+        existingProfessional.setSupended(isSuspended);
+        professionalRepository.save(existingProfessional);
+    }
+
     private Professional findOrThrow(String id) {
         return professionalRepository.findById(id)
                 .filter(professional -> professional.getUserType() == EnumUserType.PROFESSIONAL)

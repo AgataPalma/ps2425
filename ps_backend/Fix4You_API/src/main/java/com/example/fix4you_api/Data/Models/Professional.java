@@ -41,4 +41,7 @@ public class Professional extends Client {
 
     @Field
     private int strikes;
+
+    @Field
+    private boolean isSupended;
 }

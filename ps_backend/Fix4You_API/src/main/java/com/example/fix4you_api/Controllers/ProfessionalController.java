@@ -62,7 +62,7 @@ public class ProfessionalController {
             return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
         }
 
-        Professional professional = new Professional(description, nif,languages,locationsRange,acceptedPayments, 0);
+        Professional professional = new Professional(description, nif,languages,locationsRange,acceptedPayments, 0, false);
         professional.setName(name);
         professional.setPhoneNumber(phoneNumber);
         professional.setLocation(location);
@@ -106,6 +106,14 @@ public class ProfessionalController {
                 }
             }
         }
+
+        // remove suspended professionals
+        for (var i=0; i < professionals.size(); i++){
+            if(professionals.get(i).isSupended()) {
+                professionals.remove(professionals.get(i));
+            }
+        }
+
         return new ResponseEntity<>(professionals, HttpStatus.OK);
     }
 

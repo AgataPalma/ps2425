@@ -1,6 +1,9 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
 import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.Map;
 public class ProfessionalFeeController {
 
     private final ProfessionalsFeeService professionalsFeeService;
+    private final ProfessionalService professionalService;
 
     @PostMapping
     public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFee professionalsFee) {
@@ -61,9 +65,28 @@ public class ProfessionalFeeController {
     }
 
     @PutMapping("/{id}/pay")
-    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id) throws DocumentException {
+    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id)throws DocumentException {
         ProfessionalsFee fee = professionalsFeeService.setFeeAsPaid(id);
+
+        // check if he has more fees to pay -> if not (suspended = false)
+        boolean anythingToPay = false;
+        Professional professional = professionalService.getProfessionalById(fee.getProfessionalId());
+        boolean currentSuspendedStatus = professional.isSupended();
+        List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(fee.getProfessionalId());
+
+        for (ProfessionalsFee currentFee : feesList) {
+            if (!currentFee.getPaymentStatus().equals(PaymentStatusEnum.COMPLETED)) {
+                anythingToPay = true;
+            }
+        }
+
+        if (!anythingToPay && currentSuspendedStatus) {
+            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), false);
+        } else if (anythingToPay && !currentSuspendedStatus) {
+            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), true);
+        }
+
+        //Generate invoice
         return new ResponseEntity<>(fee, HttpStatus.OK);
     }
-
 }
