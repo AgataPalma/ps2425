@@ -21,6 +21,7 @@ function RequestServiceToProfessional({ id }) {
     const [category, setCategory] = useState('1');
     const [description, setDescription] = useState('');
     const [professional, setProfessional] = useState(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         if (state) {
@@ -56,9 +57,23 @@ function RequestServiceToProfessional({ id }) {
                 navigate(`/ScheduleAppointments?clientId=${id}&professionalId=${professionalId}&serviceId=${serviceId}`);
             } else {
                 console.error("Failed to create service:", response.statusText);
+                setError(
+                    <>
+                        Falha ao criar o serviço. Por favor, tente novamente.<br />
+                        <br />
+                        Todos os campos são obrigatórios!
+                    </>
+                );
             }
         } catch (error) {
             console.error("Error creating service:", error);
+            setError(
+                <>
+                    Falha ao criar o serviço. Por favor, tente novamente.<br />
+                    <br />
+                    Todos os campos são obrigatórios!
+                </>
+            );
         }
     };
 
@@ -70,6 +85,11 @@ function RequestServiceToProfessional({ id }) {
                     <div className="relative z-10 flex justify-center items-center h-full m-8">
                         <div className="bg-white bg-opacity-80 p-8 rounded-lg max-w-lg w-full">
                             <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir Um Serviço</h2>
+                            {error && (
+                                <div className="mb-4 p-2 bg-red-200 text-red-800 text-center rounded">
+                                    {error}
+                                </div>
+                            )}
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Título *</label>
@@ -134,8 +154,9 @@ function RequestServiceToProfessional({ id }) {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
-                                    Publicar
+                                    className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                                >
+                                    Avançar
                                 </button>
                             </form>
                         </div>

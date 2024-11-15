@@ -28,7 +28,7 @@ const PrincipalPageProfessional = ({ id }) => {
     };
 
     const handleShowDescription = (request) => {
-        setSelectedRequest(request); // Show the full description in the modal
+        setSelectedRequest(request);
     };
 
     useEffect(() => {
@@ -64,7 +64,7 @@ const PrincipalPageProfessional = ({ id }) => {
                             <div className="mb-4">
                                 <label className="text-sm font-medium">Categoria</label>
                                 <select
-                                    value={filters.category}
+                                    value={filters.category} 
                                     className="w-full p-2 border rounded-lg"
                                 >
                                     <option value="">Selecione a categoria</option>

@@ -108,7 +108,7 @@ const PrincipalPageClient = ({ id }) => {
                                     ))}
                                 </div>
                             </div>
-                            {/* Filtro de Linguagens */}
+
                             <div className="mt-4">
                                 <h4 className="font-medium">Linguagens</h4>
                                 <div className="flex flex-wrap gap-2">
