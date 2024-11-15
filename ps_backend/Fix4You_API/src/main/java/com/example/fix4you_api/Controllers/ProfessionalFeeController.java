@@ -5,6 +5,7 @@ import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
+import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,34 +67,28 @@ public class ProfessionalFeeController {
     }
 
     @PutMapping("/{id}/pay")
-    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("paymentStatus", PaymentStatusEnum.COMPLETED);
-        updates.put("paymentDate", LocalDateTime.now());
-
-        ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.partialUpdateProfessionalsFee(id, updates);
+    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id)throws DocumentException {
+        ProfessionalsFee fee = professionalsFeeService.setFeeAsPaid(id);
 
         // check if he has more fees to pay -> if not (suspended = false)
         boolean anythingToPay = false;
-        Professional professional = professionalService.getProfessionalById(updatedProfessionalsFee.getProfessionalId());
+        Professional professional = professionalService.getProfessionalById(fee.getProfessionalId());
         boolean currentSuspendedStatus = professional.isSupended();
-        List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(updatedProfessionalsFee.getProfessionalId());
+        List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(fee.getProfessionalId());
 
-        for(ProfessionalsFee fee : feesList) {
-            if(!fee.getPaymentStatus().equals(PaymentStatusEnum.COMPLETED)) {
+        for (ProfessionalsFee currentFee : feesList) {
+            if (!currentFee.getPaymentStatus().equals(PaymentStatusEnum.COMPLETED)) {
                 anythingToPay = true;
             }
         }
 
-        if(!anythingToPay && currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(updatedProfessionalsFee.getProfessionalId(), false);
-        }
-        else if(anythingToPay && !currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(updatedProfessionalsFee.getProfessionalId(), true);
+        if (!anythingToPay && currentSuspendedStatus) {
+            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), false);
+        } else if (anythingToPay && !currentSuspendedStatus) {
+            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), true);
         }
 
         //Generate invoice
-        return new ResponseEntity<>(updatedProfessionalsFee, HttpStatus.OK);
+        return new ResponseEntity<>(fee, HttpStatus.OK);
     }
-
 }
