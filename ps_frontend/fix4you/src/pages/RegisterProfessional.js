@@ -148,7 +148,7 @@ const RegisterProfessional = () => {
     }
 
     if (age < 18) {
-      setErrorMessage('Você deve ter pelo menos 18 anos para se registrar.');
+      setErrorMessage('Você deve ter pelo menos 18 anos para se registar.');
       return;
     }
 
@@ -169,8 +169,8 @@ const RegisterProfessional = () => {
       locationsRange: locationsRange,
       acceptedPayments: acceptedPayments,
       strikes: 0,
-      IsEmailConfirmed: false, 
-      rating: 0, 
+      IsEmailConfirmed: false,
+      rating: 0,
       // Não incluímos os serviços aqui, pois serão enviados separadamente
     };
 
@@ -203,11 +203,11 @@ const RegisterProfessional = () => {
       });
 
       if (response.ok) {
-        // Registro bem-sucedido
+        // registo bem-sucedido
         alert('Conta criada com sucesso!');
         navigate('/Login');
       } else {
-        let errorMessage = 'Ocorreu um erro durante o registro.';
+        let errorMessage = 'Ocorreu um erro durante o registo.';
         try {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
@@ -221,7 +221,7 @@ const RegisterProfessional = () => {
       }
     } catch (error) {
       console.error('Erro:', error);
-      setErrorMessage('Ocorreu um erro durante o registro. Por favor, tente novamente.');
+      setErrorMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
     }
   };
 
@@ -580,92 +580,96 @@ const RegisterProfessional = () => {
               <div className="border p-4 rounded-md max-h-40 overflow-y-auto bg-gray-100">
                 <p className="text-sm text-gray-700">
 
-                  Bem-vindo à Fix4You! Ao utilizar nossa plataforma, você concorda com os Termos e Condições abaixo. Por favor, leia atentamente antes de utilizar nossos serviços.
+                  Bem-vindo à Fix4You! Ao utilizar a nossa plataforma, concorda com os Termos e Condições abaixo. Por favor, leia atentamente antes de utilizar os nossos serviços.
 
                   1. Aceitação dos Termos
-                  Ao acessar ou utilizar a plataforma Fix4You você concorda com estes Termos e Condições e com nossa Política de Privacidade. Se você não concorda com qualquer parte dos Termos, não utilize nossos serviços.
+                  Ao aceder ou utilizar a plataforma Fix4You, concorda com estes Termos e Condições e com a nossa Política de Privacidade. Se não concorda com alguma parte dos Termos, não utilize os nossos serviços.
 
                   2. Descrição do Serviço
                   A Fix4You conecta clientes a profissionais para a contratação de serviços específicos, como limpeza, eletricidade, pintura e outros. A plataforma serve apenas como intermediário entre profissionais e clientes e não assume qualquer responsabilidade pelos serviços prestados pelos profissionais.
-                  3. Cadastro e Conta
-                  3.1. Elegibilidade: Para se cadastrar, você deve ter pelo menos 18 anos de idade. 
-                  3.2. Informações de Cadastro: Você concorda em fornecer informações precisas e completas durante o processo de cadastro e manter essas informações atualizadas.  3.3. Segurança da Conta: Você é responsável por manter a segurança de sua conta e senha. A Fix4You não será responsável por qualquer perda ou dano resultante do uso não autorizado da sua conta.
 
-                    4. Uso da Plataforma
-                    4.1. Clientes: Os clientes podem utilizar a plataforma para solicitar serviços de profissionais. Ao contratar um profissional, o cliente concorda em pagar pelo serviço prestado e cumprir os termos acordados com o profissional. 4.2. Profissionais: Profissionais podem utilizar a plataforma para oferecer seus serviços e se comprometem a realizar os serviços com profissionalismo e qualidade.  4.3. Restrições de Uso: Você concorda em não utilizar a plataforma para fins ilícitos, incluindo, mas não se limitando a, falsificação de identidade, spam, fraude, ou qualquer outro uso que infrinja as leis aplicáveis.
+                  3. Registo e Conta
+                  3.1. Elegibilidade: Para se registar, deve ter pelo menos 18 anos de idade.
+                  3.2. Informações de Registo: Concorda em fornecer informações precisas e completas durante o processo de registo e em manter essas informações atualizadas.
+                  3.3. Segurança da Conta: É responsável por manter a segurança da sua conta e palavra-passe. A Fix4You não será responsável por qualquer perda ou dano resultante do uso não autorizado da sua conta.
 
-                      5. Pagamentos e Taxas
-                      A plataforma pode cobrar taxas pelos serviços de conexão entre clientes e profissionais. Todas as taxas e comissões, se aplicáveis, serão descritas no momento da contratação ou em outros materiais de comunicação. A Fix4You reserva-se o direito de modificar as taxas e métodos de pagamento a qualquer momento.
+                  4. Utilização da Plataforma
+                  4.1. Clientes: Os clientes podem utilizar a plataforma para solicitar serviços de profissionais. Ao contratar um profissional, o cliente concorda em pagar pelo serviço prestado e cumprir os termos acordados com o profissional.
+                  4.2. Profissionais: Os profissionais podem utilizar a plataforma para oferecer os seus serviços e comprometem-se a realizar os serviços com profissionalismo e qualidade.
+                  4.3. Restrições de Uso: Concorda em não utilizar a plataforma para fins ilícitos, incluindo, mas não se limitando a, falsificação de identidade, spam, fraude ou qualquer outro uso que infrinja as leis aplicáveis.
 
-                      6. Cancelamento e Reembolso
-                      O cancelamento e reembolso devem ser acordados entre o cliente e o profissional. A Fix4You não oferece reembolsos, pois atua apenas como intermediário e não é responsável pela execução do serviço.
+                  5. Pagamentos e Taxas
+                  A plataforma pode cobrar taxas pelos serviços de conexão entre clientes e profissionais. Todas as taxas e comissões, se aplicáveis, serão descritas no momento da contratação ou em outros materiais de comunicação. A Fix4You reserva-se o direito de modificar as taxas e métodos de pagamento a qualquer momento.
 
-                      7. Limitação de Responsabilidade
-                      A Fix4You não é responsável pela qualidade, segurança, legalidade ou pontualidade dos serviços realizados pelos profissionais. A plataforma não será responsabilizada por quaisquer danos diretos, indiretos, incidentais ou consequentes relacionados ao uso dos serviços prestados pelos profissionais.
+                  6. Cancelamento e Reembolso
+                  O cancelamento e o reembolso devem ser acordados entre o cliente e o profissional. A Fix4You não oferece reembolsos, pois atua apenas como intermediário e não é responsável pela execução do serviço.
 
-                      8. Privacidade
-                      A Fix4You coleta e utiliza informações pessoais conforme descrito em nossa Política de Privacidade. Ao utilizar a plataforma, você concorda com a coleta e o uso de informações de acordo com esta política.
+                  7. Limitação de Responsabilidade
+                  A Fix4You não é responsável pela qualidade, segurança, legalidade ou pontualidade dos serviços realizados pelos profissionais. A plataforma não será responsabilizada por quaisquer danos diretos, indiretos, incidentais ou consequenciais relacionados com o uso dos serviços prestados pelos profissionais.
 
-                      9. Direitos de Propriedade Intelectual
-                      Todos os direitos, títulos e interesses relacionados à plataforma e seu conteúdo são de propriedade da Fix4You ou de seus licenciadores. É proibido reproduzir, modificar, distribuir ou criar trabalhos derivados sem autorização prévia.
+                  8. Privacidade
+                  A Fix4You recolhe e utiliza informações pessoais conforme descrito na nossa Política de Privacidade. Ao utilizar a plataforma, concorda com a recolha e o uso de informações de acordo com esta política.
 
-                      10. Modificações aos Termos
-                      A Fix4You reserva-se o direito de modificar estes Termos e Condições a qualquer momento. Quaisquer alterações serão comunicadas e entrarão em vigor imediatamente após a publicação. O uso contínuo da plataforma após tais mudanças constitui aceitação das modificações.
+                  9. Direitos de Propriedade Intelectual
+                  Todos os direitos, títulos e interesses relacionados com a plataforma e o seu conteúdo são propriedade da Fix4You ou dos seus licenciadores. É proibido reproduzir, modificar, distribuir ou criar trabalhos derivados sem autorização prévia.
 
-                      11. Rescisão
-                      A Fix4You reserva-se o direito de suspender ou encerrar sua conta e o acesso à plataforma a qualquer momento, sem aviso prévio, caso você viole estes Termos.
+                  10. Modificações aos Termos
+                  A Fix4You reserva-se o direito de modificar estes Termos e Condições a qualquer momento. Quaisquer alterações serão comunicadas e entrarão em vigor imediatamente após a publicação. O uso contínuo da plataforma após tais mudanças constitui aceitação das modificações.
 
-                      12. Lei Aplicável e Foro Competente
-                      Estes Termos e Condições são regidos pelas leis de Portual. Em caso de controvérsia, você concorda em se submeter à jurisdição dos tribunais de Coimbra.
+                  11. Rescisão
+                  A Fix4You reserva-se o direito de suspender ou encerrar a sua conta e o acesso à plataforma a qualquer momento, sem aviso prévio, caso viole estes Termos.
 
-                      13. Contato
-                      Caso tenha dúvidas sobre estes Termos e Condições, entre em contato conosco
+                  12. Lei Aplicável e Foro Competente
+                  Estes Termos e Condições são regidos pelas leis de Portugal. Em caso de controvérsia, concorda em submeter-se à jurisdição dos tribunais de Coimbra.
 
-                    </p>
-                    </div>
-                    <div className="mt-4 flex items-center">
-                      <input
-                        type="checkbox"
-                        id="terms"
-                        required
-                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                      />
-                      <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                        Eu li e aceito os Termos e Condições
-                      </label>
-                    </div>
-                  </div>
+                  13. Contacto
+                  Caso tenha dúvidas sobre estes Termos e Condições, entre em contacto connosco.
+
+                </p>
+              </div>
+              <div className="mt-4 flex items-center">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  required
+                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                  Eu li e aceito os Termos e Condições
+                </label>
+              </div>
+            </div>
 
 
 
-                    {/* Mensagem de Erro */}
-                    {errorMessage && (
-                      <div className="text-red-500 text-sm text-center">
-                        {errorMessage}
-                      </div>
-                    )}
+            {/* Mensagem de Erro */}
+            {errorMessage && (
+              <div className="text-red-500 text-sm text-center">
+                {errorMessage}
+              </div>
+            )}
 
-                    {/* Botões de Envio */}
-                    <div className="mt-6 flex items-center justify-end gap-x-6">
-                      <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-                        Cancelar
-                      </button>
-                      <button
-                        type="submit"
-                        className="rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm
+            {/* Botões de Envio */}
+            <div className="mt-6 flex items-center justify-end gap-x-6">
+              <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm
                            hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2
                            focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      >
-                        Registar
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <Footer />
+              >
+                Registar
+              </button>
             </div>
-            );
+          </div>
+        </form>
+      </div>
+
+      <Footer />
+    </div>
+  );
 };
 
-            export default RegisterProfessional;
+export default RegisterProfessional;

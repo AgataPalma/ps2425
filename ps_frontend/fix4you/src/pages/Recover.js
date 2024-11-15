@@ -18,14 +18,14 @@ const ForgotPassword = () => {
             });
 
             if (response.ok) {
-                setMessage('Verification email sent! Please check your inbox.');
+                setMessage('E-mail de verificação enviado! Por favor, verifique a sua caixa de correio.');
                 setError('');
             } else {
-                setError('Failed to send verification email. Please try again.');
+                setError('Falha no envio do e-mail de verificação. Por favor, tente novamente.');
                 setMessage('');
             }
         } catch (error) {
-            setError('An error occurred. Please try again.');
+            setError('Ocorreu um erro. Por favor, tente novamente.');
             setMessage('');
         }
     };
