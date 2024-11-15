@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../index.css';
 import user from '../images/user.png';
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
 import { useNavigate } from 'react-router-dom';
@@ -224,13 +224,24 @@ const PrincipalPageClient = ({ id }) => {
                                         <h2 className="text-2xl font-bold capitalize">{professional.name}</h2>
                                         <p className="text-sm font-medium capitalize">{categoryDescription.category}</p>
                                     </div>
+
                                     <div className="flex space-x-1">
-                                        {[...Array(5)].map((_, starIndex) => (
-                                            <FaStar
-                                                key={starIndex}
-                                                className={starIndex < professional.rating ? "text-yellow-600 w-6 h-6" : "text-gray-800 w-6 h-6"}
-                                            />
-                                        ))}
+                                        {[...Array(5)].map((_, starIndex) => {
+                                            const isFullStar = starIndex < Math.floor(professional.rating);
+                                            const isHalfStar = starIndex === Math.floor(professional.rating) && professional.rating % 1 !== 0;
+
+                                            return (
+                                                <span key={starIndex}>
+                                                    {isFullStar ? (
+                                                        <FaStar className="text-yellow-600 w-6 h-6"/>
+                                                    ) : isHalfStar ? (
+                                                        <FaStarHalfAlt className="text-yellow-600 w-6 h-6"/>
+                                                    ) : (
+                                                        <FaStar className="text-gray-800 w-6 h-6"/>
+                                                    )}
+                                                </span>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
