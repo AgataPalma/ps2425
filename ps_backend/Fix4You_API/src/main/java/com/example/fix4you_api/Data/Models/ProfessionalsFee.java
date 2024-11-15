@@ -46,6 +46,9 @@ public class ProfessionalsFee {
     @NotNull(message = "Payment status cannot be null")
     private PaymentStatusEnum paymentStatus;
 
+    @Field
+    private byte[] invoice;
+
     public ProfessionalsFee(String professionalId, float value, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
         this.professionalId = professionalId;
         this.value = value;
