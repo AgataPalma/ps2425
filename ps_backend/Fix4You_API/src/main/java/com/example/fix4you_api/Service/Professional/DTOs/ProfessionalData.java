@@ -4,7 +4,6 @@ import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.Models.PortfolioFile;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;

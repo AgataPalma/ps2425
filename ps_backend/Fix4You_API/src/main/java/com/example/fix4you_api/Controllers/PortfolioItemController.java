@@ -1,10 +1,13 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Models.PortfolioFile;
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
+import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
+import com.example.fix4you_api.Data.Models.CategoryDescription;
+import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Data.Models.PortfolioItem;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,30 +27,26 @@ public class PortfolioItemController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addPortfolioItem(@RequestParam String professionalId,
-                                                   @RequestParam String description,
+    public ResponseEntity<String> addPortfolioItem(PortfolioItem portfolioItem,
                                                    @RequestParam("files") MultipartFile[] files) {
         try {
-            PortfolioItem portfolioItem = new PortfolioItem();
-            portfolioItem.setProfessionalId(professionalId);
-            portfolioItem.setDescription(description);
 
             if(files.length > 0) {
-                List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                List<Image> images = new ArrayList<>();
                 for (var i=0; i< files.length; i++) {
                     String fileName = files[i].getOriginalFilename();
                     String contentType = files[i].getContentType();
                     byte[] bytes = files[i].getBytes();
 
-                    PortfolioFile portfolioFile = new PortfolioFile();
-                    portfolioFile.setFilename(fileName);
-                    portfolioFile.setContentType(contentType);
-                    portfolioFile.setBytes(bytes);
+                    Image image = new Image();
+                    image.setFilename(fileName);
+                    image.setContentType(contentType);
+                    image.setBytes(bytes);
 
-                    portfolioFiles.add(portfolioFile);
+                    images.add(image);
 
                 }
-                portfolioItem.setFiles(portfolioFiles);
+                portfolioItem.setImages(images);
             }
 
             this.portfolioItemRepository.save(portfolioItem);
@@ -62,20 +61,6 @@ public class PortfolioItemController {
     public ResponseEntity<?> getPortfolioItem() {
         try {
             List<PortfolioItem> portfolioItems = this.portfolioItemRepository.findAll();
-            for (var i=0; i < portfolioItems.size(); i++){
-                if(portfolioItems.get(i).getFiles() != null) {
-                    for (var y = 0; y < portfolioItems.get(i).getFiles().size(); y++) {
-                        if(portfolioItems.get(i).getFiles().get(y) != null) {
-                            byte[] bytes = portfolioItems.get(i).getFiles().get(y).getBytes();
-                            if (bytes != null) {
-                                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                                portfolioItems.get(i).getFiles().get(y).setBase64Encoder(Base64Encoder);
-                                portfolioItems.get(i).getFiles().get(y).setBytes(null);
-                            }
-                        }
-                    }
-                }
-            }
             return ResponseEntity.ok(portfolioItems);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -87,20 +72,6 @@ public class PortfolioItemController {
     public ResponseEntity<?> getUserPortfolioItem(@PathVariable("id") String idProfessional) {
         try {
             List<PortfolioItem> portfolioItems = this.portfolioItemRepository.findByProfessionalId(idProfessional);
-            for (var i=0; i < portfolioItems.size(); i++){
-                if(portfolioItems.get(i).getFiles() != null) {
-                    for (var y = 0; y < portfolioItems.get(i).getFiles().size(); y++) {
-                        if(portfolioItems.get(i).getFiles().get(y) != null) {
-                            byte[] bytes = portfolioItems.get(i).getFiles().get(y).getBytes();
-                            if (bytes != null) {
-                                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                                portfolioItems.get(i).getFiles().get(y).setBase64Encoder(Base64Encoder);
-                                portfolioItems.get(i).getFiles().get(y).setBytes(null);
-                            }
-                        }
-                    }
-                }
-            }
             return ResponseEntity.ok(portfolioItems);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -112,18 +83,6 @@ public class PortfolioItemController {
     public ResponseEntity<?> getPortfolioItem(@PathVariable String id) {
         try {
             Optional<PortfolioItem> portfolioItems = this.portfolioItemRepository.findById(id);
-            if(portfolioItems.get().getFiles() != null) {
-                for (var y = 0; y < portfolioItems.get().getFiles().size(); y++) {
-                    if(portfolioItems.get().getFiles().get(y) != null) {
-                        byte[] bytes = portfolioItems.get().getFiles().get(y).getBytes();
-                        if (bytes != null) {
-                            String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                            portfolioItems.get().getFiles().get(y).setBase64Encoder(Base64Encoder);
-                            portfolioItems.get().getFiles().get(y).setBytes(null);
-                        }
-                    }
-                }
-            }
             return (portfolioItems.isPresent() ? ResponseEntity.ok(portfolioItems.get()) : ResponseEntity.ok("Couldn't find any portfolio item with the id: '" + id + "'!"));
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -146,35 +105,34 @@ public class PortfolioItemController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePortfolioItem(@PathVariable String id,
-                                                 @RequestParam String professionalId,
-                                                 @RequestParam String description,
+                                                 PortfolioItem portfolioItem,
                                                  @RequestParam("files") MultipartFile[] files ){
         try {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
                 if(files.length > 0) {
-                    List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                    List<Image> images = new ArrayList<>();
                     for (var i=0; i< files.length; i++) {
                         String fileName = files[i].getOriginalFilename();
                         String contentType = files[i].getContentType();
                         byte[] bytes = files[i].getBytes();
 
-                        PortfolioFile portfolioFile = new PortfolioFile();
-                        portfolioFile.setFilename(fileName);
-                        portfolioFile.setContentType(contentType);
-                        portfolioFile.setBytes(bytes);
+                        Image image = new Image();
+                        image.setFilename(fileName);
+                        image.setContentType(contentType);
+                        image.setBytes(bytes);
 
-                        portfolioFiles.add(portfolioFile);
+                        images.add(image);
 
                     }
-                    portfolioItemOpt.get().setFiles(portfolioFiles);
+                    portfolioItemOpt.get().setImages(images);
 
                 } else {
-                    portfolioItemOpt.get().setFiles(null);
+                    portfolioItemOpt.get().setImages(null);
                 }
 
-                portfolioItemOpt.get().setProfessionalId(professionalId);
-                portfolioItemOpt.get().setDescription(description);
+                portfolioItemOpt.get().setProfessionalId(portfolioItem.getProfessionalId());
+                portfolioItemOpt.get().setDescription(portfolioItem.getDescription());
 
                 this.portfolioItemRepository.save(portfolioItemOpt.get());
                 return ResponseEntity.ok(portfolioItemOpt);
@@ -194,24 +152,24 @@ public class PortfolioItemController {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
                 if(files.length > 0) {
-                    List<PortfolioFile> portfolioFiles = new ArrayList<>();
+                    List<Image> images = new ArrayList<>();
                     for (var i=0; i< files.length; i++) {
                         String fileName = files[i].getOriginalFilename();
                         String contentType = files[i].getContentType();
                         byte[] bytes = files[i].getBytes();
 
-                        PortfolioFile portfolioFile = new PortfolioFile();
-                        portfolioFile.setFilename(fileName);
-                        portfolioFile.setContentType(contentType);
-                        portfolioFile.setBytes(bytes);
+                        Image image = new Image();
+                        image.setFilename(fileName);
+                        image.setContentType(contentType);
+                        image.setBytes(bytes);
 
-                        portfolioFiles.add(portfolioFile);
+                        images.add(image);
 
                     }
-                    portfolioItemOpt.get().setFiles(portfolioFiles);
+                    portfolioItemOpt.get().setImages(images);
 
                 } else {
-                    portfolioItemOpt.get().setFiles(null);
+                    portfolioItemOpt.get().setImages(null);
                 }
 
                 this.portfolioItemRepository.save(portfolioItemOpt.get());
@@ -223,5 +181,23 @@ public class PortfolioItemController {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<PortfolioItem> partialUpdatePortfolioItem(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        PortfolioItem portfolioItem = portfolioItemRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Portfolio Item not found"));
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "professionalId" -> portfolioItem.setProfessionalId((String) value);
+                case "description" -> portfolioItem.setDescription((String) value);
+                default -> throw new RuntimeException("Invalid field update request");
+            }
+        });
+
+        this.portfolioItemRepository.save(portfolioItem);
+
+        return ResponseEntity.ok(portfolioItem);
     }
 }

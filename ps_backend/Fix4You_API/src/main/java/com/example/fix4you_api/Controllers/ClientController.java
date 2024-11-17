@@ -1,9 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.PortfolioFile;
-import com.example.fix4you_api.Data.Models.PortfolioItem;
+import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Review.ReviewService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -17,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/clients")
@@ -32,44 +30,15 @@ public class ClientController {
     private final ServiceService serviceService;
 
     @PostMapping
-    public ResponseEntity<?> createClient(@RequestParam String name,
-                                          @RequestParam String phoneNumber,
-                                          @RequestParam String location,
-                                          @RequestParam Boolean ageValidation,
-                                          @RequestParam EnumUserType userType,
-                                          @RequestParam String password,
-                                          @RequestParam String email,
+    public ResponseEntity<?> createClient(Client client,
                                           @Validated @RequestParam("file") MultipartFile file) throws IOException {
 
         // check if email already exists
-        if(userService.emailExists(email)){
+        if(userService.emailExists(client.getEmail())){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-
-        Client client = new Client();
-        client.setName(name);
-        client.setPhoneNumber(phoneNumber);
-        client.setLocation(location);
-        client.setAgeValidation(ageValidation);
-        client.setUserType(userType);
-        client.setPassword(password);
-        client.setEmail(email);
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
-
-            client.setPortfolioFile(portfolioFile);
-        }
-
-        Client createdClient = clientService.createClient(client);
+        Client createdClient = clientService.createClient(client, file);
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
@@ -78,70 +47,26 @@ public class ClientController {
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable String id) {
         Client client = clientService.getClientById(id);
-        if(client.getPortfolioFile() != null) {
-            byte[] bytes = client.getPortfolioFile().getBytes();
-            if (bytes != null) {
-                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                client.getPortfolioFile().setBase64Encoder(Base64Encoder);
-                client.getPortfolioFile().setBytes(null);
-            }
-        }
-
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Client>> getAllClients() {
         List<Client> clients = clientService.getAllClients();
-        for (var i=0; i < clients.size(); i++){
-            if(clients.get(i).getPortfolioFile() != null) {
-                byte[] bytes = clients.get(i).getPortfolioFile().getBytes();
-                if (bytes != null) {
-                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                    clients.get(i).getPortfolioFile().setBase64Encoder(Base64Encoder);
-                    clients.get(i).getPortfolioFile().setBytes(null);
-                }
-            }
-        }
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Client> updateClient(@PathVariable String id,
-                                               @RequestParam String name,
-                                               @RequestParam String phoneNumber,
-                                               @RequestParam String location,
-                                               @RequestParam Boolean ageValidation,
-                                               @RequestParam EnumUserType userType,
-                                               @RequestParam String password,
-                                               @RequestParam String email,
+                                               Client client,
                                                @Validated @RequestParam("file") MultipartFile file) throws IOException {
+        Client updatedClient = clientService.updateClient(id, client, file);
+        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
+    }
 
-        Client client = clientService.getClientById(id);
-        client.setName(name);
-        client.setPhoneNumber(phoneNumber);
-        client.setLocation(location);
-        client.setAgeValidation(ageValidation);
-        client.setUserType(userType);
-        client.setPassword(password);
-        client.setEmail(email);
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
-
-            client.setPortfolioFile(portfolioFile);
-        } else {
-            client.setPortfolioFile(null);
-        }
-
-        Client updatedClient = clientService.updateClient(id, client);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Client> partialUpdateClient(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        Client updatedClient = clientService.partialUpdateClient(id, updates);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
@@ -156,17 +81,17 @@ public class ClientController {
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
 
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
+            Image image = new Image();
+            image.setFilename(fileName);
+            image.setContentType(contentType);
+            image.setBytes(bytes);
 
-            client.setPortfolioFile(portfolioFile);
+            client.setImage(image);
         } else {
-            client.setPortfolioFile(null);
+            client.setImage(null);
         }
 
-        Client updatedClient = clientService.updateClient(id, client);
+        Client updatedClient = clientService.updateClient(id, client, file);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 

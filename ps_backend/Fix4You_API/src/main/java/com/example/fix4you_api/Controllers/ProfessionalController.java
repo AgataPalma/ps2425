@@ -1,9 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
-import com.example.fix4you_api.Data.Models.PortfolioFile;
+import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -40,51 +36,18 @@ public class ProfessionalController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createProfessional(@RequestParam String name,
-                                                @RequestParam String phoneNumber,
-                                                @RequestParam String location,
-                                                @RequestParam Boolean ageValidation,
-                                                @RequestParam EnumUserType userType,
-                                                @RequestParam String password,
-                                                @RequestParam String email,
-                                                @RequestParam String description,
-                                                @RequestParam String nif,
-                                                @RequestParam List<LanguageEnum> languages,
-                                                @RequestParam Integer locationsRange,
-                                                @RequestParam List<PaymentTypesEnum> acceptedPayments,
+    public ResponseEntity<?> createProfessional(Professional professional,
                                                 @RequestParam("file") MultipartFile file) throws IOException {
         // verify if the email and nif are unique
-        if(userService.emailExists(email)){
+        if(userService.emailExists(professional.getEmail())){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        if(professionalService.nifExists(nif)) {
+        if(professionalService.nifExists(professional.getNif())) {
             return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
         }
 
-        Professional professional = new Professional(description, nif,languages,locationsRange,acceptedPayments, 0, false);
-        professional.setName(name);
-        professional.setPhoneNumber(phoneNumber);
-        professional.setLocation(location);
-        professional.setAgeValidation(ageValidation);
-        professional.setUserType(userType);
-        professional.setPassword(password);
-        professional.setEmail(email);
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
-
-            professional.setPortfolioFile(portfolioFile);
-        }
-
-        Professional createdProfessional = professionalService.createProfessional(professional);
+        Professional createdProfessional = professionalService.createProfessional(professional, file);
 
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
@@ -96,16 +59,6 @@ public class ProfessionalController {
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "sort", required = false) String sort) {
         List<Professional> professionals = professionalService.getProfessionals(filter, sort);
-        for (var i=0; i < professionals.size(); i++){
-            if(professionals.get(i).getPortfolioFile() != null) {
-                byte[] bytes = professionals.get(i).getPortfolioFile().getBytes();
-                if (bytes != null) {
-                    String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                    professionals.get(i).getPortfolioFile().setBase64Encoder(Base64Encoder);
-                    professionals.get(i).getPortfolioFile().setBytes(null);
-                }
-            }
-        }
 
         // remove suspended professionals
         for (var i=0; i < professionals.size(); i++){
@@ -126,65 +79,16 @@ public class ProfessionalController {
     @GetMapping("/{id}")
     public ResponseEntity<Professional> getProfessionalById(@PathVariable("id") String id) {
         Professional professional = professionalService.getProfessionalById(id);
-        if(professional.getPortfolioFile() != null) {
-            byte[] bytes = professional.getPortfolioFile().getBytes();
-            if (bytes != null) {
-                String Base64Encoder = Base64.getEncoder().encodeToString(bytes);
-                professional.getPortfolioFile().setBase64Encoder(Base64Encoder);
-                professional.getPortfolioFile().setBytes(null);
-            }
-        }
 
         return new ResponseEntity<>(professional, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Professional> updateProfessional(@PathVariable String id,
-                                                           @RequestParam String name,
-                                                           @RequestParam String phoneNumber,
-                                                           @RequestParam String location,
-                                                           @RequestParam Boolean ageValidation,
-                                                           @RequestParam EnumUserType userType,
-                                                           @RequestParam String password,
-                                                           @RequestParam String email,
-                                                           @RequestParam String description,
-                                                           @RequestParam String nif,
-                                                           @RequestParam List<LanguageEnum> languages,
-                                                           @RequestParam Integer locationsRange,
-                                                           @RequestParam Boolean IsEmailConfirmed,
-                                                           @RequestParam List<PaymentTypesEnum> acceptedPayments,
+                                                           Professional professional,
                                                            @RequestParam("file") MultipartFile file) throws IOException {
-        Professional professional = professionalService.getProfessionalById(id);
-        professional.setEmail(email);
-        professional.setPassword(password);
-        professional.setUserType(userType);
-        professional.setName(name);
-        professional.setPhoneNumber(phoneNumber);
-        professional.setLanguages(languages);
-        professional.setAgeValidation(ageValidation);
-        professional.setDescription(description);
-        professional.setNif(nif);
-        professional.setLocation(location);
-        professional.setLocationsRange(locationsRange);
-        professional.setAcceptedPayments(acceptedPayments);
-        professional.setIsEmailConfirmed(IsEmailConfirmed);
 
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
-
-            professional.setPortfolioFile(portfolioFile);
-        } else {
-            professional.setPortfolioFile(null);
-        }
-
-        Professional updatedProfessional = professionalService.updateProfessional(professional);
+        Professional updatedProfessional = professionalService.updateProfessional(id, professional, file);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 
@@ -198,17 +102,17 @@ public class ProfessionalController {
             String contentType = file.getContentType();
             byte[] bytes = file.getBytes();
 
-            PortfolioFile portfolioFile = new PortfolioFile();
-            portfolioFile.setFilename(fileName);
-            portfolioFile.setContentType(contentType);
-            portfolioFile.setBytes(bytes);
+            Image image = new Image();
+            image.setFilename(fileName);
+            image.setContentType(contentType);
+            image.setBytes(bytes);
 
-            professional.setPortfolioFile(portfolioFile);
+            professional.setImage(image);
         } else {
-            professional.setPortfolioFile(null);
+            professional.setImage(null);
         }
 
-        Professional updatedProfessional = professionalService.updateProfessional(professional);
+        Professional updatedProfessional = professionalService.updateProfessional(id, professional, file);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 

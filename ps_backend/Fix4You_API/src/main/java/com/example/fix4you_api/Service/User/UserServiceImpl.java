@@ -1,7 +1,10 @@
 package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.LanguageEnum;
+import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -52,6 +56,26 @@ public class UserServiceImpl implements UserService {
         User existingUser = findOrThrow(user.getId());
         BeanUtils.copyProperties(user, existingUser, "id");
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    @Transactional
+    public User partialUpdateUser(String id, Map<String, Object> updates) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "password" -> user.setPassword((String) value);
+                case "email" -> user.setEmail((String) value);
+                case "userType" -> user.setUserType((EnumUserType) value);
+                case "IsEmailConfirmed" -> user.setIsEmailConfirmed((Boolean) value);
+                case "IsDeleted" -> user.setIsDeleted((Boolean) value);
+                default -> throw new RuntimeException("Invalid field update request");
+            }
+        });
+
+        return userRepository.save(user);
     }
 
     @Override

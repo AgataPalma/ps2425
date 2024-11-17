@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PortfolioFile {
+public class Image {
     @Field
     private String filename;
 
@@ -17,7 +17,4 @@ public class PortfolioFile {
 
     @Field
     byte[] bytes;
-
-    @Field
-    private String base64Encoder;
 }

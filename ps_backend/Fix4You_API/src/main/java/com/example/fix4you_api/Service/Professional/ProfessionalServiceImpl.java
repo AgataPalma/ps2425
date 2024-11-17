@@ -13,6 +13,7 @@ import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -121,18 +122,64 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public Professional createProfessional(Professional professional) throws IOException {
+    public Professional createProfessional(Professional professional, MultipartFile file) throws IOException {
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
         professional.setRating(0);
+        professional.setSupended(false);
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            Image image = new Image();
+            image.setFilename(fileName);
+            image.setContentType(contentType);
+            image.setBytes(bytes);
+
+            professional.setImage(image);
+        }
+
         return professionalRepository.save(professional);
     }
 
     @Override
     @Transactional
-    public Professional updateProfessional(Professional professional) throws IOException {
-        return professionalRepository.save(professional);
+    public Professional updateProfessional(String id, Professional professional, MultipartFile file) throws IOException {
+
+        Professional existingProfessional = findOrThrow(id);
+        existingProfessional.setEmail(professional.getEmail());
+        existingProfessional.setPassword(professional.getPassword());
+        existingProfessional.setUserType(professional.getUserType());
+        existingProfessional.setName(professional.getName());
+        existingProfessional.setPhoneNumber(professional.getPhoneNumber());
+        existingProfessional.setLanguages(professional.getLanguages());
+        existingProfessional.setAgeValidation(professional.isAgeValidation());
+        existingProfessional.setDescription(professional.getDescription());
+        existingProfessional.setNif(professional.getNif());
+        existingProfessional.setLocation(professional.getLocation());
+        existingProfessional.setLocationsRange(professional.getLocationsRange());
+        existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
+        existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
+
+        if(!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] bytes = file.getBytes();
+
+            Image image = new Image();
+            image.setFilename(fileName);
+            image.setContentType(contentType);
+            image.setBytes(bytes);
+
+            existingProfessional.setImage(image);
+        } else {
+            existingProfessional.setImage(null);
+        }
+
+        return professionalRepository.save(existingProfessional);
     }
 
     @Override
