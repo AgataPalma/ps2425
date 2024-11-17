@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.CategoryDescription;
 
+import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -42,6 +44,24 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
         CategoryDescription existingCategoryDescription = findOrThrow(id);
         BeanUtils.copyProperties(categoryDescription, existingCategoryDescription, "id");
         return categoryDescriptionRepository.save(existingCategoryDescription);
+    }
+
+    @Override
+    @Transactional
+    public CategoryDescription partialUpdateCategoryDescription(String id, Map<String, Object> updates) {
+        CategoryDescription existingCategory = findOrThrow(id);
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "categoryId" -> existingCategory.setCategoryId((String) value);
+                case "chargesTravels" -> existingCategory.setChargesTravels((Boolean) value);
+                case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
+                case "mediumPricePerService" -> existingCategory.setMediumPricePerService(((Double) value).floatValue());
+                default -> throw new RuntimeException("Invalid field update request");
+            }
+        });
+
+        return categoryDescriptionRepository.save(existingCategory);
     }
 
     @Override

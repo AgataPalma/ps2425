@@ -24,7 +24,6 @@ public class CategoryDescription {
     private String professionalId;
 
     @Field
-    @NotNull(message = "Category ID cannot be null")
     private String categoryId;
 
     @Field

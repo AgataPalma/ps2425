@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
@@ -79,6 +80,12 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
         User updatedUser = userService.updateUser(id, user);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> partialUpdateUser(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        User updatedUser = userService.partialUpdateUser(id, updates);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 

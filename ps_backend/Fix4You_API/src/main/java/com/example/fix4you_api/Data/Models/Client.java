@@ -38,6 +38,6 @@ public class Client extends User {
     private float rating;
 
     @Field
-    private PortfolioFile portfolioFile;
+    private Image image;
 
 }

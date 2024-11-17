@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Service.Category.CategoryService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -48,6 +50,12 @@ public class CategoryDescriptionController {
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDescription> updateCategoryDescription(@PathVariable String id, @RequestBody CategoryDescription categoryDescription) {
         CategoryDescription updatedCategoryDescription = categoryDescriptionService.updatecategoryDescription(id, categoryDescription);
+        return new ResponseEntity<>(updatedCategoryDescription, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CategoryDescription> partialUpdateCategoryDescription(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        CategoryDescription updatedCategoryDescription = categoryDescriptionService.partialUpdateCategoryDescription(id, updates);
         return new ResponseEntity<>(updatedCategoryDescription, HttpStatus.OK);
     }
 

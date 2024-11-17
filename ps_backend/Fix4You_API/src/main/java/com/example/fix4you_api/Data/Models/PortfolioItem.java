@@ -25,7 +25,7 @@ public class PortfolioItem {
     private String professionalId;
 
     @Field
-    private List<PortfolioFile> files;
+    private List<Image> images;
 
     @Field
     @NotBlank(message = "Description cannot be blank")
