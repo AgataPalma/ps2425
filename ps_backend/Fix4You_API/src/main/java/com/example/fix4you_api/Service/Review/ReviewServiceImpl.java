@@ -42,17 +42,17 @@ public class ReviewServiceImpl implements ReviewService {
         Client reviwedUser;     // could be either a professional or a client
 
         if(review.getClassification() < 1 && review.getClassification() > 5) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid classification [1-5]");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid classification [1-5]");
         }
 
         // check if service exists
         Optional<com.example.fix4you_api.Data.Models.Service> service = serviceRepository.findById(review.getServiceId());
         if(!service.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Service doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Service doesnt exist");
         }
 
         if(!service.get().getState().equals(ServiceStateEnum.COMPLETED)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Service is not completed yet");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Service is not completed yet");
         }
 
         List<ScheduleAppointment> scheduleAppointmentList = scheduleAppointmentRepository.findByServiceId(review.getServiceId());
@@ -64,12 +64,12 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if(scheduleDate == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Schedule appointment not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Schedule appointment not found");
         }
 
         // check if review date is valid (can only be made within 3 months)
         if(review.getDate().isAfter(scheduleDate.plusMonths(3))) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Date to make the review as expired");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Date to make the review as expired");
         }
 
         // check if reviewer exists
@@ -102,7 +102,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if(CheckIfUserAlreadyMakeReviewToService(review, reviewer.getId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already make review to this service");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already make review to this service");
         }
 
         reviwedUser = (Client) reviewed;

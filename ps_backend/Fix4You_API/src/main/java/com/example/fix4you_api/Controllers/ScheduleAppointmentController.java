@@ -3,15 +3,20 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import com.example.fix4you_api.Utils.ICSParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.example.fix4you_api.Utils.ICSParser.parseICSFile;
 
 @RestController
 @RequestMapping("/scheduleAppointments")
@@ -229,5 +234,19 @@ public class ScheduleAppointmentController {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was an error trying to delete the schedule appointment with id: '" + id + "'!");
         }
+    }
+
+    @GetMapping("/import")
+    public ResponseEntity<?> importScheduleAppointments(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("infDate") @DateTimeFormat(pattern = "dd-MM-yyyy'T'HH:mm:ss") LocalDateTime infDate,
+            @RequestParam("supDate") @DateTimeFormat(pattern = "dd-MM-yyyy'T'HH:mm:ss") LocalDateTime supDate) {
+
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
+        }
+
+        // Parse ICS file and filter events by date range
+        return ResponseEntity.ok(ICSParser.parseICSFile(file, infDate, supDate));
     }
 }
