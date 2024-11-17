@@ -19,7 +19,7 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<?> addReview(@RequestBody Review review) {
-        return new ResponseEntity<>(reviewService.createReview(review), HttpStatus.CREATED);
+        return reviewService.createReview(review);
     }
 
     @GetMapping
