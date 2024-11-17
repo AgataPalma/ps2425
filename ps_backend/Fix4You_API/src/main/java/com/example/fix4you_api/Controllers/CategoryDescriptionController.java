@@ -25,7 +25,7 @@ public class CategoryDescriptionController {
     @PostMapping
     public ResponseEntity<CategoryDescription> addCategoryDescription(@RequestBody CategoryDescription categoryDescription) {
         CategoryDescription categoryDescriptionCreated = categoryDescriptionService.createCategoryDescription(categoryDescription);
-        categoryService.updateCategoryMinMaxValue(categoryDescriptionCreated.getCategory().getId(), categoryDescriptionCreated.getMediumPricePerService());
+        categoryService.updateCategoryMinMaxValue(categoryDescriptionCreated.getCategory().getId());
         return new ResponseEntity<>(categoryDescriptionCreated, HttpStatus.CREATED);
     }
 
@@ -43,25 +43,29 @@ public class CategoryDescriptionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDescription> getCategoryDescription(@PathVariable String id) {
-            CategoryDescription categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionById(id);
-            return new ResponseEntity<>(categoryDescriptions, HttpStatus.OK);
+            CategoryDescription categoryDescription = categoryDescriptionService.getCategoryDescriptionById(id);
+            return new ResponseEntity<>(categoryDescription, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDescription> updateCategoryDescription(@PathVariable String id, @RequestBody CategoryDescription categoryDescription) {
         CategoryDescription updatedCategoryDescription = categoryDescriptionService.updatecategoryDescription(id, categoryDescription);
+        categoryService.updateCategoryMinMaxValue(updatedCategoryDescription.getCategory().getId());
         return new ResponseEntity<>(updatedCategoryDescription, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<CategoryDescription> partialUpdateCategoryDescription(@PathVariable String id, @RequestBody Map<String, Object> updates) {
         CategoryDescription updatedCategoryDescription = categoryDescriptionService.partialUpdateCategoryDescription(id, updates);
+        categoryService.updateCategoryMinMaxValue(updatedCategoryDescription.getCategory().getId());
         return new ResponseEntity<>(updatedCategoryDescription, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategoryDescription(@PathVariable String id) {
+        CategoryDescription categoryDescription = categoryDescriptionService.getCategoryDescriptionById(id);
         categoryDescriptionService.deleteCategoryDescriptionsById(id);
+        categoryService.updateCategoryMinMaxValue(categoryDescription.getCategory().getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

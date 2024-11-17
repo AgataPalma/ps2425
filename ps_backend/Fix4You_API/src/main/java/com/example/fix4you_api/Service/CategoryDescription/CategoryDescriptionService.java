@@ -7,8 +7,9 @@ import java.util.Map;
 
 public interface CategoryDescriptionService {
     List<CategoryDescription> getAllCategoriesDescription();
-    CategoryDescription getCategoriesDescriptionById(String id);
+    CategoryDescription getCategoryDescriptionById(String id);
     List<CategoryDescription> getCategoriesDescriptionByProfessionalId(String professionalId);
+    List<CategoryDescription> getCategoriesDescriptionByCategoryId(String categoryId);
     CategoryDescription createCategoryDescription(CategoryDescription categoryDescription);
     CategoryDescription updatecategoryDescription(String id, CategoryDescription categoryDescription);
     CategoryDescription partialUpdateCategoryDescription(String id, Map<String, Object> updates);

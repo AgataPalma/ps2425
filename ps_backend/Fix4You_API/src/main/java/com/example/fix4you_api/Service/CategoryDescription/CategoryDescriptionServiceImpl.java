@@ -27,13 +27,18 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
     }
 
     @Override
-    public CategoryDescription getCategoriesDescriptionById(String id) {
+    public CategoryDescription getCategoryDescriptionById(String id) {
         return findOrThrow(id);
     }
 
     @Override
     public List<CategoryDescription> getCategoriesDescriptionByProfessionalId(String professionalId) {
         return categoryDescriptionRepository.findByProfessionalId(professionalId);
+    }
+
+    @Override
+    public List<CategoryDescription> getCategoriesDescriptionByCategoryId(String categoryId) {
+        return categoryDescriptionRepository.findByCategory_Id(categoryId);
     }
 
     @Override

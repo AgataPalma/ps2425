@@ -3,6 +3,7 @@ package com.example.fix4you_api.Service.Category;
 import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
+import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.NoSuchElementException;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryDescriptionService categoryDescriptionService;
 
     @Override
     public List<Category> getAllCategories() {
@@ -31,8 +33,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(Category category) {
-        category.setMinValue(0);
-        category.setMaxValue(0);
+        category.setMinValue(0f);
+        category.setMaxValue(0f);
         return categoryRepository.save(category);
     }
 
@@ -63,22 +65,28 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void updateCategoryMinMaxValue(String id, float mediumPricePerService) {
-        Category existingCategory = findOrThrow(id);
+    public void updateCategoryMinMaxValue(String id) {
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByCategoryId(id);
         Map<String, Object> updates = new HashMap<>();
 
-        if(existingCategory.getMinValue() == 0 && existingCategory.getMaxValue() == 0) {
-            updates.put("minValue", mediumPricePerService);
-            updates.put("maxValue", mediumPricePerService);
+        if (categoryDescriptions.isEmpty()) {
+            updates.put("minValue", 0f);
+            updates.put("maxValue", 0f);
         } else {
 
-            if (mediumPricePerService < existingCategory.getMinValue()) {
-                updates.put("minValue", mediumPricePerService);
-            }
+            double minPrice = categoryDescriptions.stream()
+                    .mapToDouble(CategoryDescription::getMediumPricePerService)
+                    .min()
+                    .orElseThrow(() -> new RuntimeException("Unable to calculate minimum price"));
 
-            if (mediumPricePerService > existingCategory.getMaxValue()) {
-                updates.put("maxValue", mediumPricePerService);
-            }
+            double maxPrice = categoryDescriptions.stream()
+                    .mapToDouble(CategoryDescription::getMediumPricePerService)
+                    .max()
+                    .orElseThrow(() -> new RuntimeException("Unable to calculate maximum price"));
+
+
+            updates.put("minValue", (float) minPrice);
+            updates.put("maxValue", (float) maxPrice);
         }
 
         partialUpdateCategory(id, updates);

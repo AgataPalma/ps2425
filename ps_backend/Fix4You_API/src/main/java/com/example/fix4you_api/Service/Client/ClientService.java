@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Service.Client;
 
-import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Client;
 import org.springframework.web.multipart.MultipartFile;
 
