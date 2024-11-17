@@ -174,12 +174,12 @@ public class ProfessionalServiceImpl implements ProfessionalService {
             image.setContentType(contentType);
             image.setBytes(bytes);
 
-            professional.setImage(image);
+            existingProfessional.setImage(image);
         } else {
-            professional.setImage(null);
+            existingProfessional.setImage(null);
         }
 
-        return professionalRepository.save(professional);
+        return professionalRepository.save(existingProfessional);
     }
 
     @Override

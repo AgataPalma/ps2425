@@ -71,9 +71,9 @@ public class ClientServiceImpl implements ClientService {
             image.setContentType(contentType);
             image.setBytes(bytes);
 
-            client.setImage(image);
+            existingClient.setImage(image);
         } else {
-            client.setImage(null);
+            existingClient.setImage(null);
         }
 
         return clientRepository.save(existingClient);
