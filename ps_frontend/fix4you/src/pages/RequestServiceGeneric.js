@@ -10,7 +10,8 @@ function RequestServiceGeneric({ id }) {
 
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
-  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null); // Estado para armazenar a categoria selecionada
   const [description, setDescription] = useState('');
   const [locationOptions, setLocationOptions] = useState([]);
   const [languages, setLanguages] = useState([]);
@@ -29,9 +30,23 @@ function RequestServiceGeneric({ id }) {
           }))
         }));
 
+        const fetchCategories = async () => {
+          try {
+            const response = await axiosInstance.get('/categories'); // Ajustar o endpoint conforme necessário
+            const categoryData = response.data.map((category) => ({
+              value: category.id,
+              label: category.name,
+            }));
+            setCategories(categoryData);
+          } catch (error) {
+            console.error('Erro ao buscar categorias:', error);
+          }
+        };
+
         setLocationOptions(organizedData);
+        fetchCategories();
       } catch (error) {
-        console.error('Error fetching location data:', error);
+        console.error('Erro ao buscar dados de localização:', error);
       }
     };
 
@@ -41,13 +56,21 @@ function RequestServiceGeneric({ id }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!selectedCategory) {
+      setError("A categoria é obrigatória.");
+      return;
+    }
+
     const requestBody = {
       clientId: id,
       professionalId: null,
       price: 0,
       address: "0",
       postalCode: "0000-000",
-      category: category,
+      category: {
+        id: selectedCategory.value,
+        name: selectedCategory.label
+      },
       description: description,
       title: title,
       location: location,
@@ -61,23 +84,20 @@ function RequestServiceGeneric({ id }) {
       if (response.status === 200) {
         const serviceId = response.data;
         navigate(`/ScheduleAppointments?clientId=${id}&professionalId=${null}&serviceId=${serviceId}`);
-
       } else {
-        console.log("Failed to create service:",  error.response?.data?.message);
+        console.log("Falha ao criar o serviço:", error.response?.data?.message);
         setError(
             <>
               Falha ao criar o serviço. Por favor, tente novamente.<br />
-              <br />
               Todos os campos são obrigatórios!
             </>
         );
       }
     } catch (error) {
-      console.error("Error creating service:", error);
+      console.error("Erro ao criar o serviço:", error);
       setError(
           <>
             Falha ao criar o serviço. Por favor, tente novamente.<br />
-            <br />
             Todos os campos são obrigatórios!
           </>
       );
@@ -135,27 +155,26 @@ function RequestServiceGeneric({ id }) {
 
                   <div className="mb-4">
                     <label className="block text-black font-semibold mb-2">Categoria *</label>
-                    <select
-                        value={category}
-                        onChange={(e) => setCategory(parseInt(e.target.value))}
-                        className="w-full p-2 placeholder-gray-600 border-b-2 border-black bg-white bg-opacity-50 focus:outline-none focus:border-black"
-                    >
-                      <option value="">Selecionar</option>
-                      <option value="0">Limpeza</option>
-                      <option value="1">Canalizador</option>
-                      <option value="2">Eletricista</option>
-                      <option value="3">Jardineiro</option>
-                      <option value="4">Pintor</option>
-                      <option value="5">Outro</option>
-                    </select>
+                    <Select
+                        options={categories}
+                        onChange={(selectedOption) => setSelectedCategory(selectedOption)} // Atualiza a categoria selecionada
+                        placeholder="Selecione a categoria"
+                        className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: 'none',
+                          }),
+                        }}
+                    />
                   </div>
 
                   <div className="mb-4">
                     <label className="block text-black font-semibold mb-2">Idioma(s) *</label>
                     <Select
-                        isMulti  // Permitir múltiplas seleções
+                        isMulti
                         options={languageOptions}
-                        onChange={(selectedOptions) => setLanguages(selectedOptions)}  // Armazenar múltiplos idiomas
+                        onChange={(selectedOptions) => setLanguages(selectedOptions)}
                         placeholder="Selecione o(s) idioma(s)"
                         className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
                         styles={{
