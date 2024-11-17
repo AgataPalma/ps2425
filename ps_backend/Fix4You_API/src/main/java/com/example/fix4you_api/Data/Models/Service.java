@@ -44,8 +44,8 @@ public class Service {
     private String postalCode;
 
     @Field
-    @NotNull(message = "Category ID cannot be null")
-    private String categoryId;
+    @NotNull(message = "Category cannot be null")
+    private Category category;
 
     @Field
     @NotBlank(message = "Description cannot be blank")
@@ -70,4 +70,10 @@ public class Service {
     @Field
     @NotBlank(message = "Location cannot be blank")
     private String location;
+
+    @Data
+    public static class Category {
+        private String id;
+        private String name;
+    }
 }

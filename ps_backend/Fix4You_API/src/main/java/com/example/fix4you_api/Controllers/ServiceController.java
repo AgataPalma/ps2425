@@ -152,7 +152,7 @@ public class ServiceController {
                     case "price" -> service.setPrice(((Double) value).floatValue());
                     case "address" -> service.setAddress((String) value);
                     case "postalCode" -> service.setPostalCode((String) value);
-                    case "categoryId" -> service.setCategoryId((String) value);
+                    case "category" -> service.setCategory((Service.Category) value);
                     case "title" -> service.setTitle((String) value);
                     case "state" -> service.setState((ServiceStateEnum) value);
                     default -> throw new RuntimeException("Invalid field update request");
@@ -182,7 +182,7 @@ public class ServiceController {
             if (updates.containsKey("category")) {
                 String categoryName = (String) updates.get("category");
                 Category category = categoryService.getCategoryByName(categoryName);
-                filteredServices.removeIf(service -> !service.getCategoryId().contains(category.getId()));
+                filteredServices.removeIf(service -> !service.getCategory().getId().contains(category.getId()));
             }
 
             if (updates.containsKey("price")) {
