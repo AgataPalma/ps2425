@@ -483,7 +483,7 @@ const RegisterProfessional = () => {
                   )}
                 </div>
 
-                {/* Distância de Atuação (locationsRange) */}
+                {/* Distância de Atuação (locationsRange) 
                 <div className="sm:col-span-6">
                   <label htmlFor="locationsRange" className="block text-sm font-medium leading-6 text-gray-900">
                     Distância de Atuação (km)
@@ -502,6 +502,8 @@ const RegisterProfessional = () => {
                     />
                   </div>
                 </div>
+                */}
+
               </div>
             </div>
 
