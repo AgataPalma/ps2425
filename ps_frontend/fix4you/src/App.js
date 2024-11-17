@@ -21,6 +21,8 @@ import RequestServiceToProfessional from "./pages/RequestServiceToProfessional";
 import Recover from "./pages/Recover";
 import PasswordReset from "./pages/PasswordReset";
 import ScheduleAppointments from "./pages/ScheduleAppointments";
+import NotificationsClient from './pages/NotificationsClient';
+import NotificationsProfessional from './pages/NotificationsProfessional';
 
 function App() {
 
@@ -83,7 +85,7 @@ function App() {
                     <Route
                         path="/Login"
                         element={
-                            !userType ? <Login onLogin={handleLogin} /> : <Navigate to="/Home"  />
+                            !userType ? <Login onLogin={handleLogin} /> : <Navigate to="/Home" />
                         }
                     />
                     <Route
@@ -97,7 +99,7 @@ function App() {
                         path="/ClientProfile"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
-                                <ClientProfile id={userId}/>
+                                <ClientProfile id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -105,7 +107,7 @@ function App() {
                         path="/ClientRequestsHistory"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
-                                <ClientRequestsHistory id={userId}/>
+                                <ClientRequestsHistory id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -113,7 +115,7 @@ function App() {
                         path="/ClientRequests"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
-                                <ClientRequests id={userId}/>
+                                <ClientRequests id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -121,7 +123,7 @@ function App() {
                         path="/ProfessionalProfile"
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
-                                <ProfessionalProfile id={userId}/>
+                                <ProfessionalProfile id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -144,9 +146,9 @@ function App() {
                     <Route
                         path="/PrincipalPageClient"
                         element={
-                        <ProtectedRoute allowedUserType="CLIENT">
-                            <PrincipalPageClient id={userId} />
-                        </ProtectedRoute>
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <PrincipalPageClient id={userId} />
+                            </ProtectedRoute>
                         }
                     />
                     <Route
@@ -161,7 +163,7 @@ function App() {
                         path="/NewRequests"
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
-                                <NewRequests id={userId}/>
+                                <NewRequests id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -170,7 +172,7 @@ function App() {
 
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
-                                <RequestServiceGeneric id={userId}/>
+                                <RequestServiceGeneric id={userId} />
                             </ProtectedRoute>
                         }
                     />
@@ -178,15 +180,31 @@ function App() {
                         path="/RequestServiceToProfessional"
                         element={
                             <ProtectedRoute allowedUserType="CLIENT">
-                                <RequestServiceToProfessional id={userId}/>
+                                <RequestServiceToProfessional id={userId} />
                             </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/ScheduleAppointments"
                         element={
-                                <ScheduleAppointments id={userId}/>
+                            <ScheduleAppointments id={userId} />
 
+                        }
+                    />
+                    <Route
+                        path="/NotificationsClient"
+                        element={
+                            <ProtectedRoute allowedUserType="CLIENT">
+                                <NotificationsClient id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/NotificationsProfessional"
+                        element={
+                            <ProtectedRoute allowedUserType="PROFESSIONAL">
+                                <NotificationsProfessional id={userId} />
+                            </ProtectedRoute>
                         }
                     />
                 </Routes>

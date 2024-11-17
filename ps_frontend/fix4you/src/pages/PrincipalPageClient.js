@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../index.css';
 import user from '../images/user.png';
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,8 @@ const PrincipalPageClient = ({ id }) => {
     const [paymentMethods, setPaymentMethods] = useState([]);
 
     const navigate = useNavigate();
+    const [selectedProfessional, setSelectedProfessional] = useState(null);
+    const [activeTab, setActiveTab] = useState("information");
     const [filters, setFilters] = useState({
         priceRange: '',
         location: '',
@@ -27,6 +29,11 @@ const PrincipalPageClient = ({ id }) => {
 
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
+    };
+
+    const handleProfessionalClick = (professional) => {
+        setSelectedProfessional(professional);
+        setActiveTab("information"); // Reset to information tab on open
     };
 
     useEffect(() => {
@@ -108,7 +115,7 @@ const PrincipalPageClient = ({ id }) => {
                                     ))}
                                 </div>
                             </div>
-                            {/* Filtro de Linguagens */}
+
                             <div className="mt-4">
                                 <h4 className="font-medium">Linguagens</h4>
                                 <div className="flex flex-wrap gap-2">
@@ -218,19 +225,32 @@ const PrincipalPageClient = ({ id }) => {
                                             ? `data:image/png;base64,${professional.profileImage}`
                                             : user}
                                         alt="Profile"
-                                        className="w-20 h-20 rounded-full"
+                                        className="w-20 h-20 rounded-full cursor-pointer"
+                                        onClick={() => handleProfessionalClick(professional)}
                                     />
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold capitalize">{professional.name}</h2>
+                                        <h2 className="text-2xl font-bold capitalize cursor-pointer"
+                                            onClick={() => handleProfessionalClick(professional)}>{professional.name}</h2>
                                         <p className="text-sm font-medium capitalize">{categoryDescription.category}</p>
                                     </div>
+
                                     <div className="flex space-x-1">
-                                        {[...Array(5)].map((_, starIndex) => (
-                                            <FaStar
-                                                key={starIndex}
-                                                className={starIndex < professional.rating ? "text-yellow-600 w-6 h-6" : "text-gray-800 w-6 h-6"}
-                                            />
-                                        ))}
+                                        {[...Array(5)].map((_, starIndex) => {
+                                            const isFullStar = starIndex < Math.floor(professional.rating);
+                                            const isHalfStar = starIndex === Math.floor(professional.rating) && professional.rating % 1 !== 0;
+
+                                            return (
+                                                <span key={starIndex}>
+                                                    {isFullStar ? (
+                                                        <FaStar className="text-yellow-600 w-6 h-6"/>
+                                                    ) : isHalfStar ? (
+                                                        <FaStarHalfAlt className="text-yellow-600 w-6 h-6"/>
+                                                    ) : (
+                                                        <FaStar className="text-gray-800 w-6 h-6"/>
+                                                    )}
+                                                </span>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
@@ -304,6 +324,68 @@ const PrincipalPageClient = ({ id }) => {
                             </div>
                         ))
                     ))}
+                    {selectedProfessional && (
+                        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                                <div className="flex justify-between items-center mb-4">
+                                    {/* Professional's profile picture and name */}
+                                    <div className="flex items-center space-x-4">
+                                        <img
+                                            src={
+                                                selectedProfessional.profileImage && selectedProfessional.profileImage !== "base64EncodedImageString" && selectedProfessional.profileImage.trim() !== ""
+                                                    ? `data:image/png;base64,${selectedProfessional.profileImage}`
+                                                    : user
+                                            }
+                                            alt="Profile"
+                                            className="w-16 h-16 rounded-full"
+                                        />
+                                        <h2 className="text-2xl font-bold">{selectedProfessional.name}</h2>
+                                    </div>
+                                    <button
+                                        onClick={() => setSelectedProfessional(null)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+
+                                {/* Tabs */}
+                                <div className="border-b mb-4">
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "information" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                        onClick={() => setActiveTab("information")}
+                                    >
+                                        Information
+                                    </button>
+                                    {selectedProfessional.portfolio && (
+                                        <button
+                                            className={`px-4 py-2 ${activeTab === "portfolio" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                            onClick={() => setActiveTab("portfolio")}
+                                        >
+                                            Portfolio
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Tab Content */}
+                                {activeTab === "information" && (
+                                    <div>
+                                        <p className="text-sm mb-2"><strong>Descrição:</strong> {selectedProfessional.description}</p>
+                                        <p className="text-sm mb-2"><strong>Localização:</strong> {selectedProfessional.location}</p>
+                                        <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages?.join(', ')}</p>
+                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods}</p>
+                                    </div>
+                                )}
+
+                                {activeTab === "portfolio" && selectedProfessional.portfolio && (
+                                    <div>
+                                        {/* Display portfolio items here, e.g., images or project details */}
+                                        <p className="text-sm mb-2">Portfolio Content Here</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </section>
 
 

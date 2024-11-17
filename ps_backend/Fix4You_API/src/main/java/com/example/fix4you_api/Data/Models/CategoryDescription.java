@@ -24,7 +24,8 @@ public class CategoryDescription {
     private String professionalId;
 
     @Field
-    private String categoryId;
+    @NotNull(message = "Category cannot be null")
+    private Category category;
 
     @Field
     @NotNull(message = "Charges travels cannot be null")
@@ -39,4 +40,10 @@ public class CategoryDescription {
     @DecimalMin(value = "0.0", message = "Medium price must be a positive value")
     @Digits(integer = 5, fraction = 2, message = "Medium price must be a numeric value with up to 5 digits and 2 decimal places")
     private float mediumPricePerService;
+
+    @Data
+    public static class Category {
+        private String id;
+        private String name;
+    }
 }

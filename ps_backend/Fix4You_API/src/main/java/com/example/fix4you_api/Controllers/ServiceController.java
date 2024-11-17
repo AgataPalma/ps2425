@@ -29,13 +29,13 @@ public class ServiceController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<String> addService(@RequestBody Service service) {
+    public ResponseEntity<?> addService(@RequestBody Service service) {
         try {
             if(service.getClientId().equals(service.getProfessionalId())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
             }
             this.serviceRepository.save(service);
-            return ResponseEntity.ok("Service Added!");
+            return ResponseEntity.ok(service.getId());
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
