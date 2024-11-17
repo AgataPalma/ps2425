@@ -3,8 +3,10 @@ package com.example.fix4you_api.Service.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
+import com.example.fix4you_api.Event.CategoryDescription.CategoryDescriptionCreationEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import java.util.NoSuchElementException;
 public class CategoryDescriptionServiceImpl implements CategoryDescriptionService {
 
     private final CategoryDescriptionRepository categoryDescriptionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<CategoryDescription> getAllCategoriesDescription() {
@@ -35,7 +38,9 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
 
     @Override
     public CategoryDescription createCategoryDescription(CategoryDescription categoryDescription) {
-        return categoryDescriptionRepository.save(categoryDescription);
+        CategoryDescription newCategoryDescription = categoryDescriptionRepository.save(categoryDescription);
+        eventPublisher.publishEvent(new CategoryDescriptionCreationEvent(this, newCategoryDescription));
+        return newCategoryDescription;
     }
 
     @Override

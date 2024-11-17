@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Service.ProfessionalCategory;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Models.Views.FlattenedProfessionalCategoryView;
 import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -33,8 +35,9 @@ public class ProfessionalCategoryViewService {
     }
 
     @Transactional
-    public List<ProfessionalCategoryView> createProfessionalCategoryView() {
+    public List<ProfessionalCategoryView> createViews() {
         mongoTemplate.dropCollection(ProfessionalCategoryView.class);
+        mongoTemplate.dropCollection(FlattenedProfessionalCategoryView.class);
 
         MatchOperation matchProfessionals = Aggregation.match(Criteria.where("userType").is(EnumUserType.PROFESSIONAL));
 
@@ -80,6 +83,13 @@ public class ProfessionalCategoryViewService {
 
         mongoTemplate.insertAll(professionalCategoryViews);
 
+        List<FlattenedProfessionalCategoryView> flattenedViews = professionalCategoryViews.stream()
+                .map(this::flattenView)
+                .flatMap(Collection::stream)
+                .toList();
+
+        mongoTemplate.insertAll(flattenedViews);
+
         return professionalCategoryViews;
     }
 
@@ -87,6 +97,24 @@ public class ProfessionalCategoryViewService {
         if (isEmpty(filter)) {
             return mongoTemplate.findAll(ProfessionalCategoryView.class);
         } else return rsqlQueryService.findAll(ProfessionalCategoryView.class, filter, null);
+    }
+
+    public List<FlattenedProfessionalCategoryView> getFlattenedProfessionalCategoryViews(String filter) {
+        if (isEmpty(filter)) {
+            return mongoTemplate.findAll(FlattenedProfessionalCategoryView.class);
+        } else {
+            return rsqlQueryService.findAll(FlattenedProfessionalCategoryView.class, filter, null);
+        }
+    }
+
+    private List<FlattenedProfessionalCategoryView> flattenView(ProfessionalCategoryView view) {
+        return view.getCategoryDescriptions().stream()
+                .map(cd -> new FlattenedProfessionalCategoryView(view.getId(), view.getEmail(), view.getDateCreation(), view.getUserType(),
+                        view.getName(), view.getPhoneNumber(), view.getLocation(), view.getProfileImage(), view.getDescription(),
+                        view.getNif(), view.getLanguages(), view.getLocationsRange(), view.getAcceptedPayments(), view.getRating(),
+                        cd.getCategory().getId(), cd.getCategory().getName(), cd.getChargesTravels(), cd.getProvidesInvoices(),
+                        cd.getMediumPricePerService()))
+                .toList();
     }
 
     // Custom AggregationOperation class for inserting custom JSON stages

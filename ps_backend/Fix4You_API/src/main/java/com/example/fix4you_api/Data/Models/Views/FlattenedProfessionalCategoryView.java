@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @AllArgsConstructor
-@Document(collection = "ProfessionalCategoryView")
-public class ProfessionalCategoryView {
-    private String id;
+@Data
+@Document(collection = "FlattenedProfessionalCategoryView")
+public class FlattenedProfessionalCategoryView {
+    private String professionalId;
     private String email;
     private LocalDateTime dateCreation;
     private EnumUserType userType;
@@ -28,19 +28,10 @@ public class ProfessionalCategoryView {
     private Integer locationsRange;
     private List<PaymentTypesEnum> acceptedPayments;
     private Float rating;
-    private List<CategoryDescription> categoryDescriptions;
-
-    @Data
-    public static class CategoryDescription {
-        private Boolean chargesTravels;
-        private Boolean providesInvoices;
-        private Float mediumPricePerService;
-        private Category category;
-
-        @Data
-        public static class Category {
-            private String id;
-            private String name;
-        }
-    }
+    
+    private String categoryId;
+    private String categoryName;
+    private Boolean chargesTravels;
+    private Boolean providesInvoices;
+    private Float mediumPricePerService;
 }

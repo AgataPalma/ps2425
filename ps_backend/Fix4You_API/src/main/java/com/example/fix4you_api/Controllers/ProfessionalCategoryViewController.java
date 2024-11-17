@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Models.Views.FlattenedProfessionalCategoryView;
 import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
 import com.example.fix4you_api.Service.ProfessionalCategory.ProfessionalCategoryViewService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,15 @@ public class ProfessionalCategoryViewController {
 
     }
 
+    @GetMapping("/flattened")
+    public ResponseEntity<List<FlattenedProfessionalCategoryView>> getFlattenedViewData(@RequestParam(value = "filter", required = false) String filter) {
+        List<FlattenedProfessionalCategoryView> data = professionalCategoryViewService.getFlattenedProfessionalCategoryViews(filter);
+        return ResponseEntity.ok(data);
+
+    }
+
     @PostMapping
-    public List<ProfessionalCategoryView> createSimplifiedProfessionalView() {
-        return professionalCategoryViewService.createProfessionalCategoryView();
+    public List<ProfessionalCategoryView> createProfessionalCategoryView() {
+        return professionalCategoryViewService.createViews();
     }
 }
