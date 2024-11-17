@@ -23,7 +23,7 @@ public class CategoryDescriptionController {
     @PostMapping
     public ResponseEntity<CategoryDescription> addCategoryDescription(@RequestBody CategoryDescription categoryDescription) {
         CategoryDescription categoryDescriptionCreated = categoryDescriptionService.createCategoryDescription(categoryDescription);
-        categoryService.updateCategoryMinMaxValue(categoryDescriptionCreated.getCategoryId(), categoryDescriptionCreated.getMediumPricePerService());
+        categoryService.updateCategoryMinMaxValue(categoryDescriptionCreated.getCategory().getId(), categoryDescriptionCreated.getMediumPricePerService());
         return new ResponseEntity<>(categoryDescriptionCreated, HttpStatus.CREATED);
     }
 
