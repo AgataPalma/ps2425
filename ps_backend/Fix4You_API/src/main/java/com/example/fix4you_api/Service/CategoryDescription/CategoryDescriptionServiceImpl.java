@@ -53,7 +53,6 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "categoryId" -> existingCategory.setCategoryId((String) value);
                 case "chargesTravels" -> existingCategory.setChargesTravels((Boolean) value);
                 case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
                 case "mediumPricePerService" -> existingCategory.setMediumPricePerService(((Double) value).floatValue());
