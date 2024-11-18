@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +28,7 @@ public class Professional extends Client {
     private String nif;
 
     @NotNull(message = "Languages cannot be null")
-    private List<LanguageEnum> languages;
+    private List<Language> languages;
 
     @Field
     @NotNull(message = "Locations range cannot be null")

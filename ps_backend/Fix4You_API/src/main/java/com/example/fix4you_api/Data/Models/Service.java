@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -65,7 +64,7 @@ public class Service {
 
     @Field
     @NotNull(message = "Languages cannot be null")
-    private List<LanguageEnum> languages;
+    private List<Language> languages;
 
     @Field
     @NotBlank(message = "Location cannot be blank")

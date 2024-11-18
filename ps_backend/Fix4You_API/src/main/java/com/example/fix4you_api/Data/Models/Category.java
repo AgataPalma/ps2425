@@ -18,7 +18,7 @@ public class Category {
 
     @Field
     @NotBlank(message = "Name cannot be blank")
-    @Size(max = 50, message = "Description must be less than 500 characters")
+    @Size(max = 50, message = "Name must be less than 50 characters")
     private String name;
 
     @Field

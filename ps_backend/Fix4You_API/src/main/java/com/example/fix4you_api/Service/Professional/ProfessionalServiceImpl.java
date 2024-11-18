@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
 import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
@@ -13,7 +12,6 @@ import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -175,7 +173,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "password" -> professional.setPassword((String) value);
                 case "name" -> professional.setName((String) value);
                 case "phoneNumber" -> professional.setPhoneNumber((String) value);
-                case "languages" -> professional.setLanguages((List<LanguageEnum>) value);
+                case "languages" -> professional.setLanguages((List<Language>) value);
                 case "description" -> professional.setDescription((String) value);
                 case "location" -> professional.setLocation((String) value);
                 case "locationsRange" -> professional.setLocationsRange((Integer) value);
