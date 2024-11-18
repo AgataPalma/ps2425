@@ -20,14 +20,14 @@ const ResetPassword = () => {
         if (tokenFromUrl) {
             setToken(tokenFromUrl);
         } else {
-            setError('Invalid or missing token.');
+            setError('Token inválido ou em falta.');
         }
     }, [location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError('Passwords não são idênticas');
             return;
         }
 
@@ -41,16 +41,16 @@ const ResetPassword = () => {
             });
 
             if (response.ok) {
-                setMessage('Password reset successfully! Redirecting to login...');
+                setMessage('Password restaurada com sucesso! A redirecionar para login...');
                 setError('');
                 setTimeout(() => navigate('/login'), 3000); // Redireciona após 3 segundos
             } else {
                 const responseData = await response.json();
-                setError(responseData.message || 'Failed to reset password. Please try again.');
+                setError(responseData.message || 'Erro ao restaurar password. Tente outra vez.');
                 setMessage('');
             }
         } catch (error) {
-            setError('An error occurred. Please try again.');
+            setError('Ocorreu um erro. Tente outra vez.');
             setMessage('');
         }
     };
@@ -59,7 +59,7 @@ const ResetPassword = () => {
         <div className="bg-gray-200 min-h-screen flex flex-col">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm py-12">
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Reset your password
+                    Restaurar password
                 </h2>
             </div>
 
@@ -83,7 +83,7 @@ const ResetPassword = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">New Password</label>
+                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Nova Password</label>
                             <div className="mt-2">
                                 <input
                                     id="password"
@@ -98,7 +98,7 @@ const ResetPassword = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">Confirm Password</label>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">Confirmar Password</label>
                             <div className="mt-2">
                                 <input
                                     id="confirmPassword"
@@ -119,15 +119,15 @@ const ResetPassword = () => {
                                 type="submit"
                                 className="flex w-full justify-center rounded-md bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
-                                Reset Password
+                                Restaurar Password
                             </button>
                         </div>
                     </form>
                 )}
 
                 <p className="mt-10 text-center text-sm text-gray-800">
-                    Ready to log in? <br />
-                    <a href="/login" className="font-semibold leading-6 text-yellow-500 mx-2 hover:underline">Sign in</a>
+                    Ir para log in? <br />
+                    <a href="/login" className="font-semibold leading-6 text-yellow-500 mx-2 hover:underline">Log in</a>
                 </p>
                 <br />
             </div>

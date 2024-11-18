@@ -15,7 +15,7 @@ const RegisterChoice = () => {
             <div className="flex justify-center space-x-8 bg-gray-200 mb-20">
                 
                 <div
-                    className="bg-yellow-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
+                    className="bg-gray-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
                     style={{ backgroundImage: `url(${professionalImage})` }}
                 >
                     <h2 className="text-3xl font-bold mb-4">Registar como profissional</h2>
@@ -31,7 +31,7 @@ const RegisterChoice = () => {
 
 
                 <div
-                    className="bg-yellow-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
+                    className="bg-gray-100 p-8 w-1/3 shadow-lg rounded-lg bg-cover bg-center min-h-[641px]"
                     style={{ backgroundImage: `url(${clientImage})` }}
                 >
                     <h2 className="text-3xl font-bold mb-4">Contactar profissionais</h2>

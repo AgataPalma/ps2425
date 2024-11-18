@@ -18,7 +18,7 @@ const ForgotPassword = () => {
             });
 
             if (response.ok) {
-                setMessage('E-mail de verificação enviado! Por favor, verifique a sua caixa de correio.');
+                setMessage('Se já tiver uma conta conosco receberá um e-mail! Por favor, verifique a sua caixa de correio.');
                 setError('');
             } else {
                 setError('Falha no envio do e-mail de verificação. Por favor, tente novamente.');

@@ -45,22 +45,24 @@ const Header = ({ userType, handleLogout }) => {
                         </>
                     ) : (
                         <>
-                            <Link to={notificationsLink} className="relative">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6 text-gray-800 hover:text-gray-900 transition"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .417-.163.821-.443 1.123L4 17h11z"
-                                    />
-                                </svg>
-                            </Link>
+                            {userType === 'PROFESSIONAL' && (
+                                <Link to={notificationsLink} className="relative">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-6 w-6 text-gray-800 hover:text-gray-900 transition"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .417-.163.821-.443 1.123L4 17h11z"
+                                        />
+                                    </svg>
+                                </Link>
+                            )}
 
                             <Link to={userType === 'CLIENT' ? "/ClientProfile" : "/ProfessionalProfile"}>
                                 <img src={profileIcon} alt="profile" className="h-10" />
