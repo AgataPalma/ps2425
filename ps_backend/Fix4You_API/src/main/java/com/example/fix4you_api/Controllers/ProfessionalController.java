@@ -36,25 +36,21 @@ public class ProfessionalController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createProfessional(@RequestBody ProfessionalRegistrationRequest professionalRegistrationRequest) throws IOException {
+    public ResponseEntity<?> createProfessional(@RequestBody Professional professional) throws IOException {
         // verify if the email and nif are unique
-        if(userService.emailExists(professionalRegistrationRequest.getProfessional().getEmail())){
+        if(userService.emailExists(professional.getEmail())){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        if(professionalService.nifExists(professionalRegistrationRequest.getProfessional().getNif())) {
+        if(professionalService.nifExists(professional.getNif())) {
             return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
         }
 
-        Professional createdProfessional = professionalService.createProfessional(professionalRegistrationRequest.getProfessional());
-
-        for (var i=0; i < professionalRegistrationRequest.getCategoryDescriptions().size(); i++){
-            CategoryDescription categoryDescription = categoryDescriptionService.createCategoryDescription(professionalRegistrationRequest.getCategoryDescriptions().get(i));
-        }
+        Professional createdProfessional = professionalService.createProfessional(professional);
 
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
-        return new ResponseEntity<>(professionalRegistrationRequest, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdProfessional, HttpStatus.CREATED);
     }
 
     @GetMapping
