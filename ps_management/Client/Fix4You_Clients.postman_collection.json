@@ -132,6 +132,35 @@
 						"header": []
 					},
 					"response": []
+				},
+				{
+					"name": "Update Parcial Client",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"location\": \"Portugal\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/clients/672a0106a8d9b243378a0e38",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"clients",
+								"672a0106a8d9b243378a0e38"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

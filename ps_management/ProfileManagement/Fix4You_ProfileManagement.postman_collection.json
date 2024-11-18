@@ -220,6 +220,25 @@
 						"header": []
 					},
 					"response": []
+				},
+				{
+					"name": "portfoliotems",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/portfolioItems/67212390aaed522ce3777269",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"portfolioItems",
+								"67212390aaed522ce3777269"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -395,6 +414,34 @@
 								"categoryDescriptions",
 								"user",
 								"671fdf62a68b216e6101b20f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categoryDescriptions",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"providesInvoices\": false,\r\n    \"mediumPricePerService\": 2.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categoryDescriptions/672b87a4b87dc266a9ba970b",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categoryDescriptions",
+								"672b87a4b87dc266a9ba970b"
 							]
 						}
 					},
