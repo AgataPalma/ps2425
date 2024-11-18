@@ -17,6 +17,5 @@ public interface ProfessionalsFeeService {
     void deleteProfessionalFee(String id);
     void deleteProfessionalFees(String professionalId);
     void checkAndCreateMonthlyFees();
-
     ProfessionalsFee setFeeAsPaid(String id) throws DocumentException;
 }

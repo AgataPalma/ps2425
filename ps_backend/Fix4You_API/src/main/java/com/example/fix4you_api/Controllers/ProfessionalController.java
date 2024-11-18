@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -109,16 +108,18 @@ public class ProfessionalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Professional> deleteProfessional(@PathVariable String id) {
-        //portfolioItemService.deletePortfolioItems(id);
-        //categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
-        //reviewService.deleteReviewsForUser(id);
-        //professionalsFeeService.deleteProfessionalFees(id);
-        //ticketService.deleteTickets(id);
-        //serviceService.deleteServicesFroProfessional(id);
+    public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
+        portfolioItemService.deletePortfolioItems(id);
+        categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
+        reviewService.deleteReviewsForUser(id);
+        professionalsFeeService.deleteProfessionalFees(id);
+        ticketService.deleteTickets(id);
+        serviceService.deleteServicesForProfessional(id);
+        professionalService.deleteProfessional(id);
+        return new ResponseEntity<>(HttpStatus.OK);
 
-        Professional existingProfessional = professionalService.deleteProfessional(id);
-        return new ResponseEntity<>(existingProfessional, HttpStatus.OK);
+        //Professional existingProfessional = professionalService.deleteProfessional(id);
+        //return new ResponseEntity<>(existingProfessional, HttpStatus.OK);
     }
 
 }

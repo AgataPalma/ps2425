@@ -25,7 +25,7 @@ public interface ProfessionalService {
 
     Professional partialUpdateProfessional(String id, Map<String, Object> updates);
 
-    Professional deleteProfessional(String id);
+    void deleteProfessional(String id);
 
     void setProfessionalIsSuspended(String professionalId, boolean isSuspended);
 

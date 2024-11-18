@@ -17,12 +17,14 @@ import java.time.LocalDateTime;
 @Document("ProfessionalsFees")
 public class ProfessionalsFee {
 
+    private static final float FEE_PRICE = 20.0f;
+
     @Id
     private String id;
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
-    private String professionalId;
+    @NotNull(message = "Professional cannot be null")
+    private Professional professional;
 
     @Field
     @NotNull(message = "Value cannot be null")
@@ -49,11 +51,19 @@ public class ProfessionalsFee {
     @Field
     private byte[] invoice;
 
-    public ProfessionalsFee(String professionalId, float value, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
-        this.professionalId = professionalId;
-        this.value = value;
+    public ProfessionalsFee(Professional professional, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
+        this.professional = professional;
+        this.value = FEE_PRICE;
         this.numberServices = numberServices;
         this.relatedMonthYear = relatedMonthYear;
         this.paymentStatus = paymentStatus;
+    }
+
+    @Data
+    public static class Professional {
+        private String id;
+        private String email;
+        private String name;
+        private String nif;
     }
 }

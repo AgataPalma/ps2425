@@ -18,7 +18,7 @@ public interface UserService {
 
     User partialUpdateUser(String id, Map<String, Object> updates);
 
-    User deleteUser(String id);
+    void deleteUser(String id);
 
     User loginUser(LoginRequest request);
 

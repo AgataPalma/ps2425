@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -63,7 +64,19 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     @Override
     public ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear) {
-        ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(professionalId, 20, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
+        Professional professional = professionalService.getProfessionalById(professionalId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("isSupended", true);
+        professionalService.partialUpdateProfessional(professionalId, updates);
+
+        ProfessionalsFee.Professional feeProfessional = new ProfessionalsFee.Professional();
+        feeProfessional.setId(professional.getId());
+        feeProfessional.setEmail(professional.getEmail());
+        feeProfessional.setName(professional.getName());
+        feeProfessional.setNif(professional.getNif());
+
+        ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(feeProfessional, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
         eventPublisher.publishEvent(new FeeCreationEvent(this, newProfessionalsFee));
         return professionalFeeRepository.save(newProfessionalsFee);
     }
@@ -83,7 +96,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "professionalId" -> existingProfessionalsFee.setProfessionalId((String) value);
+                case "professional" -> existingProfessionalsFee.setProfessional((ProfessionalsFee.Professional) value);
                 case "value" -> existingProfessionalsFee.setValue((float) value);
                 case "numberServices" -> existingProfessionalsFee.setNumberServices((int) value);
                 case "relatedMonthYear" -> existingProfessionalsFee.setRelatedMonthYear((String) value);
@@ -142,7 +155,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     public ProfessionalsFee setFeeAsPaid(String id) throws DocumentException {
         ProfessionalsFee fee = findOrThrow(id);
-        Professional professional = professionalService.getProfessionalById(fee.getProfessionalId());
+        Professional professional = professionalService.getProfessionalById(fee.getProfessional().getId());
 
         fee.setPaymentStatus(PaymentStatusEnum.COMPLETED);
         fee.setPaymentDate(LocalDateTime.now());

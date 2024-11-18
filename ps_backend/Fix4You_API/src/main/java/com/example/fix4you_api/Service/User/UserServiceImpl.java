@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
                 case "email" -> user.setEmail((String) value);
                 case "userType" -> user.setUserType((EnumUserType) value);
                 case "IsEmailConfirmed" -> user.setIsEmailConfirmed((Boolean) value);
-                case "IsDeleted" -> user.setIsDeleted((Boolean) value);
+                //case "IsDeleted" -> user.setIsDeleted((Boolean) value);
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
@@ -77,12 +77,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User deleteUser(String id) {
-        User existingUser = findOrThrow(id);
-        existingUser.setIsDeleted(true);
-        return userRepository.save(existingUser);
+    public void deleteUser(String id) {
+        //User existingUser = findOrThrow(id);
+        //existingUser.setIsDeleted(true);
+        //return userRepository.save(existingUser);
 
-        //userRepository.delete(user);
+        userRepository.deleteById(id);
     }
 
     private User findOrThrow(String id) {
