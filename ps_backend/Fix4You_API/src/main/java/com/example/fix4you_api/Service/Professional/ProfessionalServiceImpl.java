@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
@@ -177,8 +176,9 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "description" -> professional.setDescription((String) value);
                 case "location" -> professional.setLocation((String) value);
                 case "locationsRange" -> professional.setLocationsRange((Integer) value);
-                case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentTypesEnum>) value);
+                case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentMethod>) value);
                 case "strikes" -> professional.setStrikes((Integer) value);
+                case "isSupended" -> professional.setSupended((boolean) value);
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
@@ -188,12 +188,12 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     @Transactional
-    public Professional deleteProfessional(String id) {
-        Professional existingProfessional = findOrThrow(id);
-        existingProfessional.setIsDeleted(true);
-        return professionalRepository.save(existingProfessional);
+    public void deleteProfessional(String id) {
+        //Professional existingProfessional = findOrThrow(id);
+        //existingProfessional.setIsDeleted(true);
+        //return professionalRepository.save(existingProfessional);
 
-        //professionalRepository.delete(professional);
+        professionalRepository.deleteById(id);
     }
 
 

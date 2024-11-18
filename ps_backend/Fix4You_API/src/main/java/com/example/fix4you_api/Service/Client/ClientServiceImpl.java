@@ -68,7 +68,7 @@ public class ClientServiceImpl implements ClientService {
                 case "password" -> client.setPassword((String) value);
                 case "location" -> client.setLocation((String) value);
                 case "rating" -> client.setRating((float) value);
-                case "IsDeleted" -> client.setIsDeleted((Boolean) value);
+                //case "IsDeleted" -> client.setIsDeleted((Boolean) value);
                 case "IsEmailConfirmed" -> client.setIsEmailConfirmed((Boolean) value);
                 default -> throw new RuntimeException("Invalid field update request");
             }
@@ -87,12 +87,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client deleteClient(String id) {
-        Client existingClient = findOrThrow(id);
-        existingClient.setIsDeleted(true);
-        return clientRepository.save(existingClient);
+    public void deleteClient(String id) {
+        //Client existingClient = findOrThrow(id);
+        //existingClient.setIsDeleted(true);
+        //return clientRepository.save(existingClient);
 
-        //clientRepository.deleteById(id);
+        clientRepository.deleteById(id);
     }
 
     @Override

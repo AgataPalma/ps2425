@@ -30,7 +30,7 @@ public class ProfessionalsFeeEventListener {
                         "Payment status: %s",
                 fee.getValue(), fee.getNumberServices(), fee.getRelatedMonthYear(), fee.getPaymentDate(), fee.getPaymentStatus());
 
-        if (fee.getProfessionalId().equals(currentUserId)) {
+        if (fee.getProfessional().getId().equals(currentUserId)) {
             sseNotificationController.sendNotificationToClients(notification);
         }
     }

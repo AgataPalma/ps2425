@@ -21,7 +21,7 @@ public interface ClientService {
 
     Client updateClientImage(String id, byte[] profileImage);
 
-    Client deleteClient(String id);
+    void deleteClient(String id);
 
     void setRating(float rating, Client client);
 }

@@ -70,9 +70,9 @@ public class ProfessionalFeeController {
 
         // check if he has more fees to pay -> if not (suspended = false)
         boolean anythingToPay = false;
-        Professional professional = professionalService.getProfessionalById(fee.getProfessionalId());
+        Professional professional = professionalService.getProfessionalById(fee.getProfessional().getId());
         boolean currentSuspendedStatus = professional.isSupended();
-        List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(fee.getProfessionalId());
+        List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(fee.getProfessional().getId());
 
         for (ProfessionalsFee currentFee : feesList) {
             if (!currentFee.getPaymentStatus().equals(PaymentStatusEnum.COMPLETED)) {
@@ -81,9 +81,9 @@ public class ProfessionalFeeController {
         }
 
         if (!anythingToPay && currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), false);
+            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), false);
         } else if (anythingToPay && !currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(fee.getProfessionalId(), true);
+            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), true);
         }
 
         //Generate invoice

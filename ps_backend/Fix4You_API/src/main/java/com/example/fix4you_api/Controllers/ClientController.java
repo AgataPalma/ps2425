@@ -77,12 +77,14 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Client> deleteClient(@PathVariable String id) {
-        //reviewService.deleteReviewsForUser(id);
-        //ticketService.deleteTickets(id);
-        //serviceService.deleteServicesForClient(id);
+    public ResponseEntity<Void> deleteClient(@PathVariable String id) {
+        reviewService.deleteReviewsForUser(id);
+        ticketService.deleteTickets(id);
+        serviceService.deleteServicesForClient(id);
+        clientService.deleteClient(id);
+        return new ResponseEntity<>(HttpStatus.OK);
 
-        Client existingClient = clientService.deleteClient(id);
-        return new ResponseEntity<>(existingClient ,HttpStatus.OK);
+        //Client existingClient = clientService.deleteClient(id);
+        //return new ResponseEntity<>(existingClient ,HttpStatus.OK);
     }
 }

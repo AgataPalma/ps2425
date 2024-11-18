@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Data.Models;
 
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -36,7 +35,7 @@ public class Professional extends Client {
 
     @Field
     @NotNull(message = "Accepted payments cannot be null")
-    private List<PaymentTypesEnum> acceptedPayments;
+    private List<PaymentMethod> acceptedPayments;
 
     @Field
     private int strikes;

@@ -1,8 +1,8 @@
 package com.example.fix4you_api.Data.Models.Views;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
 import com.example.fix4you_api.Data.Models.Language;
+import com.example.fix4you_api.Data.Models.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,7 +26,7 @@ public class ProfessionalCategoryView {
     private String nif;
     private List<Language> languages;
     private Integer locationsRange;
-    private List<PaymentTypesEnum> acceptedPayments;
+    private List<PaymentMethod> acceptedPayments;
     private Float rating;
     private List<CategoryDescription> categoryDescriptions;
 

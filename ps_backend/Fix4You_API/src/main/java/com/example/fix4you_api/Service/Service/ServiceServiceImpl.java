@@ -56,7 +56,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     @Transactional
-    public void deleteServicesFroProfessional(String professionalId) {
+    public void deleteServicesForProfessional(String professionalId) {
         List<com.example.fix4you_api.Data.Models.Service> services = getServicesByProfessionalId(professionalId);
 
         for(com.example.fix4you_api.Data.Models.Service service: services) {
