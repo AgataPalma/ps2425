@@ -15,6 +15,10 @@ const PrincipalPageProfessional = ({ id }) => {
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [languages, setLanguages] = useState([]);
+    const [confirmationModal, setConfirmationModal] = useState({ isVisible: false, request: null });
+    const [error, setError] = useState('');
+
+
     const [filters, setFilters] = useState({
         location: '',
         category: '',
@@ -41,11 +45,76 @@ const PrincipalPageProfessional = ({ id }) => {
             });
     }, [id]);
 
+    const handleAcceptRequest = (request) => {
+        setConfirmationModal({ isVisible: true, request });
+    };
+
+    const confirmAcceptRequest = () => {
+        if (confirmationModal.request) {
+            const payload = {
+                professionalId: id,
+                serviceId: confirmationModal.request.id
+            };
+
+            axiosInstance.put(`/services/accept-service?professionalId=${id}&serviceId=${confirmationModal.request.id}`)
+                .then(response => {
+                    console.log('Serviço aceito com sucesso:', response.data);
+                    setConfirmationModal({ isVisible: false, request: null });
+                })
+                .catch(error => {
+                    console.error('Erro ao aceitar o serviço:', error);
+                    setError(
+                        <>
+                            Erro ao aceitar o serviço<br />
+                            Por favor, tente mais tarde.
+                        </>
+                    );
+                });
+        }
+    };
+
+
+    const cancelAcceptRequest = () => {
+        setConfirmationModal({ isVisible: false, request: null });
+    };
+
+
     return (
         <div className="flex flex-col min-h-screen text-black font-sans">
             <div className="bg-gray-800 bg-opacity-15 shadow-lg flex-grow">
                 <br/>
 
+                {/* Modal de Confirmação */}
+                {confirmationModal.isVisible && (
+                    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
+                            <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center">Confirmar Aceitação</h2>
+                            {error && (
+                                <div className="mb-4 p-2 bg-red-200 text-red-800 text-center rounded">
+                                    {error}
+                                </div>
+                            )}
+                            <p className="text-sm text-center mb-6">
+                                Ao clicar em aceitar, este serviço ficará associado a você e o cliente será notificado.
+                            </p>
+                            <div className="flex justify-between">
+                                <button
+                                    onClick={cancelAcceptRequest}
+                                    className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={confirmAcceptRequest}
+                                    className="px-4 py-2 bg-yellow-600 text-white rounded-lg"
+                                >
+                                    Aceitar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {/* Modal dos filtros */}
                 {isFilterModalOpen && (
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
@@ -186,7 +255,7 @@ const PrincipalPageProfessional = ({ id }) => {
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
                                         <h3 className="text-xl font-semibold">{request.title}</h3>
-                                        <p className="text-sm">{request.category}</p>
+                                        <p className="text-sm">{request.category.name}</p>
                                     </div>
                                 </div>
                                 <div className="mt-4">
@@ -222,6 +291,7 @@ const PrincipalPageProfessional = ({ id }) => {
                                 </div>
                                 <div className="mt-4 flex justify-center">
                                     <button
+                                        onClick={() => handleAcceptRequest(request)}
                                         className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
                                         Aceitar
                                     </button>

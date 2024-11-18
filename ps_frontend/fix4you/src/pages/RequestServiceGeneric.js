@@ -11,7 +11,7 @@ function RequestServiceGeneric({ id }) {
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null); // Estado para armazenar a categoria selecionada
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [description, setDescription] = useState('');
   const [locationOptions, setLocationOptions] = useState([]);
   const [languages, setLanguages] = useState([]);
@@ -157,7 +157,7 @@ function RequestServiceGeneric({ id }) {
                     <label className="block text-black font-semibold mb-2">Categoria *</label>
                     <Select
                         options={categories}
-                        onChange={(selectedOption) => setSelectedCategory(selectedOption)} // Atualiza a categoria selecionada
+                        onChange={(selectedOption) => setSelectedCategory(selectedOption)}
                         placeholder="Selecione a categoria"
                         className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
                         styles={{

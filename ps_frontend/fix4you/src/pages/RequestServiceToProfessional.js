@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Footer from "../components/Footer";
 import axiosInstance from "../components/axiosInstance";
 
-// Mapeamento dos idiomas do enum para o português
 const languageMap = {
     ENGLISH: "Inglês",
     PORTUGUESE: "Português",
@@ -40,7 +39,10 @@ function RequestServiceToProfessional({ id }) {
             price: 0,
             address: "0",
             postalCode: "0000-000",
-            category: professional.category,
+            category: {
+                id: professional.category.id,
+                name: professional.category.name,
+            },
             description: description,
             title: title,
             location: professional.location,
@@ -60,7 +62,6 @@ function RequestServiceToProfessional({ id }) {
                 setError(
                     <>
                         Falha ao criar o serviço. Por favor, tente novamente.<br />
-                        <br />
                         Todos os campos são obrigatórios!
                     </>
                 );
@@ -70,7 +71,6 @@ function RequestServiceToProfessional({ id }) {
             setError(
                 <>
                     Falha ao criar o serviço. Por favor, tente novamente.<br />
-                    <br />
                     Todos os campos são obrigatórios!
                 </>
             );
@@ -114,22 +114,12 @@ function RequestServiceToProfessional({ id }) {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Categoria *</label>
-                                    <select
-                                        value={professional.category}
-                                        disabled
-                                        onChange={(e) => setCategory(parseInt(e.target.value))}
-                                        className="w-full p-2 placeholder-gray-600 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-not-allowed"
-                                    >
-                                        <option value="">Selecionar</option>
-                                        <option value="CLEANING">Limpeza</option>
-                                        <option value="PLUMBING">Canalizador</option>
-                                        <option value="ELECTRICAL">Eletricista</option>
-                                        <option value="GARDENING">Jardineiro</option>
-                                        <option value="PAINTING">Pintor</option>
-                                        <option value="OTHER">Outro</option>
-                                    </select>
+                                    <p className="w-full p-2 placeholder-gray-600 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-default">
+                                        {professional.category
+                                            ? professional.category.charAt(0).toUpperCase() + professional.category.slice(1).toLowerCase()
+                                            : "Nenhuma categoria selecionada"}
+                                    </p>
                                 </div>
-
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Idiomas *</label>
                                     <div className="flex flex-wrap gap-2">
