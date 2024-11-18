@@ -20,6 +20,8 @@ const PrincipalPageClient = ({ id }) => {
     const [location, setLocation] = useState('');
     const [locationOptions, setLocationOptions] = useState([]);
     const navigate = useNavigate();
+    const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([]);
+    const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [selectedProfessional, setSelectedProfessional] = useState(null);
     const [activeTab, setActiveTab] = useState("information");
     const [filters, setFilters] = useState({
@@ -37,23 +39,19 @@ const PrincipalPageClient = ({ id }) => {
     };
 
     const handlePaymentMethodClick = (paymentMethod) => {
-        setPaymentMethods((prevMethods) => {
-            if (prevMethods.includes(paymentMethod)) {
-                return prevMethods.filter((method) => method !== paymentMethod);
-            } else {
-                return [...prevMethods, paymentMethod];
-            }
-        });
+        setSelectedPaymentMethods((prev) =>
+            prev.includes(paymentMethod)
+                ? prev.filter((method) => method !== paymentMethod)
+                : [...prev, paymentMethod]
+        );
     };
 
     const handleLanguagesMethodClick = (language) => {
-        setLanguages((prevLanguages) => {
-            if (prevLanguages.includes(language)) {
-                return prevLanguages.filter((lang) => lang !== language);
-            } else {
-                return [...prevLanguages, language];
-            }
-        });
+        setSelectedLanguages((prev) =>
+            prev.includes(language)
+                ? prev.filter((lang) => lang !== language)
+                : [...prev, language]
+        );
     };
 
 
@@ -92,24 +90,24 @@ const PrincipalPageClient = ({ id }) => {
         }
 
         // Filtro de Linguagens
-        if (languages.length > 0) {
-            const languageFilters = languages.map((lang) => `languages=="${lang}"`).join(',');
+        if (selectedLanguages.length > 0) {
+            const languageFilters = selectedLanguages
+                .map((lang) => `languages.name=="${lang}"`) // Use selectedLanguages, não languages
+                .join(',');
             filterQuery.push(languageFilters);
         }
 
-        // Filtro de Formas de Pagamento
-        if (paymentMethods.length > 0) {
-            const paymentFilters = paymentMethods.map((method) => `acceptedPayments=="${method}"`).join(',');
+        // Filtro de Formas de Pagamento (somente se houver seleção)
+        if (selectedPaymentMethods.length > 0) {
+            const paymentFilters = selectedPaymentMethods
+                .map((payment) => `acceptedPayments.name=="${payment}"`) // Use selectedPaymentMethods, não paymentMethods
+                .join(',');
             filterQuery.push(paymentFilters);
         }
-
-
         // Filtro de Custos de Deslocação
         if (includeTravelCost !== null) {
             filterQuery.push(`chargesTravels==${includeTravelCost}`);
         }
-
-
 
         // Gerar a string da query final
         const filterString = filterQuery.join(';');
@@ -147,6 +145,23 @@ const PrincipalPageClient = ({ id }) => {
                 label: category.name,
             }));
             setCategories(categoryData);
+
+            // Fetch languages
+            const languagesResponse = await axiosInstance.get('/languages');
+            const languagesData = languagesResponse.data.map((languages) => ({
+                value: languages.id,
+                label: languages.name,
+            }));
+            setLanguages(languagesData);
+
+
+            // Fetch paymentMethod
+            const paymentMethodResponse = await axiosInstance.get('/paymentMethods');
+            const paymentMethodData = paymentMethodResponse.data.map((paymentMethod) => ({
+                value: paymentMethod.id,
+                label: paymentMethod.name,
+            }));
+            setPaymentMethods(paymentMethodData);
 
             // Fetch professionals
             const professionalsResponse = await axiosInstance.get('/professional-category-views/flattened');
@@ -272,28 +287,36 @@ const PrincipalPageClient = ({ id }) => {
                             <div className="mt-4">
                                 <h4 className="font-medium">Linguagens</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {['PORTUGUESE', 'ENGLISH', 'Espanhol', 'Francês'].map((language) => (
+                                    {languages.map((language) => (
                                         <button
-                                            key={language}
-                                            onClick={() => handleLanguagesMethodClick(language)}
-                                            className={`px-4 py-2 rounded-full ${languages.includes(language) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                            key={language.value}
+                                            onClick={() => handleLanguagesMethodClick(language.label)}
+                                            className={`px-4 py-2 rounded-full ${
+                                                selectedLanguages.includes(language.label)
+                                                    ? 'bg-yellow-600 text-white'
+                                                    : 'bg-gray-300 text-gray-700'
+                                            }`}
                                         >
-                                            {language}
+                                            {language.label}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             <div className="mt-4">
-                                <h4 className="font-medium">Formas de Pagamento</h4>
+                                <h4 className="font-medium">Métodos de Pagamento</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {['Transferencia Bancária', 'CREDIT_CARD', 'CASH'].map((paymentMethod) => (
+                                    {paymentMethods.map((paymentMethod) => (
                                         <button
-                                            key={paymentMethod}
-                                            onClick={() => handlePaymentMethodClick(paymentMethod)}
-                                            className={`px-4 py-2 rounded-full ${paymentMethods.includes(paymentMethod) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                            key={paymentMethod.value}
+                                            onClick={() => handlePaymentMethodClick(paymentMethod.label)}
+                                            className={`px-4 py-2 rounded-full ${
+                                                selectedPaymentMethods.includes(paymentMethod.label)
+                                                    ? 'bg-yellow-600 text-white'
+                                                    : 'bg-gray-300 text-gray-700'
+                                            }`}
                                         >
-                                            {paymentMethod}
+                                            {paymentMethod.label}
                                         </button>
                                     ))}
                                 </div>
@@ -458,7 +481,7 @@ const PrincipalPageClient = ({ id }) => {
                                             state: {
                                                 professionalId: professional.id,
                                                 name: professional.name,
-                                                category: professional.categoryName,
+                                                category: professional.category.name,
                                                 location: professional.location,
                                                 languages: professional.languages,
                                                 price: professional.mediumPricePerService,

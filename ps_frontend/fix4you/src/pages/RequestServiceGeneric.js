@@ -16,6 +16,15 @@ function RequestServiceGeneric({ id }) {
   const [locationOptions, setLocationOptions] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [error, setError] = useState('');
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+
+  const handleLanguagesMethodClick = (language) => {
+    setSelectedLanguages((prev) =>
+        prev.includes(language)
+            ? prev.filter((lang) => lang !== language)
+            : [...prev, language]
+    );
+  };
 
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -30,9 +39,16 @@ function RequestServiceGeneric({ id }) {
           }))
         }));
 
+        const languagesResponse = await axiosInstance.get('/languages');
+        const languagesData = languagesResponse.data.map((languages) => ({
+          value: languages.id,
+          label: languages.name,
+        }));
+        setLanguages(languagesData);
+
         const fetchCategories = async () => {
           try {
-            const response = await axiosInstance.get('/categories'); // Ajustar o endpoint conforme necessário
+            const response = await axiosInstance.get('/categories');
             const categoryData = response.data.map((category) => ({
               value: category.id,
               label: category.name,
@@ -74,7 +90,10 @@ function RequestServiceGeneric({ id }) {
       description: description,
       title: title,
       location: location,
-      languages: languages.map(language => language.value),
+      languages: selectedLanguages.map(lang => ({
+        id: lang.value,
+        name: lang.label
+      })),
       state: 0
     };
 
@@ -104,12 +123,6 @@ function RequestServiceGeneric({ id }) {
     }
   };
 
-  const languageOptions = [
-    { value: 'PORTUGUESE', label: 'Português' },
-    { value: 'FRENCH', label: 'Francês' },
-    { value: 'ENGLISH', label: 'Inglês' },
-    { value: 'SPANISH', label: 'Espanhol' }
-  ];
 
   return (
       <div className="h-screen bg-gray-200 text-black font-sans">
@@ -169,21 +182,23 @@ function RequestServiceGeneric({ id }) {
                     />
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-black font-semibold mb-2">Idioma(s) *</label>
-                    <Select
-                        isMulti
-                        options={languageOptions}
-                        onChange={(selectedOptions) => setLanguages(selectedOptions)}
-                        placeholder="Selecione o(s) idioma(s)"
-                        className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
-                        styles={{
-                          control: (provided) => ({
-                            ...provided,
-                            border: 'none',
-                          }),
-                        }}
-                    />
+                  <div className="mt-4">
+                    <h4 className="font-medium">Linguagens</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {languages.map((language) => (
+                          <button
+                              key={language.value}
+                              onClick={() => handleLanguagesMethodClick(language.label)}
+                              className={`px-4 py-2 rounded-full ${
+                                  selectedLanguages.includes(language.label)
+                                      ? 'bg-yellow-600 text-white'
+                                      : 'bg-gray-300 text-gray-700'
+                              }`}
+                          >
+                            {language.label}
+                          </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="mb-6">
@@ -207,7 +222,7 @@ function RequestServiceGeneric({ id }) {
             </div>
           </div>
         </main>
-        <Footer />
+        <Footer/>
       </div>
   );
 }

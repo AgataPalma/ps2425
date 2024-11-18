@@ -4,6 +4,8 @@ import user from '../images/user.png';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
 import {FaStar} from "react-icons/fa";
+import axios from "axios";
+import Select from "react-select";
 
 const PrincipalPageProfessional = ({ id }) => {
 
@@ -17,7 +19,10 @@ const PrincipalPageProfessional = ({ id }) => {
     const [languages, setLanguages] = useState([]);
     const [confirmationModal, setConfirmationModal] = useState({ isVisible: false, request: null });
     const [error, setError] = useState('');
-
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [location, setLocation] = useState('');
+    const [locationOptions, setLocationOptions] = useState([]);
 
     const [filters, setFilters] = useState({
         location: '',
@@ -34,16 +39,45 @@ const PrincipalPageProfessional = ({ id }) => {
     const handleShowDescription = (request) => {
         setSelectedRequest(request);
     };
+    const fetchData = async () => {
+        try {
+            // Fetch location data
+            const locationResponse = await axios.get('https://json.geoapi.pt/municipios/freguesias');
+            const organizedData = locationResponse.data.map((municipio) => ({
+                label: municipio.nome,
+                options: municipio.freguesias.map((freguesia) => ({
+                    label: freguesia,
+                    value: `${municipio.nome}, ${freguesia}`,
+                })),
+            }));
+            setLocationOptions(organizedData);
+
+            // Fetch categories
+            const categoryResponse = await axiosInstance.get('/categories');
+            const categoryData = categoryResponse.data.map((category) => ({
+                value: category.id,
+                label: category.name,
+            }));
+            setCategories(categoryData);
+
+            axiosInstance.get('/services')
+                .then(response => {
+                    SetRequests(response.data); // Set data with axios response
+                })
+                .catch(error => {
+                    console.error('Error fetching professionals:', error);
+                });
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
 
     useEffect(() => {
-        axiosInstance.get('/services')
-            .then(response => {
-                SetRequests(response.data); // Set data with axios response
-            })
-            .catch(error => {
-                console.error('Error fetching professionals:', error);
-            });
+        fetchData();
     }, [id]);
+
 
     const handleAcceptRequest = (request) => {
         setConfirmationModal({ isVisible: true, request });
@@ -121,29 +155,35 @@ const PrincipalPageProfessional = ({ id }) => {
                             <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center">Filtrar por</h2>
 
                             <div className="mb-4">
-                                <label className="text-sm font-medium">Localização</label>
-                                <input
-                                    type="text"
-                                    value={filters.location}
-                                    className="w-full p-2 border rounded-lg"
-                                    placeholder="Localização"
+                                <label className="block text-black font-semibold mb-2">Localização *</label>
+                                <Select
+                                    options={locationOptions}
+                                    onChange={(selectedOption) => setLocation(selectedOption.value)}
+                                    placeholder="Selecione a sua freguesia"
+                                    className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            border: 'none',
+                                        }),
+                                    }}
                                 />
                             </div>
 
                             <div className="mb-4">
-                                <label className="text-sm font-medium">Categoria</label>
-                                <select
-                                    value={filters.category} 
-                                    className="w-full p-2 border rounded-lg"
-                                >
-                                    <option value="">Selecione a categoria</option>
-                                    <option value="LIMPEZA">Limpeza</option>
-                                    <option value="ENCANAMENTO">Encanamento</option>
-                                    <option value="ELETRICIDADE">Eletricidade</option>
-                                    <option value="JARDINAGEM">Jardinagem</option>
-                                    <option value="PINTURA">Pintura</option>
-                                    <option value="OUTRO">Outro</option>
-                                </select>
+                                <label className="block text-black font-semibold mb-2">Categoria *</label>
+                                <Select
+                                    options={categories}
+                                    onChange={(selectedOption) => setSelectedCategory(selectedOption)}
+                                    placeholder="Selecione a categoria"
+                                    className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            border: 'none',
+                                        }),
+                                    }}
+                                />
                             </div>
 
                             <div className="mb-4">

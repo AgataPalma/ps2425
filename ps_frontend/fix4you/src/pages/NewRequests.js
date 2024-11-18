@@ -33,7 +33,7 @@ const NewRequests = ({ id }) => {
     }, [id]);
 
     const capitalizeFirstLetter = (text) => {
-        if (!text) return ''; // Return an empty string if text is undefined or null
+        if (typeof text !== 'string') return ''; // Ensure text is a string or return an empty string
         return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
@@ -127,8 +127,9 @@ const NewRequests = ({ id }) => {
                                 <div className="flex items-center space-x-4">
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title)}</h3>
-                                        <p className="text-sm">{capitalizeFirstLetter(request.category)}</p>
+                                        <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title || 'Título não disponível')}
+                                        </h3>
+                                        <p className="text-sm">{capitalizeFirstLetter(request.category|| 'Categoria não disponível')}</p>
                                     </div>
                                 </div>
                                 <div className="mt-4">
