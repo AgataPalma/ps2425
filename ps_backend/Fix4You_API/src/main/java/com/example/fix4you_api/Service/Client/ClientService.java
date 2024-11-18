@@ -10,15 +10,17 @@ import java.util.Map;
 
 public interface ClientService {
 
-    Client createClient(Client client, MultipartFile file) throws IOException;
+    Client createClient(Client client) throws IOException;
 
     Client getClientById(String id);
 
     List<Client> getAllClients();
 
-    Client updateClient(String id, Client client, MultipartFile file) throws IOException;
+    Client updateClient(String id, Client client) throws IOException;
 
     Client partialUpdateClient(String id, Map<String, Object> updates);
+
+    Client updateClientImage(String id, byte[] profileImage);
 
     Client deleteClient(String id);
 

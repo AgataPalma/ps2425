@@ -6,6 +6,8 @@ import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,23 +25,10 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
-    public Client createClient(Client client, MultipartFile file) throws IOException {
+    public Client createClient(Client client) throws IOException {
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         client.setRating(0);
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            client.setImage(image);
-        }
 
         return clientRepository.save(client);
     }
@@ -56,25 +45,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public Client updateClient(String id, Client client, MultipartFile file) throws IOException {
+    public Client updateClient(String id, Client client) throws IOException {
         Client existingClient = findOrThrow(id);
 
         BeanUtils.copyProperties(client, existingClient, "id","rating");
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            existingClient.setImage(image);
-        } else {
-            existingClient.setImage(null);
-        }
 
         return clientRepository.save(existingClient);
     }
@@ -99,6 +73,15 @@ public class ClientServiceImpl implements ClientService {
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
+
+        return clientRepository.save(client);
+    }
+
+    @Override
+    @Transactional
+    public Client updateClientImage(String id, byte[] profileImage){
+        Client client = findOrThrow(id);
+        client.setProfileImage(profileImage);
 
         return clientRepository.save(client);
     }

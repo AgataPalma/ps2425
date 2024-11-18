@@ -122,32 +122,19 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public Professional createProfessional(Professional professional, MultipartFile file) throws IOException {
+    public Professional createProfessional(Professional professional) throws IOException {
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
         professional.setRating(0);
         professional.setSupended(false);
 
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            professional.setImage(image);
-        }
-
         return professionalRepository.save(professional);
     }
 
     @Override
     @Transactional
-    public Professional updateProfessional(String id, Professional professional, MultipartFile file) throws IOException {
+    public Professional updateProfessional(String id, Professional professional) throws IOException {
 
         Professional existingProfessional = findOrThrow(id);
         existingProfessional.setEmail(professional.getEmail());
@@ -163,23 +150,18 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         existingProfessional.setLocationsRange(professional.getLocationsRange());
         existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
         existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            existingProfessional.setImage(image);
-        } else {
-            existingProfessional.setImage(null);
-        }
+        existingProfessional.setProfileImage(professional.getProfileImage());
 
         return professionalRepository.save(existingProfessional);
+    }
+
+    @Override
+    @Transactional
+    public Professional updateProfessionalImage(String id, byte[] profileImage){
+        Professional professional = findOrThrow(id);
+        professional.setProfileImage(profileImage);
+
+        return professionalRepository.save(professional);
     }
 
     @Override

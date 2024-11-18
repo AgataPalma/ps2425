@@ -30,15 +30,14 @@ public class ClientController {
     private final ServiceService serviceService;
 
     @PostMapping
-    public ResponseEntity<?> createClient(Client client,
-                                          @Validated @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> createClient(@RequestBody Client client) throws IOException {
 
         // check if email already exists
         if(userService.emailExists(client.getEmail())){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        Client createdClient = clientService.createClient(client, file);
+        Client createdClient = clientService.createClient(client);
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
@@ -58,9 +57,8 @@ public class ClientController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Client> updateClient(@PathVariable String id,
-                                               Client client,
-                                               @Validated @RequestParam("file") MultipartFile file) throws IOException {
-        Client updatedClient = clientService.updateClient(id, client, file);
+                                               @RequestBody Client client) throws IOException {
+        Client updatedClient = clientService.updateClient(id, client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
@@ -72,26 +70,9 @@ public class ClientController {
 
     @PutMapping("/image/{id}")
     public ResponseEntity<Client> updateClientImage(@PathVariable String id,
-                                               @Validated @RequestParam("file") MultipartFile file) throws IOException {
+                                                    @Validated @RequestParam("profileImage") byte[] profileImage) throws IOException {
 
-        Client client = clientService.getClientById(id);
-
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            client.setImage(image);
-        } else {
-            client.setImage(null);
-        }
-
-        Client updatedClient = clientService.updateClient(id, client, file);
+        Client updatedClient = clientService.updateClientImage(id, profileImage);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 

@@ -10,11 +10,5 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class Image {
     @Field
-    private String filename;
-
-    @Field
-    private String contentType;
-
-    @Field
-    byte[] bytes;
+    byte[] byteContent;
 }

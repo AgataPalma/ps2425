@@ -1,18 +1,14 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Enums.LanguageEnum;
-import com.example.fix4you_api.Data.Enums.PaymentTypesEnum;
-import com.example.fix4you_api.Data.Models.CategoryDescription;
-import com.example.fix4you_api.Data.Models.Image;
-import com.example.fix4you_api.Data.Models.PortfolioItem;
-import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -27,28 +23,8 @@ public class PortfolioItemController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addPortfolioItem(PortfolioItem portfolioItem,
-                                                   @RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<String> addPortfolioItem(@RequestBody PortfolioItem portfolioItem) {
         try {
-
-            if(files.length > 0) {
-                List<Image> images = new ArrayList<>();
-                for (var i=0; i< files.length; i++) {
-                    String fileName = files[i].getOriginalFilename();
-                    String contentType = files[i].getContentType();
-                    byte[] bytes = files[i].getBytes();
-
-                    Image image = new Image();
-                    image.setFilename(fileName);
-                    image.setContentType(contentType);
-                    image.setBytes(bytes);
-
-                    images.add(image);
-
-                }
-                portfolioItem.setImages(images);
-            }
-
             this.portfolioItemRepository.save(portfolioItem);
             return ResponseEntity.ok("Portfolio item Added!");
         } catch (Exception e) {
@@ -105,34 +81,14 @@ public class PortfolioItemController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePortfolioItem(@PathVariable String id,
-                                                 PortfolioItem portfolioItem,
-                                                 @RequestParam("files") MultipartFile[] files ){
+                                                 @RequestBody PortfolioItem portfolioItem){
         try {
             Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
             if (portfolioItemOpt.isPresent()) {
-                if(files.length > 0) {
-                    List<Image> images = new ArrayList<>();
-                    for (var i=0; i< files.length; i++) {
-                        String fileName = files[i].getOriginalFilename();
-                        String contentType = files[i].getContentType();
-                        byte[] bytes = files[i].getBytes();
-
-                        Image image = new Image();
-                        image.setFilename(fileName);
-                        image.setContentType(contentType);
-                        image.setBytes(bytes);
-
-                        images.add(image);
-
-                    }
-                    portfolioItemOpt.get().setImages(images);
-
-                } else {
-                    portfolioItemOpt.get().setImages(null);
-                }
 
                 portfolioItemOpt.get().setProfessionalId(portfolioItem.getProfessionalId());
                 portfolioItemOpt.get().setDescription(portfolioItem.getDescription());
+                portfolioItemOpt.get().setByteContent(portfolioItem.getByteContent());
 
                 this.portfolioItemRepository.save(portfolioItemOpt.get());
                 return ResponseEntity.ok(portfolioItemOpt);
@@ -146,41 +102,13 @@ public class PortfolioItemController {
     }
 
     @PutMapping("/images/{id}")
-    public ResponseEntity<?> updatePortfolioItemImages(@PathVariable String id,
-                                                 @RequestParam("files") MultipartFile[] files ){
-        try {
-            Optional<PortfolioItem> portfolioItemOpt = this.portfolioItemRepository.findById(id);
-            if (portfolioItemOpt.isPresent()) {
-                if(files.length > 0) {
-                    List<Image> images = new ArrayList<>();
-                    for (var i=0; i< files.length; i++) {
-                        String fileName = files[i].getOriginalFilename();
-                        String contentType = files[i].getContentType();
-                        byte[] bytes = files[i].getBytes();
+    public PortfolioItem updatePortfolioItemImages(@PathVariable String id,
+                                                   @Validated @RequestParam("byteContent") byte[][] byteContent) throws IOException {
 
-                        Image image = new Image();
-                        image.setFilename(fileName);
-                        image.setContentType(contentType);
-                        image.setBytes(bytes);
+        Optional<PortfolioItem> portfolioItem = findOrThrow(id);
+        portfolioItem.get().setByteContent(byteContent);
 
-                        images.add(image);
-
-                    }
-                    portfolioItemOpt.get().setImages(images);
-
-                } else {
-                    portfolioItemOpt.get().setImages(null);
-                }
-
-                this.portfolioItemRepository.save(portfolioItemOpt.get());
-                return ResponseEntity.ok(portfolioItemOpt);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Couldn't find any portfolio item with the id: '" + id + "'!");
-            }
-        } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return portfolioItemRepository.save(portfolioItem.get());
     }
 
     @PatchMapping("/{id}")
@@ -199,5 +127,9 @@ public class PortfolioItemController {
         this.portfolioItemRepository.save(portfolioItem);
 
         return ResponseEntity.ok(portfolioItem);
+    }
+
+    private Optional<PortfolioItem> findOrThrow(String id) {
+        return portfolioItemRepository.findById(id);
     }
 }
