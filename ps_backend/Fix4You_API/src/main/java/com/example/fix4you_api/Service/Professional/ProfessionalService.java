@@ -17,9 +17,11 @@ public interface ProfessionalService {
 
     Professional getProfessionalById(String id);
 
-    Professional createProfessional(Professional professional, MultipartFile file) throws IOException;
+    Professional createProfessional(Professional professional) throws IOException;
 
-    Professional updateProfessional(String id, Professional professional, MultipartFile file) throws IOException;
+    Professional updateProfessional(String id, Professional professional) throws IOException;
+
+    Professional updateProfessionalImage(String id, byte[] profileImage);
 
     Professional partialUpdateProfessional(String id, Map<String, Object> updates);
 

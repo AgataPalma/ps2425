@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Data.Models.Image;
-import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.PortfolioItem.PortfolioItemService;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
@@ -14,6 +13,7 @@ import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,22 +36,25 @@ public class ProfessionalController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createProfessional(Professional professional,
-                                                @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> createProfessional(@RequestBody ProfessionalRegistrationRequest professionalRegistrationRequest) throws IOException {
         // verify if the email and nif are unique
-        if(userService.emailExists(professional.getEmail())){
+        if(userService.emailExists(professionalRegistrationRequest.getProfessional().getEmail())){
             return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
         }
 
-        if(professionalService.nifExists(professional.getNif())) {
+        if(professionalService.nifExists(professionalRegistrationRequest.getProfessional().getNif())) {
             return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
         }
 
-        Professional createdProfessional = professionalService.createProfessional(professional, file);
+        Professional createdProfessional = professionalService.createProfessional(professionalRegistrationRequest.getProfessional());
+
+        for (var i=0; i < professionalRegistrationRequest.getCategoryDescriptions().size(); i++){
+            CategoryDescription categoryDescription = categoryDescriptionService.createCategoryDescription(professionalRegistrationRequest.getCategoryDescriptions().get(i));
+        }
 
         // send verification email
         //userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
-        return new ResponseEntity<>(createdProfessional, HttpStatus.CREATED);
+        return new ResponseEntity<>(professionalRegistrationRequest, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -85,34 +88,17 @@ public class ProfessionalController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Professional> updateProfessional(@PathVariable String id,
-                                                           Professional professional,
-                                                           @RequestParam("file") MultipartFile file) throws IOException {
+                                                           @RequestBody Professional professional) throws IOException {
 
-        Professional updatedProfessional = professionalService.updateProfessional(id, professional, file);
+        Professional updatedProfessional = professionalService.updateProfessional(id, professional);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 
     @PutMapping("/image/{id}")
-    public ResponseEntity<Professional> updateProfessionalImage(@PathVariable String id,
-                                                           @RequestParam("file") MultipartFile file) throws IOException {
-        Professional professional = professionalService.getProfessionalById(id);
+    public ResponseEntity<Client> updateProfessionalImage(@PathVariable String id,
+                                                    @Validated @RequestParam("profileImage") byte[] profileImage) throws IOException {
 
-        if(!file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            String contentType = file.getContentType();
-            byte[] bytes = file.getBytes();
-
-            Image image = new Image();
-            image.setFilename(fileName);
-            image.setContentType(contentType);
-            image.setBytes(bytes);
-
-            professional.setImage(image);
-        } else {
-            professional.setImage(null);
-        }
-
-        Professional updatedProfessional = professionalService.updateProfessional(id, professional, file);
+        Professional updatedProfessional = professionalService.updateProfessionalImage(id, profileImage);
         return new ResponseEntity<>(updatedProfessional, HttpStatus.OK);
     }
 

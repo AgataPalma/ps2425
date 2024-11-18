@@ -38,6 +38,8 @@ public class Client extends User {
     private float rating;
 
     @Field
-    private Image image;
+    @NotNull(message = "Profile image cannot be null")
+    @Size(max = 1048576, message = "Profile image must be less than 1 MB")
+    private byte[] profileImage;
 
 }
