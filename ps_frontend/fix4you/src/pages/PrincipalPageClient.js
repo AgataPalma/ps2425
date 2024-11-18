@@ -5,15 +5,20 @@ import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
 import { useNavigate } from 'react-router-dom';
+import Select from "react-select";
+import axios from 'axios';
 
 const PrincipalPageClient = ({ id }) => {
     const [professionals, setProfessionals] = useState([]);
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
     const [activeModalDescription, setActiveModalDescription] = useState(null);
-    const [includeTravelCost, setIncludeTravelCost] = useState(false);
+    const [includeTravelCost, setIncludeTravelCost] = useState(null);
     const [languages, setLanguages] = useState([]);
     const [paymentMethods, setPaymentMethods] = useState([]);
-
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [location, setLocation] = useState('');
+    const [locationOptions, setLocationOptions] = useState([]);
     const navigate = useNavigate();
     const [selectedProfessional, setSelectedProfessional] = useState(null);
     const [activeTab, setActiveTab] = useState("information");
@@ -31,21 +36,141 @@ const PrincipalPageClient = ({ id }) => {
         setFilterModalOpen(!isFilterModalOpen);
     };
 
+    const handlePaymentMethodClick = (paymentMethod) => {
+        setPaymentMethods((prevMethods) => {
+            if (prevMethods.includes(paymentMethod)) {
+                return prevMethods.filter((method) => method !== paymentMethod);
+            } else {
+                return [...prevMethods, paymentMethod];
+            }
+        });
+    };
+
+    const handleLanguagesMethodClick = (language) => {
+        setLanguages((prevLanguages) => {
+            if (prevLanguages.includes(language)) {
+                return prevLanguages.filter((lang) => lang !== language);
+            } else {
+                return [...prevLanguages, language];
+            }
+        });
+    };
+
+
+    const handleIncludeTravelCostClick = (value) => {
+        setIncludeTravelCost((prevValue) => (prevValue === value ? null : value));
+    };
+
+
+
     const handleProfessionalClick = (professional) => {
         setSelectedProfessional(professional);
         setActiveTab("information"); // Reset to information tab on open
     };
 
+    const applyFilters = () => {
+        let filterQuery = [];
+
+        // Filtro de Categoria
+        if (selectedCategory) {
+            filterQuery.push(`categoryName=="${selectedCategory.label}"`);
+        }
+
+        // Filtro de Localização
+        if (location) {
+            filterQuery.push(`location=="${location}"`);
+        }
+
+        // Filtro de Preço
+        if (filters.priceRange) {
+            filterQuery.push(`mediumPricePerService<=${filters.priceRange}`);
+        }
+
+        // Filtro de Classificação
+        if (filters.classification) {
+            filterQuery.push(`rating>=${filters.classification}`);
+        }
+
+        // Filtro de Linguagens
+        if (languages.length > 0) {
+            const languageFilters = languages.map((lang) => `languages=="${lang}"`).join(',');
+            filterQuery.push(languageFilters);
+        }
+
+        // Filtro de Formas de Pagamento
+        if (paymentMethods.length > 0) {
+            const paymentFilters = paymentMethods.map((method) => `acceptedPayments=="${method}"`).join(',');
+            filterQuery.push(paymentFilters);
+        }
+
+
+        // Filtro de Custos de Deslocação
+        if (includeTravelCost !== null) {
+            filterQuery.push(`chargesTravels==${includeTravelCost}`);
+        }
+
+
+
+        // Gerar a string da query final
+        const filterString = filterQuery.join(';');
+
+        // Requisição para buscar profissionais com os filtros
+        const fetchFilteredProfessionals = async () => {
+            try {
+                const response = await axiosInstance.get(`/professional-category-views/flattened?filter=${filterString}`);
+                setProfessionals(response.data);  // Atualiza a lista de profissionais com os resultados filtrados
+            } catch (error) {
+                console.error('Erro ao aplicar filtros:', error);
+            }
+        };
+
+        fetchFilteredProfessionals();
+    };
+
+    const fetchData = async () => {
+        try {
+            // Fetch location data
+            const locationResponse = await axios.get('https://json.geoapi.pt/municipios/freguesias');
+            const organizedData = locationResponse.data.map((municipio) => ({
+                label: municipio.nome,
+                options: municipio.freguesias.map((freguesia) => ({
+                    label: freguesia,
+                    value: `${municipio.nome}, ${freguesia}`,
+                })),
+            }));
+            setLocationOptions(organizedData);
+
+            // Fetch categories
+            const categoryResponse = await axiosInstance.get('/categories');
+            const categoryData = categoryResponse.data.map((category) => ({
+                value: category.id,
+                label: category.name,
+            }));
+            setCategories(categoryData);
+
+            // Fetch professionals
+            const professionalsResponse = await axiosInstance.get('/professional-category-views/flattened');
+            setProfessionals(professionalsResponse.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+
     useEffect(() => {
-        axiosInstance.get('/professional-category-views')
-            .then(response => {
-                let filteredProfessionals = response.data;
-                setProfessionals(filteredProfessionals);
-            })
-            .catch(error => {
-                console.error('Error fetching professionals:', error);
-            });
+        fetchData();
     }, []);
+
+
+    const resetFilters = () => {
+        setLocation(null);             // Limpa a seleção de localização
+        setSelectedCategory(null);     // Limpa a categoria selecionada
+        setFilters({ priceRange: '', classification: null }); // Limpa preço e classificação
+        setLanguages([]);              // Limpa as linguagens selecionadas
+        setPaymentMethods([]);         // Limpa as formas de pagamento selecionadas
+        setIncludeTravelCost(false);
+        fetchData();
+    };
 
 
     const handleShowDescription = (description) => {
@@ -56,49 +181,76 @@ const PrincipalPageClient = ({ id }) => {
         <div className="flex flex-col min-h-screen text-black font-sans">
             <div className="bg-gray-800 bg-opacity-15 shadow-lg flex-grow">
                 <br/>
+                {/*FILTROS*/}
                 {isFilterModalOpen && (
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
-                            <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center">Filtrar por</h2>
+                            <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center flex justify-between items-center">
+                                <span>Filtrar por</span>
+                                <a
+                                    onClick={() => {
+                                        resetFilters();  // Reseta todos os filtros
+                                        toggleFilterModal();  // Fecha o modal de filtros
+                                    }}
+                                    className="text-yellow-600 underline text-sm cursor-pointer"
+                                >
+                                    Remover Filtros
+                                </a>
+                            </h2>
+
+
                             <div className="mb-4">
-                                <label className="text-sm font-medium">Localização</label>
-                                <input
-                                    type="text"
-                                    value={filters.location}
-                                    className="w-full p-2 border rounded-lg"
-                                    placeholder="Digite a localização"
+                                <label className="block text-black font-semibold mb-2">Localização *</label>
+                                <Select
+                                    options={locationOptions}
+                                    onChange={(selectedOption) => setLocation(selectedOption.value)}
+                                    placeholder="Selecione a sua freguesia"
+                                    className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            border: 'none',
+                                        }),
+                                    }}
                                 />
                             </div>
 
                             <div className="mb-4">
-                                <label className="text-sm font-medium">Preço</label>
-                                <select
-                                    value={filters.priceRange}
-                                    className="w-full p-2 border rounded-lg"
-                                >
-                                    <option value="">Selecionar</option>
-                                    <option value="LIMPEZA">51-100</option>
-                                    <option value="ENCANAMENTO">100-200</option>
-                                    <option value="LIMPEZA">51-100</option>
-                                    <option value="ENCANAMENTO">100-200</option>
-                                </select>
+                                <label className="block text-black font-semibold mb-2">Categoria *</label>
+                                <Select
+                                    options={categories}
+                                    onChange={(selectedOption) => setSelectedCategory(selectedOption)}
+                                    placeholder="Selecione a categoria"
+                                    className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            border: 'none',
+                                        }),
+                                    }}
+                                />
                             </div>
 
+
                             <div className="mb-4">
-                                <label className="text-sm font-medium">Categoria</label>
-                                <select
-                                    value={filters.category}
-                                    className="w-full p-2 border rounded-lg"
-                                >
-                                    <option value="">Selecione a categoria</option>
-                                    <option value="LIMPEZA">Limpeza</option>
-                                    <option value="ENCANAMENTO">Encanamento</option>
-                                    <option value="ELETRICIDADE">Eletricidade</option>
-                                    <option value="JARDINAGEM">Jardinagem</option>
-                                    <option value="PINTURA">Pintura</option>
-                                    <option value="OUTRO">Outro</option>
-                                </select>
+                                <label className="text-sm font-medium">Intervalo de Preço (€)</label>
+                                <input
+                                    type="number"
+                                    min="5"
+                                    max="500"
+                                    step="5"
+                                    value={filters.priceRange || ''}
+                                    onChange={(e) =>
+                                        setFilters((prev) => ({
+                                            ...prev,
+                                            priceRange: e.target.value
+                                        }))
+                                    }
+                                    placeholder="Digite o valor máximo"
+                                    className="w-full p-2 bg-white bg-opacity-50 focus:outline-none focus:border-black"
+                                />
                             </div>
+
 
                             <div className="mb-4">
                                 <label className="text-sm font-medium">Classificação</label>
@@ -116,54 +268,56 @@ const PrincipalPageClient = ({ id }) => {
                                 </div>
                             </div>
 
+
                             <div className="mt-4">
                                 <h4 className="font-medium">Linguagens</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {['ENGLISH', 'PORTUGUESE', 'SPANISH', 'FRENCH'].map((lang) => (
+                                    {['PORTUGUESE', 'ENGLISH', 'Espanhol', 'Francês'].map((language) => (
                                         <button
-                                            key={lang}
-                                            className={`px-4 py-2 rounded-full ${languages.includes(lang) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                            key={language}
+                                            onClick={() => handleLanguagesMethodClick(language)}
+                                            className={`px-4 py-2 rounded-full ${languages.includes(language) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
                                         >
+                                            {language}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Filtro de Formas de Pagamento */}
                             <div className="mt-4">
                                 <h4 className="font-medium">Formas de Pagamento</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {['CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL', 'CASH', 'BANK_TRANSFER'].map((paymentMethod) => (
+                                    {['Transferencia Bancária', 'CREDIT_CARD', 'CASH'].map((paymentMethod) => (
                                         <button
                                             key={paymentMethod}
+                                            onClick={() => handlePaymentMethodClick(paymentMethod)}
                                             className={`px-4 py-2 rounded-full ${paymentMethods.includes(paymentMethod) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
                                         >
-
+                                            {paymentMethod}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="mb-4 flex items-center justify-between mt-4">
-                                <label className="text-sm font-medium">Custos de Deslocação</label>
-                                <label className="inline-flex items-center cursor-pointer">
-                                    <span className="mr-2">Não</span>
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            checked={includeTravelCost}
-                                            onChange={() => setIncludeTravelCost(!includeTravelCost)}
-                                            className="hidden"
-                                        />
-                                        <div
-                                            className={`toggle-path w-10 h-5 rounded-full transition-all ${includeTravelCost ? 'bg-yellow-600' : 'bg-gray-300'}`}
-                                        ></div>
-                                        <div
-                                            className={`toggle-circle absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-all ${includeTravelCost ? 'translate-x-5' : ''}`}
-                                        ></div>
-                                    </div>
-                                    <span className="ml-2">Sim</span>
-                                </label>
+                            <div className="mt-4">
+                                <h4 className="font-medium">Custos de Deslocação</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {/* Botão "Sim" */}
+                                    <button
+                                        onClick={() => handleIncludeTravelCostClick(true)} // Alterna para true ou null
+                                        className={`px-4 py-2 rounded-full ${includeTravelCost === true ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                    >
+                                        Sim
+                                    </button>
+
+                                    {/* Botão "Não" */}
+                                    <button
+                                        onClick={() => handleIncludeTravelCostClick(false)} // Alterna para false ou null
+                                        className={`px-4 py-2 rounded-full ${includeTravelCost === false ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                    >
+                                        Não
+                                    </button>
+                                </div>
                             </div>
 
 
@@ -175,7 +329,10 @@ const PrincipalPageClient = ({ id }) => {
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={toggleFilterModal}
+                                    onClick={() => {
+                                        applyFilters();
+                                        toggleFilterModal();
+                                    }}
                                     className="px-4 py-2 bg-yellow-600 text-white rounded-lg"
                                 >
                                     Aplicar Filtros
@@ -217,116 +374,123 @@ const PrincipalPageClient = ({ id }) => {
 
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                     {professionals.map((professional) => (
-                        professional.categoryDescriptions.map((categoryDescription, index) => (
-                            <div key={`${professional.id}-${index}`} className="rounded-xl shadow-lg bg-gray-50 p-4">
-                                <div className="flex items-center space-x-4">
-                                    <img
-                                        src={professional.profileImage && professional.profileImage !== "base64EncodedImageString" && professional.profileImage.trim() !== ""
-                                            ? `data:image/png;base64,${professional.profileImage}`
-                                            : user}
-                                        alt="Profile"
-                                        className="w-20 h-20 rounded-full cursor-pointer"
-                                        onClick={() => handleProfessionalClick(professional)}
-                                    />
-                                    <div className="flex-1">
-                                        <h2 className="text-2xl font-bold capitalize cursor-pointer"
-                                            onClick={() => handleProfessionalClick(professional)}>{professional.name}</h2>
-                                        <p className="text-sm font-medium capitalize">{categoryDescription.category}</p>
-                                    </div>
-
-                                    <div className="flex space-x-1">
-                                        {[...Array(5)].map((_, starIndex) => {
-                                            const isFullStar = starIndex < Math.floor(professional.rating);
-                                            const isHalfStar = starIndex === Math.floor(professional.rating) && professional.rating % 1 !== 0;
-
-                                            return (
-                                                <span key={starIndex}>
-                                                    {isFullStar ? (
-                                                        <FaStar className="text-yellow-600 w-6 h-6"/>
-                                                    ) : isHalfStar ? (
-                                                        <FaStarHalfAlt className="text-yellow-600 w-6 h-6"/>
-                                                    ) : (
-                                                        <FaStar className="text-gray-800 w-6 h-6"/>
-                                                    )}
-                                                </span>
-                                            );
-                                        })}
-                                    </div>
+                        <div key={professional.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
+                            <div className="flex items-center space-x-4">
+                                <img
+                                    src={professional.profileImage && professional.profileImage !== "base64EncodedImageString" && professional.profileImage.trim() !== ""
+                                        ? `data:image/png;base64,${professional.profileImage}`
+                                        : user}
+                                    alt="Profile"
+                                    className="w-20 h-20 rounded-full cursor-pointer"
+                                    onClick={() => handleProfessionalClick(professional)}
+                                />
+                                <div className="flex-1">
+                                    <h2 className="text-2xl font-bold capitalize cursor-pointer"
+                                        onClick={() => handleProfessionalClick(professional)}>{professional.name}</h2>
+                                    <p className="text-sm font-medium capitalize">
+                                        {professional.categoryName
+                                            ? professional.categoryName.charAt(0).toUpperCase() + professional.categoryName.slice(1).toLowerCase()
+                                            : 'Categoria não disponível'}
+                                    </p>
                                 </div>
 
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-800">{`€ ${categoryDescription.mediumPricePerService}`}</p>
-                                </div>
+                                <div className="flex space-x-1">
+                                    {[...Array(5)].map((_, starIndex) => {
+                                        const isFullStar = starIndex < Math.floor(professional.rating);
+                                        const isHalfStar = starIndex === Math.floor(professional.rating) && professional.rating % 1 !== 0;
 
-                                <div className="mb-4">
-                                    <p className="text-gray-800 text-sm inline">{professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description}</p>
-                                    {professional.description.length > 100 && (
-                                        <button
-                                            className="text-yellow-600 text-sm inline ml-2"
-                                            onClick={() => handleShowDescription(professional.description)}
-                                        >
-                                            Mostrar mais
-                                        </button>
-                                    )}
+                                        return (
+                                            <span key={starIndex}>
+                            {isFullStar ? (
+                                <FaStar className="text-yellow-600 w-6 h-6"/>
+                            ) : isHalfStar ? (
+                                <FaStarHalfAlt className="text-yellow-600 w-6 h-6"/>
+                            ) : (
+                                <FaStar className="text-gray-800 w-6 h-6"/>
+                            )}
+                        </span>
+                                        );
+                                    })}
                                 </div>
+                            </div>
 
-                                <div className="flex justify-center items-center mb-6 space-x-4 m-4">
-                                    <div
-                                        className={`flex items-center space-x-1 px-3 py-1 rounded-full ${categoryDescription.chargesTravels ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}>
-                                        {categoryDescription.chargesTravels ? (
-                                            <>
-                                                <span className="text-white">✓</span>
-                                                <span>Custos de deslocação</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span className="text-gray-700">✘</span>
-                                                <span>Sem custo de viagem</span>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                            <div className="mt-2">
+                                <p className="text-sm text-gray-800">{`€ ${professional.mediumPricePerService || 'Preço não disponível'}`}</p>
+                            </div>
 
-                                <div className="flex justify-center">
+                            <div className="mt-2">
+                                <p className="text-sm text-gray-800">{`€ ${professional.location || 'Preço não disponível'}`}</p>
+                            </div>
+
+                            <div className="mb-4">
+                                <p className="text-gray-800 text-sm inline">{professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description}</p>
+                                {professional.description.length > 100 && (
                                     <button
-                                        onClick={() => {
-                                            navigate('/RequestServiceToProfessional', {
-                                                state: {
-                                                    professionalId: professional.id,
-                                                    name: professional.name,
-                                                    category: categoryDescription.category,
-                                                    location: professional.location,
-                                                    languages: professional.languages,
-                                                    price: categoryDescription.mediumPricePerService,
-                                                }
-                                            });
-                                        }}
-                                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
-                                        Contactar
+                                        className="text-yellow-600 text-sm inline ml-2"
+                                        onClick={() => handleShowDescription(professional.description)}
+                                    >
+                                        Mostrar mais
                                     </button>
-                                </div>
-
-                                {activeModalDescription && (
-                                    <div
-                                        className="fixed inset-0 bg-gray-800 bg-opacity-15 flex justify-center items-center z-50">
-                                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
-                                            <h2 className="text-2xl font-bold mb-4">Descrição</h2>
-                                            <p className="text-sm">{activeModalDescription}</p>
-                                            <button
-                                                onClick={() => setActiveModalDescription(null)}
-                                                className="mt-4 px-4 py-2 bg-gray-400 text-white rounded-lg"
-                                            >
-                                                Fechar
-                                            </button>
-                                        </div>
-                                    </div>
                                 )}
                             </div>
-                        ))
+
+                            <div className="flex justify-center items-center mb-6 space-x-4 m-4">
+                                <div
+                                    className={`flex items-center space-x-1 px-3 py-1 rounded-full ${professional.chargesTravels ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}>
+                                    {professional.chargesTravels ? (
+                                        <>
+                                            <span className="text-white">✓</span>
+                                            <span>Custos de deslocação</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-gray-700">✘</span>
+                                            <span>Sem custo de viagem</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={() => {
+                                        navigate('/RequestServiceToProfessional', {
+                                            state: {
+                                                professionalId: professional.id,
+                                                name: professional.name,
+                                                category: professional.categoryName,
+                                                location: professional.location,
+                                                languages: professional.languages,
+                                                price: professional.mediumPricePerService,
+                                            }
+                                        });
+                                    }}
+                                    className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
+                                    Contactar
+                                </button>
+                            </div>
+
+                            {activeModalDescription && (
+                                <div
+                                    className="fixed inset-0 bg-gray-800 bg-opacity-15 flex justify-center items-center z-50">
+                                    <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
+                                        <h2 className="text-2xl font-bold mb-4">Descrição</h2>
+                                        <p className="text-sm">{activeModalDescription}</p>
+                                        <button
+                                            onClick={() => setActiveModalDescription(null)}
+                                            className="mt-4 px-4 py-2 bg-gray-400 text-white rounded-lg"
+                                        >
+                                            Fechar
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     ))}
+
                     {selectedProfessional && (
                         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
                                 <div className="flex justify-between items-center mb-4">
                                     {/* Professional's profile picture and name */}
                                     <div className="flex items-center space-x-4">

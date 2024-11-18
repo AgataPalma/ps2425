@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../custom-datepicker.css";
 import axios from "axios";
-import {useLocation, useNavigate} from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ScheduleAppointments({ id }) {
     const navigate = useNavigate();
@@ -13,9 +13,10 @@ function ScheduleAppointments({ id }) {
     const location = useLocation();
     const state = 0;
     const queryParams = new URLSearchParams(location.search);
-    const clientId = queryParams.get('clientId');
-    const professionalId = queryParams.get('professionalId');
-    const serviceId = queryParams.get('serviceId');
+    const clientId = queryParams.get("clientId");
+    const professionalId = queryParams.get("professionalId");
+    const serviceId = queryParams.get("serviceId");
+    const [showModal, setShowModal] = useState(false);
 
     const timeSlots = [
         "06:00 - 07:00",
@@ -46,6 +47,11 @@ function ScheduleAppointments({ id }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!selectedTimeSlot) {
+            setShowModal(true); // Exibe o modal
+            return;
+        }
+
         const [startHour, endHour] = selectedTimeSlot.split(" - ").map((time) => parseInt(time));
 
         const dateStart = new Date(selectedDate);
@@ -60,7 +66,7 @@ function ScheduleAppointments({ id }) {
             dateStart: dateStart.toISOString(),
             dateFinish: dateFinish.toISOString(),
             state,
-            serviceId
+            serviceId,
         };
 
         try {
@@ -82,13 +88,38 @@ function ScheduleAppointments({ id }) {
         }
     };
 
+    const isPastTimeSlot = (slot) => {
+        const [startHour] = slot.split(" - ").map((time) => parseInt(time));
+        const now = new Date();
+
+        if (selectedDate.toDateString() === now.toDateString()) {
+            return startHour <= now.getHours();
+        }
+        return false;
+    };
+
     return (
         <div className="h-screen bg-gray-200 text-black font-sans flex flex-col">
             <main className="flex-grow bg-gray-800 bg-opacity-10 flex items-center justify-center">
                 <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                     <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Agendar Serviço</h2>
-                    <form onSubmit={handleSubmit}>
 
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                                <h3 className="text-xl font-bold mb-4">Erro</h3>
+                                <p>Por favor, selecione um horário antes de agendar.</p>
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="mt-4 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                                >
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-6">
                             <label className="block text-gray-700 font-medium mb-2">Data</label>
                             <DatePicker
@@ -97,6 +128,7 @@ function ScheduleAppointments({ id }) {
                                 dateFormat="dd/MM/yyyy"
                                 className="w-full p-2 border border-gray-300 rounded"
                                 placeholderText="Selecione a data"
+                                minDate={new Date()} // Block past dates
                             />
                         </div>
 
@@ -108,10 +140,13 @@ function ScheduleAppointments({ id }) {
                                         key={index}
                                         type="button"
                                         onClick={() => handleTimeSlotSelect(slot)}
+                                        disabled={isPastTimeSlot(slot)} // Disable past time slots
                                         className={`py-2 px-4 rounded-lg border ${
                                             selectedTimeSlot === slot
-                                                ? "bg-yellow-600  text-white"
-                                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                                ? "bg-yellow-600 text-white"
+                                                : isPastTimeSlot(slot)
+                                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                                         } transition duration-200`}
                                     >
                                         {slot}
@@ -135,5 +170,3 @@ function ScheduleAppointments({ id }) {
 }
 
 export default ScheduleAppointments;
-
-
