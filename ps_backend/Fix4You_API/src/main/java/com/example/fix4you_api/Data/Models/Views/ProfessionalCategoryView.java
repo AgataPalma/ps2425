@@ -25,7 +25,7 @@ public class ProfessionalCategoryView {
     private String description;
     private String nif;
     private List<Language> languages;
-    private Integer locationsRange;
+    //private Integer locationsRange;
     private List<PaymentMethod> acceptedPayments;
     private Float rating;
     private List<CategoryDescription> categoryDescriptions;

@@ -25,7 +25,8 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
-    public Client createClient(Client client) throws IOException {
+    public Client createClient(Client client) {
+        client.setUserType(EnumUserType.CLIENT);
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         client.setRating(0);
@@ -45,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public Client updateClient(String id, Client client) throws IOException {
+    public Client updateClient(String id, Client client) {
         Client existingClient = findOrThrow(id);
 
         BeanUtils.copyProperties(client, existingClient, "id","rating");

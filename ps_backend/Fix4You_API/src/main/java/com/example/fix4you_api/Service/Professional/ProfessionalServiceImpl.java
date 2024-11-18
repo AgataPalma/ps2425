@@ -100,7 +100,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                         professional.getDescription(),
                         professional.getNif(),
                         professional.getLanguages(),
-                        professional.getLocationsRange(),
+                        //professional.getLocationsRange(),
                         professional.getAcceptedPayments(),
                         categoriesProfessional,
                         portfolioItems,
@@ -119,7 +119,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public Professional createProfessional(Professional professional) throws IOException {
+    public Professional createProfessional(Professional professional) {
+        professional.setUserType(EnumUserType.PROFESSIONAL);
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
@@ -131,7 +132,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
     @Override
     @Transactional
-    public Professional updateProfessional(String id, Professional professional) throws IOException {
+    public Professional updateProfessional(String id, Professional professional) {
 
         Professional existingProfessional = findOrThrow(id);
         existingProfessional.setEmail(professional.getEmail());
@@ -144,7 +145,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         existingProfessional.setDescription(professional.getDescription());
         existingProfessional.setNif(professional.getNif());
         existingProfessional.setLocation(professional.getLocation());
-        existingProfessional.setLocationsRange(professional.getLocationsRange());
+        //existingProfessional.setLocationsRange(professional.getLocationsRange());
         existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
         existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
         existingProfessional.setProfileImage(professional.getProfileImage());
@@ -175,7 +176,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "languages" -> professional.setLanguages((List<Language>) value);
                 case "description" -> professional.setDescription((String) value);
                 case "location" -> professional.setLocation((String) value);
-                case "locationsRange" -> professional.setLocationsRange((Integer) value);
+                //case "locationsRange" -> professional.setLocationsRange((Integer) value);
                 case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentMethod>) value);
                 case "strikes" -> professional.setStrikes((Integer) value);
                 case "isSupended" -> professional.setSupended((boolean) value);

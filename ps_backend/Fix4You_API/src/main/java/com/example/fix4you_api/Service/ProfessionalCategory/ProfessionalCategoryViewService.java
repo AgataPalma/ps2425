@@ -68,7 +68,7 @@ public class ProfessionalCategoryViewService {
                 .and("description").as("description")
                 .and("nif").as("nif")
                 .and("languages").as("languages")
-                .and("locationsRange").as("locationsRange")
+                //.and("locationsRange").as("locationsRange")
                 .and("acceptedPayments").as("acceptedPayments")
                 .and("rating").as("rating")
                 .and("categoryDescriptions").as("categoryDescriptions");
@@ -111,7 +111,7 @@ public class ProfessionalCategoryViewService {
         return view.getCategoryDescriptions().stream()
                 .map(cd -> new FlattenedProfessionalCategoryView(view.getId(), view.getEmail(), view.getDateCreation(), view.getUserType(),
                         view.getName(), view.getPhoneNumber(), view.getLocation(), view.getProfileImage(), view.getDescription(),
-                        view.getNif(), view.getLanguages(), view.getLocationsRange(), view.getAcceptedPayments(), view.getRating(),
+                        view.getNif(), view.getLanguages() /*, view.getLocationsRange()*/, view.getAcceptedPayments(), view.getRating(),
                         cd.getCategory().getId(), cd.getCategory().getName(), cd.getChargesTravels(), cd.getProvidesInvoices(),
                         cd.getMediumPricePerService()))
                 .toList();

@@ -29,9 +29,9 @@ public class Professional extends Client {
     @NotNull(message = "Languages cannot be null")
     private List<Language> languages;
 
-    @Field
-    @NotNull(message = "Locations range cannot be null")
-    private int locationsRange;
+    //@Field
+    //@NotNull(message = "Locations range cannot be null")
+    //private int locationsRange;
 
     @Field
     @NotNull(message = "Accepted payments cannot be null")

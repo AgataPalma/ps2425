@@ -44,6 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+        user.setUserType(EnumUserType.ADMIN);
+        user.setDateCreation(LocalDateTime.now());
+        user.setIsEmailConfirmed(true);
         return userRepository.save(user);
     }
 

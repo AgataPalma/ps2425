@@ -24,7 +24,7 @@ public class ProfessionalData {
     private String description;
     private String nif;
     private List<Language> languages;
-    private int locationsRange;
+    //private int locationsRange;
     private List<PaymentMethod> acceptedPayments;
     private List<CategoryDescription> categories;
     private List<PortfolioItem> portfolioItems;

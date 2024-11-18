@@ -25,7 +25,7 @@ public class FlattenedProfessionalCategoryView {
     private String description;
     private String nif;
     private List<Language> languages;
-    private Integer locationsRange;
+    //private Integer locationsRange;
     private List<PaymentMethod> acceptedPayments;
     private Float rating;
     
