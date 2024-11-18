@@ -118,7 +118,7 @@ const NotificationsProfessional = () => {
                         ))}
                     </ul>
                 )}
-
+                <br></br>
                 {/* Notificações de serviços */}
                 <h2 className="text-xl font-semibold mb-4">Notificações de Serviço</h2>
                 {notificacoesServicos.length === 0 ? (

@@ -55,10 +55,10 @@ const Home = () => {
               ].map((stat, index) => (
                 <div
                   key={index}
-                  className="p-6 rounded-lg shadow-lg bg-white hover:shadow-xl transition"
+                  className="p-6 rounded-lg shadow-lg bg-gray-800 hover:shadow-xl transition"
                 >
-                  <h3 className="text-3xl font-bold text-gray-800">{stat.label}</h3>
-                  <p className="mt-4 text-gray-600">{stat.description}</p>
+                  <h3 className="text-3xl font-bold text-white">{stat.label}</h3>
+                  <p className="mt-4 text-white">{stat.description}</p>
                 </div>
               ))}
             </div>

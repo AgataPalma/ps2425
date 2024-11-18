@@ -21,6 +21,10 @@ const RegisterProfessional = () => {
   const [acceptedPayments, setAcceptedPayments] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Estados para opções dinâmicas
+  const [languageOptions, setLanguageOptions] = useState([]);
+  const [paymentOptions, setPaymentOptions] = useState([]);
+
   // Estado para a imagem de perfil
   const [selectedImage, setSelectedImage] = useState(null);
   const [profileImage, setProfileImage] = useState(''); // Armazena a imagem em Base64
@@ -28,7 +32,6 @@ const RegisterProfessional = () => {
   // Estado para as opções de localização
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [editMode, setEditMode] = useState(true); // Para alternar entre visualização e edição
 
   // Estado para as categorias (áreas de trabalho)
   const [categories, setCategories] = useState([]);
@@ -37,15 +40,47 @@ const RegisterProfessional = () => {
   // Estado para detalhes adicionais dos serviços selecionados
   const [serviceDetails, setServiceDetails] = useState({});
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
+
   // Buscar categorias da API ao montar o componente
   useEffect(() => {
-    fetch('http://localhost:8080/categoryDescriptions')
+    fetch('http://localhost:8080/categories')
       .then((response) => response.json())
       .then((data) => {
-        const uniqueCategories = Array.from(new Set(data.map((item) => item.category)));
-        setCategories(uniqueCategories);
+        setCategories(data); // Onde data é um array de objetos { id, name }
       })
       .catch((error) => console.error('Erro ao buscar categorias:', error));
+  }, []);
+
+  // Buscar idiomas da API
+  useEffect(() => {
+    fetch('http://localhost:8080/languages')
+      .then((response) => response.json())
+      .then((data) => {
+        const options = data.map((language) => ({
+          value: language.id,
+          label: language.name,
+        }));
+        setLanguageOptions(options);
+      })
+      .catch((error) => console.error('Erro ao buscar idiomas:', error));
+  }, []);
+
+  // Buscar métodos de pagamento da API
+  useEffect(() => {
+    fetch('http://localhost:8080/paymentMethods')
+      .then((response) => response.json())
+      .then((data) => {
+        const options = data.map((method) => ({
+          value: method.id,
+          label: method.name,
+        }));
+        setPaymentOptions(options);
+      })
+      .catch((error) => console.error('Erro ao buscar métodos de pagamento:', error));
   }, []);
 
   // Buscar dados de localização ao montar o componente
@@ -68,22 +103,6 @@ const RegisterProfessional = () => {
 
     fetchLocationData();
   }, []);
-
-  // Opções para idiomas
-  const languageOptions = [
-    { value: 'PORTUGUESE', label: 'Português' },
-    { value: 'ENGLISH', label: 'Inglês' },
-    // Adicione outros idiomas conforme necessário
-  ];
-
-  // Opções para métodos de pagamento aceitos
-  const paymentOptions = [
-    { value: 'CASH', label: 'Dinheiro' },
-    { value: 'CARD', label: 'Cartão' },
-    { value: 'MBWAY', label: 'MBWAY' },
-    { value: 'TRANSFER', label: 'Transferência' },
-    // Adicione outros métodos de pagamento conforme necessário
-  ];
 
   const handleLocationChange = (selectedOption) => {
     setSelectedLocation(selectedOption.value);
@@ -131,7 +150,6 @@ const RegisterProfessional = () => {
   const handleNifChange = (e) => {
     const nifValue = e.target.value;
     setNif(nifValue);
-    // Removido o determineIsCompany, já que o NIF não pode começar com 5
   };
 
   const handleSubmit = async (event) => {
@@ -160,70 +178,79 @@ const RegisterProfessional = () => {
       userType: 'PROFESSIONAL',
       name: name,
       phoneNumber: phoneNumber,
-      location: selectedLocation,
-      profileImage: profileImage || null, // Envia null se não houver imagem
+      location: selectedLocation || '',
       ageValidation: true,
+      rating: 0,
+      profileImage: profileImage || null,
       description: description,
       nif: nif,
-      languages: languages,
-      locationsRange: locationsRange,
-      acceptedPayments: acceptedPayments,
+      languages: languages.map((id) => {
+        const languageOption = languageOptions.find((option) => option.value === id);
+        return { id: id, name: languageOption ? languageOption.label : '' };
+      }),
+      acceptedPayments: acceptedPayments.map((id) => {
+        const paymentOption = paymentOptions.find((option) => option.value === id);
+        return { id: id, name: paymentOption ? paymentOption.label : '' };
+      }),
       strikes: 0,
-      IsEmailConfirmed: false,
-      rating: 0,
-      // Não incluímos os serviços aqui, pois serão enviados separadamente
-    };
-
-    // Construir o array de categoryDescriptions
-    const categoryDescriptions = Object.keys(selectedServices)
-      .filter((category) => selectedServices[category])
-      .map((category) => {
-        return {
-          category: category,
-          chargesTravels: serviceDetails[category]?.chargesTravels || false,
-          providesInvoices: serviceDetails[category]?.providesInvoices || false,
-          mediumPricePerService: serviceDetails[category]?.mediumPricePerService || 0,
-        };
-      });
-
-    // Construir o requestBody conforme esperado pelo backend
-    const requestBody = {
-      professional: professional,
-      categoryDescriptions: categoryDescriptions,
+      supended: false, // Verifique se o campo correto é 'supended' ou 'suspended'
+      isEmailConfirmed: false,
     };
 
     try {
-      // Enviar a requisição para criar o profissional
-      const response = await fetch('http://localhost:8080/professionals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
+      // Enviar a requisição para criar o profissional (sem encapsulamento)
+      const response = await axios.post('http://localhost:8080/professionals', professional);
 
-      if (response.ok) {
-        // registo bem-sucedido
+      if (response.status === 201 || response.status === 200) {
+        const createdProfessional = response.data;
+        const professionalId = createdProfessional.id; // Capturar o ID do profissional criado
+
+        // Chamar função para enviar categoryDescriptions com o professionalId
+        await createCategoryDescriptions(professionalId);
+
         alert('Conta criada com sucesso!');
         navigate('/Login');
       } else {
-        let errorMessage = 'Ocorreu um erro durante o registo.';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-        } catch (parseError) {
-          // Resposta não é JSON
-          const errorText = await response.text();
-          errorMessage = errorText || errorMessage;
-        }
-        console.error('Erro:', errorMessage);
-        setErrorMessage(`Erro: ${errorMessage}`);
+        setErrorMessage('Erro ao criar o profissional. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro:', error);
-      setErrorMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
+      console.error('Erro ao criar o profissional:', error);
+      setErrorMessage('Erro ao criar o profissional. Por favor, tente novamente.');
     }
   };
+
+  const createCategoryDescriptions = async (professionalId) => {
+    // Construir o array de categoryDescriptions
+    const categoryDescriptionsArray = categories
+      .filter((category) => selectedServices[category.name])
+      .map((category) => {
+        return {
+          professionalId: professionalId,
+          category: {
+            id: category.id,
+            name: category.name,
+          },
+          chargesTravels: serviceDetails[category.name]?.chargesTravels || false,
+          providesInvoices: serviceDetails[category.name]?.providesInvoices || false,
+          mediumPricePerService: serviceDetails[category.name]?.mediumPricePerService || 0,
+        };
+      });
+
+    // Enviar cada categoryDescription individualmente
+    for (const categoryDescription of categoryDescriptionsArray) {
+      try {
+        await axios.post('http://localhost:8080/categoryDescriptions', categoryDescription, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      } catch (error) {
+        console.error('Erro ao criar categoryDescription:', error);
+        setErrorMessage('Erro ao criar as áreas de trabalho. Por favor, tente novamente.');
+      }
+    }
+  };
+
 
   return (
     <div className="bg-gray-200">
@@ -467,20 +494,16 @@ const RegisterProfessional = () => {
                 {/* Localização */}
                 <div className="sm:col-span-6">
                   <h3 className="block text-sm font-medium leading-6 text-gray-900">Localização</h3>
-                  {editMode ? (
-                    <Select
-                      options={locationOptions}
-                      onChange={handleLocationChange}
-                      placeholder="Selecione a freguesia"
-                      value={locationOptions
-                        .flatMap((option) => option.options)
-                        .find((option) => option.value === selectedLocation)
-                      }
-                      className="mt-2"
-                    />
-                  ) : (
-                    <p className="text-gray-600">{selectedLocation || "Sem localização definida"}</p>
-                  )}
+                  <Select
+                    options={locationOptions}
+                    onChange={handleLocationChange}
+                    placeholder="Selecione a freguesia"
+                    value={locationOptions
+                      .flatMap((option) => option.options)
+                      .find((option) => option.value === selectedLocation)
+                    }
+                    className="mt-2"
+                  />
                 </div>
 
                 {/* Distância de Atuação (locationsRange) 
@@ -518,52 +541,61 @@ const RegisterProfessional = () => {
                 <fieldset>
                   <div className="mt-6 space-y-6">
                     {categories.map((category) => (
-                      <div key={category}>
+                      <div key={category.id}>
                         <div className="relative flex gap-x-3">
                           <div className="flex h-6 items-center">
                             <input
-                              id={category}
-                              name={category}
+                              id={category.id}
+                              name={category.name}
                               type="checkbox"
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                               onChange={handleCheckboxChange}
                             />
                           </div>
                           <div className="text-sm leading-6">
-                            <label htmlFor={category} className="font-medium text-gray-900">
-                              {category}
+                            <label htmlFor={category.id} className="font-medium text-gray-900">
+                              {capitalizeFirstLetter(category.name)}
                             </label>
                           </div>
                         </div>
-                        {selectedServices[category] && (
+                        {selectedServices[category.name] && (
                           <div className="ml-6">
+                            {/* Detalhes adicionais */}
                             <div>
                               <label className="block text-sm font-medium text-gray-900">Passa Fatura?</label>
                               <input
                                 type="checkbox"
-                                name={`${category}-fatura`}
+                                name={`${category.name}-fatura`}
                                 className="h-4 w-4 text-indigo-600"
-                                onChange={(e) => handleServiceDetailChange(category, 'providesInvoices', e.target.checked)}
+                                onChange={(e) =>
+                                  handleServiceDetailChange(category.name, 'providesInvoices', e.target.checked)
+                                }
                               />
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-900">Cobra por Deslocação?</label>
                               <input
                                 type="checkbox"
-                                name={`${category}-deslocacao`}
+                                name={`${category.name}-deslocacao`}
                                 className="h-4 w-4 text-indigo-600"
-                                onChange={(e) => handleServiceDetailChange(category, 'chargesTravels', e.target.checked)}
+                                onChange={(e) =>
+                                  handleServiceDetailChange(category.name, 'chargesTravels', e.target.checked)
+                                }
                               />
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-900">Preço Médio</label>
                               <input
                                 type="number"
-                                name={`${category}-preco`}
+                                name={`${category.name}-preco`}
                                 className="block w-20 rounded-md border-0 py-1.5 text-gray-900 shadow-sm
-                                           ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 pl-3 pr-1"
+                       ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 pl-3 pr-1"
                                 onChange={(e) =>
-                                  handleServiceDetailChange(category, 'mediumPricePerService', parseFloat(e.target.value))
+                                  handleServiceDetailChange(
+                                    category.name,
+                                    'mediumPricePerService',
+                                    parseFloat(e.target.value)
+                                  )
                                 }
                               />
                             </div>
@@ -571,6 +603,7 @@ const RegisterProfessional = () => {
                         )}
                       </div>
                     ))}
+
                   </div>
                 </fieldset>
               </div>
