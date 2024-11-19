@@ -30,9 +30,9 @@ public class CategoryDescription {
     @NotNull(message = "Charges travels cannot be null")
     private boolean chargesTravels;
 
-    @Field
-    @NotNull(message = "Provides invoices cannot be null")
-    private boolean providesInvoices;
+    //@Field
+    //@NotNull(message = "Provides invoices cannot be null")
+    //private boolean providesInvoices;
 
     @Field
     @NotNull(message = "Medium price per service cannot be null")

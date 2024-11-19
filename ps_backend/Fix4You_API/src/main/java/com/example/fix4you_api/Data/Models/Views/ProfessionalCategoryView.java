@@ -33,7 +33,7 @@ public class ProfessionalCategoryView {
     @Data
     public static class CategoryDescription {
         private Boolean chargesTravels;
-        private Boolean providesInvoices;
+        //private Boolean providesInvoices;
         private Float mediumPricePerService;
         private Category category;
 
