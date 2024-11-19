@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/portfolioItems/*").permitAll()
                         .requestMatchers("/portfolioItems/user/*").permitAll()
                         .requestMatchers("/professionalFees").permitAll()
-                        .requestMatchers("/professionalFees/*").permitAll()
+                        .requestMatchers("/professionalFees/**").permitAll()
                         .requestMatchers("/professionalFees/user/*").permitAll()
                         .requestMatchers("/professionalFees/*/pay").permitAll()
                         .requestMatchers("/services").permitAll()
