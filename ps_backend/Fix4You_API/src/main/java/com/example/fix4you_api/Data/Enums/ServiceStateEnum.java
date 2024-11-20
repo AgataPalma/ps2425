@@ -5,5 +5,5 @@ public enum ServiceStateEnum {
     IN_PROGRESS,
     ACCEPTED,
     COMPLETED,
-    CANCELLED
+    CANCELED
 }

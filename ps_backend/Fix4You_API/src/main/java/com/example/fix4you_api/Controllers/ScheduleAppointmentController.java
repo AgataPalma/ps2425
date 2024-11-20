@@ -106,7 +106,7 @@ public class ScheduleAppointmentController {
     @PutMapping("/disapprove/{id}")
     public ResponseEntity<?> disapproveScheduleAppointment(@PathVariable("id") String id) {
         try {
-            scheduleAppointmentServiceImpl.updateScheduleAppointmentState(id, ScheduleStateEnum.CANCELLED);
+            scheduleAppointmentServiceImpl.updateScheduleAppointmentState(id, ScheduleStateEnum.CANCELED);
 
             Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
 
