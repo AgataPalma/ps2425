@@ -9,4 +9,5 @@ import java.util.List;
 public interface ScheduleAppointmentService {
     List<ScheduleAppointment> getScheduleAppointmentsByServiceIdAndStateAndDateFinishBetween(String serviceId, ScheduleStateEnum state, LocalDateTime startDate, LocalDateTime endDate);
     void deleteScheduleAppointment(String serviceId);
+    void updateScheduleAppointmentState(String id, ScheduleStateEnum state);
 }

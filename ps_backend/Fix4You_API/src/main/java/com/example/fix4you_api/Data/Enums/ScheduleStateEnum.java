@@ -3,7 +3,7 @@ package com.example.fix4you_api.Data.Enums;
 public enum ScheduleStateEnum {
     PENDING,
     CONFIRMED,
-    CANCELED,
+    CANCELLED,
     COMPLETED,
     RESCHEDULED,
     AWAITING_CONFIRMATION,
