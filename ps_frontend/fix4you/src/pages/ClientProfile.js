@@ -80,7 +80,7 @@ function ClientProfile({ id }) {
 
     const handleCancel = () => {
         setEditMode(false);
-        
+
         const profileImage = profileData.profileImage.includes('http')
             ? profileData.profileImage
             : atob(profileData.profileImage);

@@ -10,8 +10,10 @@ function ClientRequests({ id }) {
     useEffect(() => {
         axiosInstance.get(`/services/client/${id}`)
             .then(response => {
-                // Filter out completed requests
-                const nonCompletedRequests = response.data.filter(request => request.status.toLowerCase() !== 'completed');
+                const data = Array.isArray(response.data) ? response.data : [response.data];
+                const nonCompletedRequests = data.filter(
+                    request => !['completed', 'canceled'].includes(request.state.toLowerCase())
+                );
                 setRequests(nonCompletedRequests);
                 setFilteredRequests(nonCompletedRequests);
                 setLoading(false);
@@ -28,13 +30,10 @@ function ClientRequests({ id }) {
         if (status === '') {
             setFilteredRequests(requests);
         } else {
-            setFilteredRequests(requests.filter(request => request.status.toLowerCase() === status));
+            setFilteredRequests(requests.filter(request => request.state.toLowerCase() === status));
         }
     };
 
-    const handleWriteReview = (requestId) => {
-        console.log(`Review: ${requestId}`);
-    };
 
     const handleConfirmCompletion = (requestId) => {
         console.log(`Completado: ${requestId}`);
@@ -62,8 +61,6 @@ function ClientRequests({ id }) {
                     <option value="">Estados</option>
                     <option value="pending">Pendente</option>
                     <option value="accepted">Aceite</option>
-                    <option value="canceled">Cancelado</option>
-                    <option value="refused">Recusado</option>
                 </select>
             </div>
             <div className="space-y-6">
@@ -71,19 +68,13 @@ function ClientRequests({ id }) {
                     filteredRequests.map(request => (
                         <div key={request.id} className="p-4 bg-gray-100 rounded-lg shadow-md">
                             <h3 className="text-xl font-bold text-gray-800 mb-2">{request.serviceName}</h3>
-                            <p className="text-gray-600">Category: {request.category}</p>
+                            <p className="text-gray-600">Category: {request.category.name}</p>
                             <p className="text-gray-600">Date: {new Date(request.date).toLocaleDateString()}</p>
                             <p className="text-gray-600">Price: ${request.price}</p>
-                            <p className="text-gray-600">Status: {request.status}</p>
-                            {request.status === 'completed' && (
-                                <button
-                                    onClick={() => handleWriteReview(request.id)}
-                                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
-                                >
-                                    Write Review
-                                </button>
-                            )}
-                            {request.status === 'ACCEPTED' && (
+                            <p className="text-gray-600">State: {request.state}</p>
+                            <p className="text-gray-600">Languages: {request.languages.map(lang => lang.name).join(', ')}</p>
+
+                            {request.state.toLowerCase() === 'accepted' && (
                                 <div className="mt-4 space-x-4">
                                     <button
                                         onClick={() => handleConfirmCompletion(request.id)}
@@ -99,6 +90,7 @@ function ClientRequests({ id }) {
                                     </button>
                                 </div>
                             )}
+
                         </div>
                     ))
                 ) : (
