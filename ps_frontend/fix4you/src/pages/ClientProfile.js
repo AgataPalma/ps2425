@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
+import axiosInstance from "../components/axiosInstance";
 
 function ClientProfile({ id }) {
     const [profileData, setProfileData] = useState(null);
@@ -21,7 +22,8 @@ function ClientProfile({ id }) {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/clients/${id}`);
+                const response = await axiosInstance.get(`/clients/${id}`);
+
                 let profileImage = atob(response.data.profileImage);
 
                 if (!profileImage) {
@@ -70,9 +72,6 @@ function ClientProfile({ id }) {
         fetchProfileData();
         generateAvatarList();
 
-        axios.get('http://localhost:8080/avatar/list')
-            .then(response => setAvatarList(response.data))
-            .catch(error => console.error('Error fetching avatar list:', error));
     }, [id]);
 
     const handleEdit = () => {
@@ -81,8 +80,7 @@ function ClientProfile({ id }) {
 
     const handleCancel = () => {
         setEditMode(false);
-
-        // Decode profile image if it’s in byte format, otherwise use as-is
+        
         const profileImage = profileData.profileImage.includes('http')
             ? profileData.profileImage
             : atob(profileData.profileImage);
@@ -107,7 +105,7 @@ function ClientProfile({ id }) {
             formDataToSend.password = profileData.password;
         }
 
-        axios.put(`http://localhost:8080/clients/${id}`, formDataToSend)
+        axiosInstance.put(`/clients/${id}`, formDataToSend)
             .then(response => {
                 const updatedProfileData = {
                     ...response.data,
@@ -137,7 +135,7 @@ function ClientProfile({ id }) {
     };
 
     const confirmDeleteAccount = () => {
-        axios.delete(`http://localhost:8080/clients/${id}`)
+        axiosInstance.delete(`/clients/${id}`)
             .then(() => {
                 //setSuccessMessage("Account successfully deleted!");
                 setShowConfirmDeleteModal(false); // Close confirmation modal
