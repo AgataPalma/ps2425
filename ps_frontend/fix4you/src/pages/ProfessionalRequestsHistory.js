@@ -10,6 +10,7 @@ function ProfessionalRequestsHistory({ id }) {
     const [loading, setLoading] = useState(true);
     const [scheduleAppointments, setScheduleAppointments] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const [clientDetails, setClientDetails] = useState({}); // Fix: Add clientDetails state
     const [reviews, setReviews] = useState({});
     const [activeModalTab, setActiveModalTab] = useState('details');
     const [review, setReview] = useState({ classification: 0, reviewDescription: '' });
@@ -42,7 +43,19 @@ function ProfessionalRequestsHistory({ id }) {
                     }
                 });
                 setReviews(reviewMap);
-                console.log("Mapped Reviews:", reviewMap);
+
+                const acceptedRequests = servicesResponse.data.filter(
+                    (request) => request.state === "ACCEPTED"
+                );
+                const clientDetailsMap = {};
+                for (const request of acceptedRequests) {
+                    if (request.clientId) {
+                        const clientResponse = await axiosInstance.get(`/clients/${request.clientId}`);
+                        clientDetailsMap[request.clientId] = clientResponse.data;
+                    }
+                }
+                setClientDetails(clientDetailsMap);
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -51,6 +64,8 @@ function ProfessionalRequestsHistory({ id }) {
         };
         fetchData();
     }, [id]);
+
+
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -61,9 +76,10 @@ function ProfessionalRequestsHistory({ id }) {
         setSelectedCategory('');
     };
 
-    const handleViewDetails = (request) => {
+    const handleViewDetails = async (request) => {
         setSelectedRequest(request);
         setActiveModalTab('details');
+
     };
 
     const handleCloseModal = () => {
@@ -172,11 +188,12 @@ function ProfessionalRequestsHistory({ id }) {
                         <div key={request.id} className="p-4 bg-gray-100 rounded-lg shadow-md flex justify-between">
                             <div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">{request.title}</h3>
-                                {/*<p className="text-gray-600">Categoria: {request.category?.name || "Unknown"}</p>*/}
-                                {/*<p className="text-gray-600">Data: {new Date(request.date).toLocaleDateString()}</p>*/}
                                 <p className="text-gray-600">Preço por hora: ${request.price}</p>
                                 <p className="text-gray-600">Estado: {request.state}</p>
                                 <p className="text-gray-600">Estado da marcação: {getAppointmentState(request.id)}</p>
+                                {request.state === "ACCEPTED" && clientDetails[request.clientId] && (
+                                    <p className="text-gray-600">Contacto: {clientDetails[request.clientId].phoneNumber}</p>
+                                )}
                             </div>
                             <div className="flex flex-col items-end space-y-2">
                                 {request.state === 'COMPLETED' && !reviews[request.id] && (

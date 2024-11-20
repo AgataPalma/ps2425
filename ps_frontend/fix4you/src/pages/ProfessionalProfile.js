@@ -167,7 +167,10 @@ function ProfessionalProfile({ id }) {
     const handleCategorySelection = (selectedOption) => {
         setNewCategoryData({
             ...newCategoryData,
-            category: selectedOption.value,
+            category: {
+                id: selectedOption.value,
+                name: selectedOption.label,
+            },
         });
     };
 
@@ -192,7 +195,7 @@ function ProfessionalProfile({ id }) {
                         chargesTravels: false,
                     });
 
-                    window.location.href = '/professional-profile'
+                    window.location.href = '/ProfessionalProfile'
                 })
                 .catch(error => {
                     console.error('Error adding new category:', error);
@@ -204,6 +207,7 @@ function ProfessionalProfile({ id }) {
             setTimeout(() => setErrorMessage(''), 3000);
         }
     };
+
 
     const handleDeleteCategory = (categoryId) => {
         setSelectedCategoryId(categoryId);
