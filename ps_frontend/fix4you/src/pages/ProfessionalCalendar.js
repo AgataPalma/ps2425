@@ -78,9 +78,9 @@ function ProfessionalCalendar({ id }) {
             setIsErrorModal(true);
         }
     };
-    
+
     const handleCancel = (appointmentId) => {
-        axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`)
+        axiosInstance.put(`/scheduleAppointments/disapprove/${appointmentId}`)
             .then(() => {
                 setAppointments(appointments.filter(app => app.id !== appointmentId));
                 setRefuseModalVisible(true);
