@@ -231,7 +231,6 @@ const RegisterProfessional = () => {
             name: category.name,
           },
           chargesTravels: serviceDetails[category.name]?.chargesTravels || false,
-          providesInvoices: serviceDetails[category.name]?.providesInvoices || false,
           mediumPricePerService: serviceDetails[category.name]?.mediumPricePerService || 0,
         };
       });
@@ -250,6 +249,7 @@ const RegisterProfessional = () => {
       }
     }
   };
+
 
 
   return (
@@ -562,17 +562,6 @@ const RegisterProfessional = () => {
                           <div className="ml-6">
                             {/* Detalhes adicionais */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-900">Passa Fatura?</label>
-                              <input
-                                type="checkbox"
-                                name={`${category.name}-fatura`}
-                                className="h-4 w-4 text-indigo-600"
-                                onChange={(e) =>
-                                  handleServiceDetailChange(category.name, 'providesInvoices', e.target.checked)
-                                }
-                              />
-                            </div>
-                            <div>
                               <label className="block text-sm font-medium text-gray-900">Cobra por Deslocação?</label>
                               <input
                                 type="checkbox"
@@ -589,7 +578,7 @@ const RegisterProfessional = () => {
                                 type="number"
                                 name={`${category.name}-preco`}
                                 className="block w-20 rounded-md border-0 py-1.5 text-gray-900 shadow-sm
-                       ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 pl-3 pr-1"
+                           ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 pl-3 pr-1"
                                 onChange={(e) =>
                                   handleServiceDetailChange(
                                     category.name,
@@ -601,6 +590,7 @@ const RegisterProfessional = () => {
                             </div>
                           </div>
                         )}
+
                       </div>
                     ))}
 
