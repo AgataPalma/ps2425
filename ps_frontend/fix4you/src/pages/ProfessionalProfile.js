@@ -27,10 +27,10 @@ function ProfessionalProfile({ id }) {
     const [portfolioDescription, setPortfolioDescription] = useState('');
     const [portfolioImages, setPortfolioImages] = useState([]);
     const [showNewCategory, setShowNewCategory] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [newCategoryData, setNewCategoryData] = useState({
         category: '',
         mediumPricePerService: '',
-        providesInvoices: false,
         chargesTravels: false
     });
 
@@ -68,39 +68,50 @@ function ProfessionalProfile({ id }) {
             });
 
         axiosInstance.get(`/portfolioItems/user/${id}`)
-            .then(response => {
+            .then((response) => {
                 if (response.data.length > 0) {
-                    setPortfolio(response.data);
+                    const portfolioItem = response.data[0];
+                    setPortfolio({
+                        ...portfolioItem,
+                        byteContent: portfolioItem.byteContent || [],
+                    });
+                } else {
+                    setPortfolio(null);
                 }
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching portfolio:', error);
             });
 
+
         axiosInstance.get(`/categoryDescriptions/user/${id}`)
-            .then(response => {
-                const associatedCategories = response.data.map(cat => cat.category);
+            .then((response) => {
+                const associatedCategories = response.data.map((cat) => cat.category.name);
                 setCategories(response.data);
 
-                axiosInstance.get(`/categoryDescriptions`)
-                    .then(allCategoriesResponse => {
+                axiosInstance.get(`/categories`)
+                    .then((allCategoriesResponse) => {
                         const allCategories = allCategoriesResponse.data;
 
-                        const uniqueAvailableCategories = Array.from(
-                            new Set(allCategories.map(category => category.category))
-                        )
-                            .filter(category => !associatedCategories.includes(category))
-                            .map(category => ({ value: category, label: category }));
+                        const uniqueAvailableCategories = allCategories
+                            .filter(
+                                (category) => !associatedCategories.includes(category.name)
+                            )
+                            .map((category) => ({
+                                value: category.id,
+                                label: category.name,
+                            }));
 
                         setAvailableCategories(uniqueAvailableCategories);
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         console.error('Error fetching all categories:', error);
                     });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching professional categories:', error);
             });
+
 
 
         const fetchLocationData = async () => {
@@ -122,6 +133,8 @@ function ProfessionalProfile({ id }) {
         fetchLocationData();
     }, [id]);
 
+    //------------------------- CATEGORIES --------------------------------------------------//
+
     const handleCategorySelection = (selectedOption) => {
         setNewCategoryData({
             ...newCategoryData,
@@ -135,7 +148,6 @@ function ProfessionalProfile({ id }) {
                 professionalId: id,
                 category: newCategoryData.category,
                 chargesTravels: newCategoryData.chargesTravels,
-                providesInvoices: newCategoryData.providesInvoices,
                 mediumPricePerService: parseFloat(newCategoryData.mediumPricePerService),
             };
 
@@ -148,7 +160,6 @@ function ProfessionalProfile({ id }) {
                     setNewCategoryData({
                         category: '',
                         mediumPricePerService: '',
-                        providesInvoices: false,
                         chargesTravels: false,
                     });
 
@@ -165,97 +176,30 @@ function ProfessionalProfile({ id }) {
         }
     };
 
-    const handlePortfolioImageUpload = (e) => {
-        const files = Array.from(e.target.files);
-        const imagePromises = files.map((file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.replace(/^data:image\/\w+;base64,/, ''));
-                reader.onerror = (error) => reject(error);
-            });
-        });
-
-        Promise.all(imagePromises)
-            .then(images => setPortfolioImages(images))
-            .catch(error => console.error('Error loading images:', error));
+    const handleDeleteCategory = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        setShowConfirmDeleteCategoryModal(true);
     };
 
-    const handleSavePortfolio = () => {
-        const portfolioPayload = {
-            professionalId: id,
-            mediaContent: portfolioImages,  // Array of base64 strings
-            description: portfolioDescription,
-        };
-
-        axiosInstance.post(`http://localhost:8080/portfolioItems`, portfolioPayload, {
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-            .then(response => {
-                setPortfolio([...portfolio, response.data]);
-                setPortfolioDescription('');
-                setPortfolioImages([]);  // Reset images after successful upload
-                setSuccessMessage("Portfolio created successfully!");
-                setTimeout(() => setSuccessMessage(''), 3000);
+    const confirmDeleteCategory = (categoryId) => {
+        axiosInstance.delete(`/categoryDescriptions/${selectedCategoryId}`)
+            .then(() => {
+                setShowConfirmDeleteCategoryModal(false);
+                setShowDeleteCategoryModal(true);
+                setCategories(categories.filter(category => category.id !== selectedCategoryId));
             })
             .catch(error => {
-                console.error('Error creating portfolio:', error);
-                setErrorMessage("Failed to create portfolio. Please try again.");
-                setTimeout(() => setErrorMessage(''), 3000);
+                console.error('Error deleting category:', error);
+                setErrorMessage("Failed to delete category. Please try again. If the error persists, please contact support.");
+                setTimeout(() => {
+                    setErrorMessage('');
+                }, 3000);
             });
     };
 
     const handleCancelNewCategory = () => {
-        setNewCategoryData({ category: '', mediumPricePerService: '', providesInvoices: false, chargesTravels: false });
+        setNewCategoryData({ category: '', mediumPricePerService: '', chargesTravels: false });
         setShowNewCategory(false);
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-
-        if (name in formData) {
-            setFormData({
-                ...formData,
-                [name]: type === 'checkbox' ? checked : value,
-            });
-        }
-        else if (name in newCategoryData) {
-            setNewCategoryData({
-                ...newCategoryData,
-                [name]: type === 'checkbox' ? checked : value,
-            });
-        }
-    };
-
-    const handleTabChange = (index) => {
-        if (editMode) {
-            handleCancelPersonalInformation();
-            handleCancelCategory()
-        }
-        setSelectedIndex(index);
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Set the preview URL for display in the UI (this won't be sent to the backend)
-            setImagePreview(URL.createObjectURL(file));
-
-            // Read the file as a base64 string for submission
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64Image = reader.result.replace(/^data:image\/\w+;base64,/, ''); // Remove the prefix
-                setFormData({ ...formData, profileImage: base64Image }); // Set only base64 data for backend
-            };
-            reader.onerror = (error) => console.error("Error reading file:", error);
-            reader.readAsDataURL(file); // Read file as base64
-        }
-    };
-
-    const handleEdit = () => {
-        setEditMode(true);
     };
 
     const handleEditCategory = (category) => {
@@ -264,22 +208,6 @@ function ProfessionalProfile({ id }) {
             ...prevData,
             [category.id]: { ...category }
         }));
-    };
-
-    const handleCancelPersonalInformation = () => {
-        setEditMode(false);
-        setImagePreview(null);
-
-        setFormData(prev => ({
-            ...profileData,
-            profileImage: profileData.profileImage,
-            password: '*****',
-        }));
-
-    };
-
-    const handleLocationChange = (selectedOption) => {
-        setFormData({ ...formData, location: selectedOption.value });
     };
 
     const handleSaveCategory = async (categoryId) => {
@@ -329,10 +257,188 @@ function ProfessionalProfile({ id }) {
         setTimeout(() => setErrorMessage(''), 3000);
     };
 
+
+    //------------------------ TAB CHANGES --------------------------------------------------//
+
+    const handleTabChange = (index) => {
+        if (editMode) {
+            handleCancelPersonalInformation();
+            handleCancelCategory()
+        }
+        setSelectedIndex(index);
+    };
+
+    //------------------------ PORTFOLIO ----------------------------------------------------//
+
+    const handlePortfolioImageUpload = (e) => {
+        const files = Array.from(e.target.files);
+        const imagePromises = files.map((file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve({ file, preview: reader.result });
+                reader.onerror = (error) => reject(error);
+            });
+        });
+
+        Promise.all(imagePromises)
+            .then((images) => {
+                setPortfolioImages((prev) => [...prev, ...images]);
+            })
+            .catch((error) => console.error('Error loading images:', error));
+    };
+
+    const handleUploadImage = (file) => {
+        if (!file || !portfolio) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const base64Image = reader.result.replace(/^data:image\/\w+;base64,/, '');
+
+            axiosInstance.put(`/portfolioItems/images/${portfolio.id}`, [base64Image])
+                .then(() => {
+
+                    axiosInstance.get(`/portfolioItems/${portfolio.id}`)
+                        .then((response) => {
+                            setPortfolio(response.data);
+                            setSuccessMessage('Image uploaded successfully!');
+                            setTimeout(() => setSuccessMessage(''), 3000);
+                        })
+                        .catch((error) => console.error('Error fetching updated portfolio:', error));
+                })
+                .catch((error) => {
+                    console.error('Error uploading image:', error);
+                    setErrorMessage('Failed to upload image. Please try again.');
+                    setTimeout(() => setErrorMessage(''), 3000);
+                });
+        };
+        reader.onerror = (error) => console.error('Error reading file:', error);
+    };
+
+    const handleRemovePreviewImage = (index) => {
+        setPortfolioImages((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const handleDeletePortfolioImage = (imageIndex) => {
+        const updatedImages = portfolio.byteContent.filter((_, i) => i !== imageIndex);
+
+        axiosInstance.put(`/portfolioItems/${portfolio.id}`, {
+            ...portfolio,
+            byteContent: updatedImages,
+        })
+            .then((response) => {
+                setPortfolio(response.data);
+                setSuccessMessage('Image deleted successfully!');
+                setTimeout(() => setSuccessMessage(''), 3000);
+            })
+            .catch((error) => {
+                console.error('Error deleting image:', error);
+                setErrorMessage('Failed to delete image. Please try again.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
+
+    const handleSavePortfolio = () => {
+        const newImages = portfolioImages.map((image) =>
+            image.preview.replace(/^data:image\/\w+;base64,/, '')
+        );
+
+        const updatedPortfolio = {
+            ...portfolio,
+            byteContent: [...portfolio.byteContent, ...newImages],
+        };
+
+        axiosInstance.put(`/portfolioItems/${portfolio.id}`, updatedPortfolio)
+            .then((response) => {
+                setPortfolio(response.data);
+                setPortfolioImages([]);
+                setEditMode(false);
+                setSuccessMessage('Portfolio updated successfully!');
+                setTimeout(() => setSuccessMessage(''), 3000);
+            })
+            .catch((error) => {
+                console.error('Error saving portfolio:', error);
+                setErrorMessage('Failed to save portfolio. Please try again.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
+
+    const handleDeleteEntirePortfolio = () => {
+        axiosInstance.delete(`/portfolioItems/${portfolio.id}`)
+            .then(() => {
+                setPortfolio(null);
+                setSuccessMessage('Portfolio deleted successfully!');
+                setTimeout(() => setSuccessMessage(''), 3000);
+            })
+            .catch((error) => {
+                console.error('Error deleting portfolio:', error);
+                setErrorMessage('Failed to delete portfolio. Please try again.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
+
+    const handleCreatePortfolio = () => {
+        if (!portfolioDescription) {
+            setErrorMessage('Description is mandatory!');
+            setTimeout(() => setErrorMessage(''), 3000);
+            return;
+        }
+
+        const portfolioPayload = {
+            professionalId: id,
+            byteContent: portfolioImages.map((image) =>
+                image.preview.replace(/^data:image\/\w+;base64,/, '')
+            ),
+            description: portfolioDescription,
+        };
+
+        axiosInstance.post(`/portfolioItems`, portfolioPayload)
+            .then((response) => {
+                setPortfolio(response.data);
+                setPortfolioDescription('');
+                setPortfolioImages([]);
+                setSuccessMessage('Portfolio created successfully!');
+                setTimeout(() => setSuccessMessage(''), 3000);
+            })
+            .catch((error) => {
+                console.error('Error creating portfolio:', error);
+                setErrorMessage('Failed to create portfolio. Please try again.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
+
+    const handleOpenImage = (image) => {
+        setSelectedImage(image);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedImage(null);
+    };
+
+
+    //-------------------------PERSONAL INFORMATION ----------------------------------------//
+
+    const handleCancelPersonalInformation = () => {
+        setEditMode(false);
+        setImagePreview(null);
+
+        setFormData(prev => ({
+            ...profileData,
+            profileImage: profileData.profileImage,
+            password: '*****',
+        }));
+
+    };
+
+    const handleLocationChange = (selectedOption) => {
+        setFormData({ ...formData, location: selectedOption.value });
+    };
+
     const handleSavePersonalInformation = async () => {
 
         const profileImageBase64 = formData.profileImage?.startsWith('data:image')
-            ? formData.profileImage.replace(/^data:image\/\w+;base64,/, '') // Strip base64 prefix
+            ? formData.profileImage.replace(/^data:image\/\w+;base64,/, '')
             : formData.profileImage;
 
         const formDataToSend = {
@@ -368,36 +474,15 @@ function ProfessionalProfile({ id }) {
         }
     };
 
-    const handleDeleteCategory = (categoryId) => {
-        setSelectedCategoryId(categoryId);
-        setShowConfirmDeleteCategoryModal(true);
-    };
-
     const handleDeleteAccount = () => {
         setShowConfirmDeleteModal(true);
-    };
-
-    const confirmDeleteCategory = (categoryId) => {
-        axiosInstance.delete(`/categoryDescriptions/${selectedCategoryId}`)
-            .then(() => {
-                setShowConfirmDeleteCategoryModal(false);
-                setShowDeleteCategoryModal(true);
-                setCategories(categories.filter(category => category.id !== selectedCategoryId));
-            })
-            .catch(error => {
-                console.error('Error deleting category:', error);
-                setErrorMessage("Failed to delete category. Please try again. If the error persists, please contact support.");
-                setTimeout(() => {
-                    setErrorMessage('');
-                }, 3000);
-            });
     };
 
     const confirmDeleteAccount = () => {
         axiosInstance.delete(`/professionals/${id}`)
             .then(() => {
-                setShowConfirmDeleteModal(false); // Close confirmation modal
-                setShowDeleteModal(true); // Show success modal
+                setShowConfirmDeleteModal(false);
+                setShowDeleteModal(true);
             })
             .catch(error => {
                 console.error('Error deleting account:', error);
@@ -406,6 +491,45 @@ function ProfessionalProfile({ id }) {
                     setErrorMessage('');
                 }, 3000);
             });
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+
+            setImagePreview(URL.createObjectURL(file));
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64Image = reader.result.replace(/^data:image\/\w+;base64,/, '');
+                setFormData({ ...formData, profileImage: base64Image });
+            };
+            reader.onerror = (error) => console.error("Error reading file:", error);
+            reader.readAsDataURL(file);
+        }
+    };
+
+    //---------------------------- GENERAL HANDLING ----------------------------------------//
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+
+        if (name in formData) {
+            setFormData({
+                ...formData,
+                [name]: type === 'checkbox' ? checked : value,
+            });
+        }
+        else if (name in newCategoryData) {
+            setNewCategoryData({
+                ...newCategoryData,
+                [name]: type === 'checkbox' ? checked : value,
+            });
+        }
+    };
+
+    const handleEdit = () => {
+        setEditMode(true);
     };
 
     const handleConfirmRedirect = () => {
@@ -437,7 +561,7 @@ function ProfessionalProfile({ id }) {
                         <p>Tem a certeza de que pretende apagar esta categoria? Esta acção é irreversível e os dados desta categoria serão eliminados.</p>
                         <div className="mt-6 flex justify-end space-x-4">
                             <button
-                                onClick={() => setShowConfirmDeleteCategoryModal(false)} // Close modal without deleting
+                                onClick={() => setShowConfirmDeleteCategoryModal(false)}
                                 className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                             >
                                 Cancelar
@@ -461,13 +585,13 @@ function ProfessionalProfile({ id }) {
                         <p>Tem a certeza de que pretende apagar a conta? Esta acção é irreversível e os seus dados serão eliminados.</p>
                         <div className="mt-6 flex justify-end space-x-4">
                             <button
-                                onClick={() => setShowConfirmDeleteModal(false)} // Close modal without deleting
+                                onClick={() => setShowConfirmDeleteModal(false)}
                                 className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                             >
                                 Cancelar
                             </button>
                             <button
-                                onClick={confirmDeleteAccount} // Call actual delete function
+                                onClick={confirmDeleteAccount}
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg"
                             >
                                 Confirmar
@@ -512,6 +636,24 @@ function ProfessionalProfile({ id }) {
                 </div>
             )}
 
+            {/* Modal for viewing the image */}
+            {selectedImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="relative bg-white rounded-lg p-4">
+                        <button
+                            onClick={handleCloseModal}
+                            className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center"
+                        >
+                            &times;
+                        </button>
+                        <img
+                            src={`data:image/jpeg;base64,${selectedImage}`}
+                            alt="Enlarged Portfolio"
+                            className="max-w-full max-h-screen"
+                        />
+                    </div>
+                </div>
+            )}
             <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                 <Tab.List className="flex space-x-4 mb-8">
                     <Tab className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
@@ -521,8 +663,8 @@ function ProfessionalProfile({ id }) {
                         Portfolio
                     </Tab>
                     {categories.map((category) => (
-                        <Tab key={category.id} className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
-                            {category.category}
+                        <Tab key={category.category.id} className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
+                            {category.category.name}
                         </Tab>
                     ))}
                     <Tab className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
@@ -653,25 +795,123 @@ function ProfessionalProfile({ id }) {
                     <Tab.Panel>
                         <div className="space-y-4">
                             <h3 className="text-2xl font-bold text-gray-800">Portfolio</h3>
-                            {portfolio.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {portfolio.map(item => (
-                                        <div key={item.id} className="border p-4 rounded-lg">
-                                            <p className="mb-2 text-gray-600">{item.description}</p>
-                                            {item.mediaContent.length > 0 && (
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {item.mediaContent.map((media, index) => (
-                                                        <img key={index} src={`data:image/jpeg;base64,${media}`} alt="Portfolio" className="w-full h-24 object-cover rounded" />
+
+                            {portfolio ? (
+                                <div className="border p-4 rounded-lg">
+                                    {editMode ? (
+                                        <>
+                                            {/* Editable Description */}
+                                            <textarea
+                                                className="w-full p-2 border rounded mb-2"
+                                                value={portfolio.description}
+                                                onChange={(e) => setPortfolio({ ...portfolio, description: e.target.value })}
+                                            />
+
+                                            {/* Editable Images */}
+                                            {Array.isArray(portfolio.byteContent) && portfolio.byteContent.length > 0 && (
+                                                <div className="grid grid-cols-3 gap-2 mb-4">
+                                                    {portfolio.byteContent.map((media, index) => (
+                                                        <div key={index} className="relative">
+                                                            <img
+                                                                src={`data:image/jpeg;base64,${media}`}
+                                                                alt="Portfolio"
+                                                                className="w-full h-24 object-cover rounded cursor-pointer"
+                                                                onClick={() => handleOpenImage(media)}
+                                                            />
+                                                            <button
+                                                                onClick={() => handleDeletePortfolioImage(index)}
+                                                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-sm"
+                                                            >
+                                                                &times;
+                                                            </button>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}
-                                        </div>
-                                    ))}
+
+                                            {/* Add New Images */}
+                                            <div className="space-y-2">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleUploadImage(e.target.files[0])}
+                                                    className="w-full"
+                                                />
+                                                {portfolioImages.map((image, index) => (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={image.preview}
+                                                            alt="Preview"
+                                                            className="w-full h-24 object-cover rounded mb-2"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleRemovePreviewImage(index)}
+                                                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-sm"
+                                                        >
+                                                            &times;
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Save and Cancel Buttons */}
+                                            <div className="flex space-x-4 mt-4">
+                                                <button
+                                                    onClick={handleSavePortfolio}
+                                                    className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                                                >
+                                                    Save Changes
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditMode(false)}
+                                                    className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Non-editable Description */}
+                                            <p className="text-gray-600 mb-4">{portfolio.description}</p>
+
+                                            {/* Non-editable Images */}
+                                            {Array.isArray(portfolio.byteContent) && portfolio.byteContent.length > 0 && (
+                                                <div className="grid grid-cols-3 gap-2 mb-4">
+                                                    {portfolio.byteContent.map((media, index) => (
+                                                        <img
+                                                            key={index}
+                                                            src={`data:image/jpeg;base64,${media}`}
+                                                            className="w-full h-24 object-cover rounded cursor-pointer"
+                                                            onClick={() => handleOpenImage(media)}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Edit Button */}
+                                            <button
+                                                onClick={() => setEditMode(true)}
+                                                className="px-4 py-2 bg-gray-800 text-white rounded-lg mr-4"
+                                            >
+                                                Editar
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {/* Delete Entire Portfolio */}
+                                    <button
+                                        onClick={handleDeleteEntirePortfolio}
+                                        className="mt-4 px-4 py-2 bg-red-700 text-white rounded-lg"
+                                    >
+                                        Apagar
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
+                                    {/* Create Portfolio Form */}
                                     <textarea
-                                        placeholder="Portfolio description"
+                                        placeholder="Enter a portfolio description"
                                         value={portfolioDescription}
                                         onChange={(e) => setPortfolioDescription(e.target.value)}
                                         className="w-full p-2 border rounded"
@@ -683,18 +923,48 @@ function ProfessionalProfile({ id }) {
                                         onChange={handlePortfolioImageUpload}
                                         className="w-full"
                                     />
+                                    {portfolioImages.map((image, index) => (
+                                        <div key={index} className="relative">
+                                            <img
+                                                src={image.preview}
+                                                alt="Preview"
+                                                className="w-full h-24 object-cover rounded mb-2"
+                                            />
+                                            <button
+                                                onClick={() => handleRemovePreviewImage(index)}
+                                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-sm"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ))}
                                     <div className="flex space-x-4 mt-4">
-                                        <button onClick={handleSavePortfolio} className="px-4 py-2 bg-gray-800 text-white rounded-lg">Save Portfolio</button>
-                                        <button onClick={() => { setPortfolioDescription(''); setPortfolioImages([]); }} className="px-4 py-2 bg-gray-400 text-white rounded-lg">Cancel</button>
+                                        <button
+                                            onClick={handleCreatePortfolio}
+                                            className="px-4 py-2 bg-gray-800 text-white rounded-lg"
+                                        >
+                                            Create Portfolio
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setPortfolioDescription('');
+                                                setPortfolioImages([]);
+                                            }}
+                                            className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                                        >
+                                            Cancel
+                                        </button>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </Tab.Panel>
+
+
                     {categories.map((category) => (
-                        <Tab.Panel key={category.id}>
+                        <Tab.Panel key={category.category.id}>
                             <div className="space-y-6">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4">{category.category}</h3>
+                                <h3 className="text-2xl font-bold text-gray-800 mb-4">{category.category.name}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-800 mb-2">Preço do serviço por hora</h3>
@@ -716,28 +986,6 @@ function ProfessionalProfile({ id }) {
                                             />
                                         ) : (
                                             <p className="text-gray-600">{category.mediumPricePerService || "No price provided"}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Emissão de Recibos</h3>
-                                        {editMode ? (
-                                            <input
-                                                type="checkbox"
-                                                name="providesInvoices"
-                                                checked={categoryEditData[category.id]?.providesInvoices ?? category.providesInvoices ?? false}
-                                                onChange={(e) =>
-                                                    setCategoryEditData((prevData) => ({
-                                                        ...prevData,
-                                                        [category.id]: {
-                                                            ...prevData[category.id],
-                                                            providesInvoices: e.target.checked,
-                                                        }
-                                                    }))
-                                                }
-                                                className="w-4 h-4"
-                                            />
-                                        ) : (
-                                            <p className="text-gray-600">{category.providesInvoices ? 'Sim' : 'Não'}</p>
                                         )}
                                     </div>
                                     <div>
@@ -809,16 +1057,6 @@ function ProfessionalProfile({ id }) {
                                     onChange={handleInputChange}
                                     className="w-full p-2 border rounded"
                                 />
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    name="providesInvoices"
-                                    checked={newCategoryData.providesInvoices}
-                                    onChange={handleInputChange}
-                                    className="w-4 h-4 mr-2"
-                                />
-                                <label className="text-xl font-semibold text-gray-800">Emissão de Recibos</label>
                             </div>
                             <div className="flex items-center">
                                 <input
