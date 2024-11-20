@@ -64,7 +64,7 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
         updates.forEach((key, value) -> {
             switch (key) {
                 case "chargesTravels" -> existingCategory.setChargesTravels((Boolean) value);
-                case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
+                //case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
                 case "mediumPricePerService" -> existingCategory.setMediumPricePerService(((Double) value).floatValue());
                 default -> throw new RuntimeException("Invalid field update request");
             }

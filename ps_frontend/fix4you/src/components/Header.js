@@ -31,7 +31,7 @@ const Header = ({ userType, handleLogout }) => {
                     {userType === 'PROFESSIONAL' && (
                         <>
                             <Link to="/NewRequests" className="text-gray-600 hover:text-gray-900">Novos Pedidos</Link>
-                            <Link to="/ProfessionalRequests" className="text-gray-600 hover:text-gray-900">Histórico de Serviços</Link>
+                            <Link to="/ProfessionalRequests" className="text-gray-600 hover:text-gray-900">Serviços</Link>
                             <Link to="/ProfessionalCalendar" className="text-gray-600 hover:text-gray-900">Calendário</Link>
                         </>
                     )}

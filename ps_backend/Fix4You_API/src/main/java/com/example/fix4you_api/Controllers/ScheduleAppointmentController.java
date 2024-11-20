@@ -3,8 +3,8 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequestMapping("/scheduleAppointments")
 @RequiredArgsConstructor
 public class ScheduleAppointmentController {
-    @Autowired
-    private ScheduleAppointmentRepository scheduleAppointmentRepository;
 
-    @Autowired
-    public ScheduleAppointmentController(ScheduleAppointmentRepository scheduleAppointmentRepository) {
-        this.scheduleAppointmentRepository = scheduleAppointmentRepository;
-    }
+    private final ScheduleAppointmentRepository scheduleAppointmentRepository;
+    private final ScheduleAppointmentServiceImpl scheduleAppointmentServiceImpl;
 
     @PostMapping
     public ResponseEntity<String> addScheduleAppointment(@RequestBody ScheduleAppointment scheduleAppointment) {
@@ -92,24 +88,36 @@ public class ScheduleAppointmentController {
     @PutMapping("/approve/{id}")
     public ResponseEntity<?> approveScheduleAppointment(@PathVariable("id") String id) {
         try {
-            Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
-            scheduleAppointment.get().setState(ScheduleStateEnum.CONFIRMED);
-            return ResponseEntity.ok(scheduleAppointment);
+            scheduleAppointmentServiceImpl.updateScheduleAppointmentState(id, ScheduleStateEnum.CONFIRMED);
+
+            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
+
+            if (updatedScheduleAppointment.isPresent()) {
+                return ResponseEntity.ok(updatedScheduleAppointment.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ScheduleAppointment not found.");
+            }
         } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            System.err.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
 
     @PutMapping("/disapprove/{id}")
     public ResponseEntity<?> disapproveScheduleAppointment(@PathVariable("id") String id) {
         try {
-            Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
-            scheduleAppointment.get().setState(ScheduleStateEnum.CANCELED);
-            return ResponseEntity.ok(scheduleAppointment);
+            scheduleAppointmentServiceImpl.updateScheduleAppointmentState(id, ScheduleStateEnum.CANCELED);
+
+            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
+
+            if (updatedScheduleAppointment.isPresent()) {
+                return ResponseEntity.ok(updatedScheduleAppointment.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ScheduleAppointment not found.");
+            }
         } catch (Exception e) {
-            System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            System.err.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
 
@@ -180,7 +188,14 @@ public class ScheduleAppointmentController {
                     case "professionalId" -> scheduleAppointment.setProfessionalId((String) value);
                     case "dateStart" -> scheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
                     case "dateFinish" -> scheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
-                    case "state" -> scheduleAppointment.setState((ScheduleStateEnum) value);
+                    case "state" -> {
+                        try {
+                        scheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid value for state: " + value);
+                    }
+                }
+
                     default -> throw new RuntimeException("Invalid field update request");
                 }
             });
