@@ -94,6 +94,7 @@ public class ScheduleAppointmentController {
         try {
             Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
             scheduleAppointment.get().setState(ScheduleStateEnum.CONFIRMED);
+            this.scheduleAppointmentRepository.save(scheduleAppointment.get());
             return ResponseEntity.ok(scheduleAppointment);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -106,6 +107,7 @@ public class ScheduleAppointmentController {
         try {
             Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
             scheduleAppointment.get().setState(ScheduleStateEnum.CANCELED);
+            this.scheduleAppointmentRepository.save(scheduleAppointment.get());
             return ResponseEntity.ok(scheduleAppointment);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
