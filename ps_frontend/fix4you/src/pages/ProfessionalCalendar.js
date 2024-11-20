@@ -36,7 +36,8 @@ function ProfessionalCalendar({ id }) {
                             description: serviceResponse.data.description,
                             color: appointment.state === 'PENDING' ? '#f9a825' : '#43a047',
                             clientId: appointment.clientId,
-                            location: appointment.location,
+                            location: serviceResponse.data.location,
+                            serviceId: appointment.serviceId,
                         };
                     })
                 );
@@ -45,7 +46,7 @@ function ProfessionalCalendar({ id }) {
 
             } catch (error) {
                 console.error('Error fetching appointments:', error);
-                setModalMessage('Ocorreu um erro na recuperação das suas marcações'); // Show error message
+                setModalMessage('Ocorreu um erro na recuperação das suas marcações');
                 setIsErrorModal(true);
             } finally {
                 setLoading(false);
@@ -57,21 +58,27 @@ function ProfessionalCalendar({ id }) {
     }, [id]);
 
 
-    const handleAccept = (appointmentId) => {
-        axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`)
-            .then(() => {
-                setAppointments(appointments.map(app =>
-                    app.id === appointmentId ? { ...app, state: 'CONFIRMED', color: '#43a047' } : app
-                ));
-                setConfirmationModalVisible(true);
-            })
-            .catch(error => {
-                console.error('Error accepting appointment:', error);
-                setModalMessage('Ocorreu um erro ao aceitar o horário'); // Show error message
-                setIsErrorModal(true);
-            });
-    };
+    const handleAccept = async (appointmentId, serviceId) => {
+        try {
+            await axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`);
+            await axiosInstance.patch(`/services/${serviceId}`, { state: 'ACCEPTED' });
 
+            setAppointments((prevAppointments) =>
+                prevAppointments.map((app) =>
+                    app.id === appointmentId
+                        ? { ...app, state: 'ACCEPTED', color: '#43a047' }
+                        : app
+                )
+            );
+
+            setConfirmationModalVisible(true);
+        } catch (error) {
+            console.error('Error accepting appointment:', error?.response?.data || error.message);
+            setModalMessage('Ocorreu um erro ao aceitar o horário e o serviço');
+            setIsErrorModal(true);
+        }
+    };
+    
     const handleCancel = (appointmentId) => {
         axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`)
             .then(() => {
@@ -80,7 +87,7 @@ function ProfessionalCalendar({ id }) {
             })
             .catch(error => {
                 console.error('Error canceling appointment:', error);
-                setModalMessage('Ocorreu um erro ao recusar o horário'); // Show error message
+                setModalMessage('Ocorreu um erro ao recusar o horário');
                 setIsErrorModal(true);
             });
     };
@@ -90,11 +97,11 @@ function ProfessionalCalendar({ id }) {
 
         setAppointments((prevAppointments) =>
             prevAppointments.map((app) =>
-                app.id === event.id // Match by event id
+                app.id === event.id
                     ? {
                         ...app,
-                        start: event.start, // Update the start time
-                        end: event.end,     // Update the end time
+                        start: event.start,
+                        end: event.end,
                     }
                     : app
             )
@@ -134,9 +141,9 @@ function ProfessionalCalendar({ id }) {
                             : app
                     )
                 );
-                setModalMessage('Horário alterado e confirmado'); // Show reschedule success message
+                setModalMessage('Horário alterado e confirmado');
                 setIsErrorModal(false);
-                setSelectedEvent(null); // Clear modal state
+                setSelectedEvent(null);
             })
             .catch((error) => {
                 console.error('Error rescheduling appointment:', error);
@@ -160,7 +167,7 @@ function ProfessionalCalendar({ id }) {
 
         if (error) {
             console.error('Error creating ICS file:', error);
-            setModalMessage('Ocorreu um erro ao criar o ficheiro para download'); // Show error message
+            setModalMessage('Ocorreu um erro ao criar o ficheiro para download');
             setIsErrorModal(true);
             return;
         }
@@ -203,8 +210,9 @@ function ProfessionalCalendar({ id }) {
             state: info.event.extendedProps.state,
             start: info.event.start,
             end: info.event.end,
-            originalStart: clickedAppointment.originalStart, // Use values from appointments
-            originalEnd: clickedAppointment.originalEnd,     // Use values from appointments
+            originalStart: clickedAppointment.originalStart,
+            originalEnd: clickedAppointment.originalEnd,
+            serviceId: clickedAppointment.serviceId
         };
 
         setSelectedEvent(clickedEvent);
@@ -215,35 +223,35 @@ function ProfessionalCalendar({ id }) {
             setClientDetails(clientResponse.data);
         } catch (error) {
             console.error('Error fetching client details:', error);
-            setModalMessage('Ocorreu um erro ao recuperar os dados do cliente'); // Show error message
+            setModalMessage('Ocorreu um erro ao recuperar os dados do cliente');
             setIsErrorModal(true);
         }
     };
 
     const resetChanges = () => {
         if (selectedEvent) {
-            // Update selectedEvent with original values
+
             setSelectedEvent((prevEvent) => ({
                 ...prevEvent,
                 start: prevEvent.originalStart,
                 end: prevEvent.originalEnd,
             }));
 
-            // Update the appointments array to reflect the reset
+
             setAppointments((prevAppointments) =>
                 prevAppointments.map((app) =>
                     app.id === selectedEvent.id
                         ? {
                             ...app,
-                            start: selectedEvent.originalStart, // Reset to original start
-                            end: selectedEvent.originalEnd,     // Reset to original end
+                            start: selectedEvent.originalStart,
+                            end: selectedEvent.originalEnd,
                         }
                         : app
                 )
             );
 
             // Show success message
-            setModalMessage('Alterações removidas'); // Show reset success message
+            setModalMessage('Alterações removidas');
             setIsErrorModal(false);
         }
     };
@@ -311,7 +319,7 @@ function ProfessionalCalendar({ id }) {
             />
             {selectedEvent && (
                 <div
-                    key={selectedEvent.id} // Force re-render of modal when selectedEvent changes
+                    key={selectedEvent.id}
                     className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50"
                 >
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
@@ -344,18 +352,22 @@ function ProfessionalCalendar({ id }) {
                         )}
                         <div className="mt-4 flex justify-between items-center">
                             <div className="flex space-x-2">
-                                <button
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
-                                    onClick={() => handleAccept(selectedEvent.id)}
-                                >
-                                    Accept
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
-                                    onClick={() => handleCancel(selectedEvent.id)}
-                                >
-                                    Refuse
-                                </button>
+                                {selectedEvent?.state === 'PENDING' && (
+                                    <>
+                                        <button
+                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
+                                            onClick={() => handleAccept(selectedEvent.id, selectedEvent.serviceId)}
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
+                                            onClick={() => handleCancel(selectedEvent.id)}
+                                        >
+                                            Refuse
+                                        </button>
+                                    </>
+                                )}
                                 {selectedEvent?.state === 'PENDING' &&
                                     (formatDateForAPI(selectedEvent.start) !== formatDateForAPI(selectedEvent.originalStart) ||
                                         formatDateForAPI(selectedEvent.end) !== formatDateForAPI(selectedEvent.originalEnd)) && (
