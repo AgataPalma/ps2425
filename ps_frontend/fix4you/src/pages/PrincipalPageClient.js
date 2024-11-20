@@ -54,16 +54,49 @@ const PrincipalPageClient = ({ id }) => {
         );
     };
 
-
     const handleIncludeTravelCostClick = (value) => {
         setIncludeTravelCost((prevValue) => (prevValue === value ? null : value));
     };
 
+    const handleProfessionalClick = async (professional) => {
+        try {
+            setSelectedProfessional(professional);
+            console.log("Professional clicked:", professional);
+            setActiveTab("information");
 
+            const response = await axiosInstance.get(`/portfolioItems/user/${professional.professionalId}`);
+            console.log(professional.professionalId)
 
-    const handleProfessionalClick = (professional) => {
-        setSelectedProfessional(professional);
-        setActiveTab("information"); // Reset to information tab on open
+            if (response.data && response.data.length > 0) {
+                const portfolioItem = response.data[0];
+                console.log("Portfolio Item Description:", portfolioItem.description);
+
+                setSelectedProfessional((prev) => ({
+                    ...prev,
+                    portfolio: {
+                        description: portfolioItem.description || "Sem descrição disponível.",
+                        images: portfolioItem.byteContent || [],
+                    },
+                }));
+            } else {
+                setSelectedProfessional((prev) => ({
+                    ...prev,
+                    portfolio: {
+                        description: "Nenhum portfólio disponível.",
+                        images: [],
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching portfolio:", error);
+            setSelectedProfessional((prev) => ({
+                ...prev,
+                portfolio: {
+                    description: "Erro ao carregar o portfólio.",
+                    images: [],
+                },
+            }));
+        }
     };
 
     const applyFilters = () => {
@@ -172,8 +205,10 @@ const PrincipalPageClient = ({ id }) => {
     };
 
 
+
     useEffect(() => {
         fetchData();
+
     }, []);
 
 
@@ -513,9 +548,9 @@ const PrincipalPageClient = ({ id }) => {
 
                     {selectedProfessional && (
                         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                                {/* Modal Header */}
                                 <div className="flex justify-between items-center mb-4">
-                                    {/* Professional's profile picture and name */}
                                     <div className="flex items-center space-x-4">
                                         <img
                                             src={
@@ -537,21 +572,19 @@ const PrincipalPageClient = ({ id }) => {
                                 </div>
 
                                 {/* Tabs */}
-                                <div className="border-b mb-4">
+                                <div className="border-b mb-4 flex space-x-4">
                                     <button
                                         className={`px-4 py-2 ${activeTab === "information" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
                                         onClick={() => setActiveTab("information")}
                                     >
                                         Information
                                     </button>
-                                    {selectedProfessional.portfolio && (
-                                        <button
-                                            className={`px-4 py-2 ${activeTab === "portfolio" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
-                                            onClick={() => setActiveTab("portfolio")}
-                                        >
-                                            Portfolio
-                                        </button>
-                                    )}
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "portfolio" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                        onClick={() => setActiveTab("portfolio")}
+                                    >
+                                        Portfolio
+                                    </button>
                                 </div>
 
                                 {/* Tab Content */}
@@ -559,20 +592,63 @@ const PrincipalPageClient = ({ id }) => {
                                     <div>
                                         <p className="text-sm mb-2"><strong>Descrição:</strong> {selectedProfessional.description}</p>
                                         <p className="text-sm mb-2"><strong>Localização:</strong> {selectedProfessional.location}</p>
-                                        <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages?.join(', ')}</p>
-                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods}</p>
+                                        <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages.map(lang => lang.name).join(', ')}</p>
+                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods && selectedProfessional.paymentMethods.length > 0
+                                            ? selectedProfessional.paymentMethods.map((method, index) => (
+                                                <span key={index}>
+                                {method.name}{index < selectedProfessional.paymentMethods.length - 1 ? ', ' : ''}
+                            </span>
+                                            ))
+                                            : 'Nenhuma forma de pagamento disponível'}</p>
                                     </div>
                                 )}
 
                                 {activeTab === "portfolio" && selectedProfessional.portfolio && (
                                     <div>
-                                        {/* Display portfolio items here, e.g., images or project details */}
-                                        <p className="text-sm mb-2">Portfolio Content Here</p>
+                                        <p className="text-sm mb-4"><strong>Descrição:</strong> {selectedProfessional.portfolio.description || "Sem descrição disponível."}</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {selectedProfessional.portfolio.images && selectedProfessional.portfolio.images.length > 0 ? (
+                                                selectedProfessional.portfolio.images.map((image, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={`data:image/jpeg;base64,${image}`}
+                                                        alt={`Portfolio Image ${index + 1}`}
+                                                        className="w-full h-32 object-cover rounded cursor-pointer"
+                                                        onClick={() => setActiveModalDescription(`data:image/jpeg;base64,${image}`)}
+                                                    />
+                                                ))
+                                            ) : (
+                                                <p className="text-gray-500">Nenhuma imagem disponível.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Enlarged Image Modal */}
+                                {activeModalDescription && (
+                                    <div
+                                        className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
+                                        onClick={() => setActiveModalDescription(null)}
+                                    >
+                                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-lg relative">
+                                            <img
+                                                src={activeModalDescription}
+                                                alt="Enlarged Portfolio"
+                                                className="w-full h-auto object-contain"
+                                            />
+                                            <button
+                                                onClick={() => setActiveModalDescription(null)}
+                                                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
+
                 </section>
 
 
