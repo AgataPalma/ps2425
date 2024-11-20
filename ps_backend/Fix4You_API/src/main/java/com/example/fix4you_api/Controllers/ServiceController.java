@@ -104,7 +104,13 @@ public class ServiceController {
                 case "postalCode" -> service.setPostalCode((String) value);
                 case "category" -> service.setCategory((Service.Category) value);
                 case "title" -> service.setTitle((String) value);
-                case "state" -> service.setState((ServiceStateEnum) value);
+                case "state" -> {
+                    try {
+                        service.setState(ServiceStateEnum.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid value for state: " + value);
+                    }
+                }
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
