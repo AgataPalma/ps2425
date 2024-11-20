@@ -253,7 +253,7 @@ function ClientRequestsHistory({ id }) {
                                     </div>
                                 ) : (
                                     <p className="text-gray-600 italic">
-                                        Você ainda não escreveu uma review para este serviço.
+                                        Ainda não escreveu uma review para este serviço.
                                     </p>
                                 )}
 
