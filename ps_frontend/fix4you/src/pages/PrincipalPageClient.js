@@ -23,6 +23,7 @@ const PrincipalPageClient = ({ id }) => {
     const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [selectedProfessional, setSelectedProfessional] = useState(null);
+    const [reviews, setReviews] = useState([]);
     const [activeTab, setActiveTab] = useState("information");
     const [filters, setFilters] = useState({
         priceRange: '',
@@ -204,12 +205,24 @@ const PrincipalPageClient = ({ id }) => {
         }
     };
 
-
-
     useEffect(() => {
-        fetchData();
+        const fetchReviews = async () => {
+            try {
+                if (!selectedProfessional) return;
+                const response = await axiosInstance.get(`/reviews?reviewedId=${selectedProfessional.professionalId}`);
+                const filteredReviews = response.data.filter(
+                    (review) => review.reviewedId === selectedProfessional.professionalId
+                );
+                setReviews(filteredReviews);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                setReviews([]);
+            }
+        };
 
-    }, []);
+        fetchReviews();
+        fetchData();
+    }, [selectedProfessional]);
 
 
     const resetFilters = () => {
@@ -585,6 +598,12 @@ const PrincipalPageClient = ({ id }) => {
                                     >
                                         Portfolio
                                     </button>
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "reviews" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                        onClick={() => setActiveTab("reviews")}
+                                    >
+                                        Reviews
+                                    </button>
                                 </div>
 
                                 {/* Tab Content */}
@@ -623,7 +642,31 @@ const PrincipalPageClient = ({ id }) => {
                                         </div>
                                     </div>
                                 )}
-
+                                {activeTab === "reviews" && (
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-4">Avaliações</h3>
+                                        {reviews.length > 0 ? (
+                                            reviews.map((review, index) => (
+                                                <div key={index} className="mb-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-yellow-500">
+                                                            {Array.from({ length: 5 }, (_, starIndex) => (
+                                                                <span key={starIndex} className={`${starIndex < review.classification ? "text-yellow-500" : "text-gray-300"}`}>
+                                                                    ★
+                                                                </span>
+                                                            ))}
+                                                        </span>
+                                                        <span className="text-sm text-gray-600">({review.classification}/5)</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-800">{review.reviewDescription}</p>
+                                                    <p className="text-xs text-gray-500">Data: {new Date(review.date).toLocaleDateString()}</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 italic">Nenhuma avaliação disponível para este profissional.</p>
+                                        )}
+                                    </div>
+                                )}
                                 {/* Enlarged Image Modal */}
                                 {activeModalDescription && (
                                     <div
