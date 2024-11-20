@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import axiosInstance from "../components/axiosInstance";
+import Spinner from "../components/Spinner";
 
 function ClientProfile({ id }) {
     const [profileData, setProfileData] = useState(null);
@@ -166,7 +167,7 @@ function ClientProfile({ id }) {
     };
 
     if (loading) {
-        return <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">Loading...</div>;
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
     return (

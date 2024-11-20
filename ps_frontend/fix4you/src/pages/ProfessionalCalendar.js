@@ -6,6 +6,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import Spinner from "../components/Spinner";
 
 function ProfessionalCalendar({ id }) {
     const [appointments, setAppointments] = useState([]);
@@ -278,7 +279,7 @@ function ProfessionalCalendar({ id }) {
     };
 
     if (loading) {
-        return <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">Loading...</div>;
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
     return (

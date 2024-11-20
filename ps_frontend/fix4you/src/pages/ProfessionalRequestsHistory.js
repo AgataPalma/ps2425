@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../components/axiosInstance';
+import Spinner from "../components/Spinner";
 
 function ProfessionalRequestsHistory({ id }) {
     const [requests, setRequests] = useState([]);
@@ -54,7 +55,7 @@ function ProfessionalRequestsHistory({ id }) {
     });
 
     if (loading) {
-        return <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">A carregar...</div>;
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
     return (

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import Spinner from "../components/Spinner";
 import axiosInstance from '../components/axiosInstance';
 import axios from 'axios';
 import { Tab } from '@headlessui/react';
@@ -28,6 +29,17 @@ function ProfessionalProfile({ id }) {
     const [portfolioImages, setPortfolioImages] = useState([]);
     const [showNewCategory, setShowNewCategory] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [paymentOptions, setPaymentOptions] = useState([]);
+    const [fees, setFees] = useState([]);
+    const [selectedFee, setSelectedFee] = useState(null); // Fee currently being paid
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalTitle, setModalTitle] = useState('');
+    const [loadingMessage, setLoadingMessage] = useState("");
+
     const [newCategoryData, setNewCategoryData] = useState({
         category: '',
         mediumPricePerService: '',
@@ -83,6 +95,15 @@ function ProfessionalProfile({ id }) {
                 console.error('Error fetching portfolio:', error);
             });
 
+        axiosInstance.get('/paymentMethods')
+            .then((response) => {
+                const options = response.data.map((method) => ({
+                    value: method.id,
+                    label: method.name,
+                }));
+                setPaymentOptions(options);
+            })
+            .catch((error) => console.error('Error fetching payment methods:', error));
 
         axiosInstance.get(`/categoryDescriptions/user/${id}`)
             .then((response) => {
@@ -112,7 +133,15 @@ function ProfessionalProfile({ id }) {
                 console.error('Error fetching professional categories:', error);
             });
 
-
+        axiosInstance.get(`/professionalFees`)
+            .then((response) => {
+                // Filter fees for the current professional
+                const filteredFees = response.data.filter(fee => fee.professional.id === id);
+                setFees(filteredFees);
+            })
+            .catch((error) => {
+                console.error('Error fetching professional fees:', error);
+            });
 
         const fetchLocationData = async () => {
             try {
@@ -437,6 +466,10 @@ function ProfessionalProfile({ id }) {
 
     const handleSavePersonalInformation = async () => {
 
+        const updatedPayments = formData.acceptedPayments?.map((payment) => ({
+            id: payment.id,
+            name: payment.name,
+        }));
         const profileImageBase64 = formData.profileImage?.startsWith('data:image')
             ? formData.profileImage.replace(/^data:image\/\w+;base64,/, '')
             : formData.profileImage;
@@ -444,6 +477,7 @@ function ProfessionalProfile({ id }) {
         const formDataToSend = {
             ...formData,
             profileImage: profileImageBase64,
+            acceptedPayments: updatedPayments,
             userType: "PROFESSIONAL"
         };
 
@@ -509,6 +543,70 @@ function ProfessionalProfile({ id }) {
         }
     };
 
+    //----------------------------------- PAYMENT --------------------------------------------//
+    const handleOpenPaymentModal = (fee) => {
+        setSelectedFee(fee);
+        setShowPaymentModal(true);
+    };
+
+    const handleClosePaymentModal = () => {
+        setSelectedFee(null);
+        setPaymentMethod('');
+        setShowPaymentModal(false);
+    };
+
+    const handlePayment = async () => {
+        setLoadingMessage("A processar o pagamento...");
+        setLoading(true); // Show the loading indicator
+        try {
+            const response = await axiosInstance.put(`/professionalFees/${selectedFee.id}/pay`);
+            console.log(response.data);
+
+            setFees(fees.map(f => f.id === selectedFee.id ? { ...f, paymentStatus: "PAID" } : f));
+
+            setModalTitle('Sucesso');
+            setModalMessage(`Pagamento de €${selectedFee.value.toFixed(2)} realizado com sucesso!`);
+            setIsSuccessModalOpen(true);
+        } catch (error) {
+            console.error('Error during payment:', error);
+
+            setModalTitle('Erro');
+            setModalMessage('Falha no pagamento. Tente novamente.');
+            setIsErrorModalOpen(true);
+        } finally {
+            setLoading(false); // Hide the loading indicator
+            setShowPaymentModal(false);
+        }
+    };
+
+    const handleDownloadInvoice = async (feeId) => {
+        try {
+            const response = await axiosInstance.get(`/professionalFees/${feeId}/invoice`, {
+                responseType: 'blob',
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+
+            link.setAttribute("download", `invoice_${feeId}.pdf`);
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading the invoice:", error);
+            setModalTitle("Erro");
+            setModalMessage("Falha ao descarregar a fatura. Tente novamente.");
+            setIsErrorModalOpen(true);
+        }
+    };
+
+
+
+
+
     //---------------------------- GENERAL HANDLING ----------------------------------------//
 
     const handleInputChange = (e) => {
@@ -544,7 +642,7 @@ function ProfessionalProfile({ id }) {
     };
 
     if (loading) {
-        return <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">Loading...</div>;
+        return <Spinner message={loadingMessage} spinnerColor="border-yellow-600" />;
     }
 
     return (
@@ -576,7 +674,41 @@ function ProfessionalProfile({ id }) {
                     </div>
                 </div>
             )}
+            {/* General Success Modal */}
+            {isSuccessModalOpen && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <h2 className="text-2xl font-bold mb-4 text-green-800">{modalTitle}</h2>
+                        <p className="mb-4">{modalMessage}</p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setIsSuccessModalOpen(false)}
+                                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:opacity-80 transition"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
+            {/* General Error Modal */}
+            {isErrorModalOpen && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <h2 className="text-2xl font-bold mb-4 text-red-800">{modalTitle}</h2>
+                        <p className="mb-4">{modalMessage}</p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setIsErrorModalOpen(false)}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:opacity-80 transition"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Confirmation Modal for Deletion */}
             {showConfirmDeleteModal && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
@@ -654,6 +786,45 @@ function ProfessionalProfile({ id }) {
                     </div>
                 </div>
             )}
+
+            {showPaymentModal && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <h2 className="text-2xl font-bold mb-4">Simular Pagamento</h2>
+                        <p className="mb-4">Escolha o método de pagamento para pagar <strong>€{selectedFee?.value.toFixed(2)}</strong></p>
+                        <div className="mb-4">
+                            <select
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="" disabled>Escolha o método de pagamento</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito/Débito</option>
+                                <option value="MBWay">MBWay</option>
+                                <option value="Transferência Bancária">Transferência Bancária</option>
+                            </select>
+                        </div>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={handleClosePaymentModal}
+                                className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                                disabled={loading}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handlePayment}
+                                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                                disabled={!paymentMethod || loading}
+                            >
+                                Pagar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
             <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                 <Tab.List className="flex space-x-4 mb-8">
                     <Tab className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
@@ -669,6 +840,9 @@ function ProfessionalProfile({ id }) {
                     ))}
                     <Tab className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
                         Nova Categoria
+                    </Tab>
+                    <Tab className={({ selected }) => selected ? 'px-4 py-2 bg-yellow-600 text-white rounded-lg' : 'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg'}>
+                        Pagamentos
                     </Tab>
                 </Tab.List>
                 <Tab.Panels>
@@ -746,7 +920,7 @@ function ProfessionalProfile({ id }) {
                                             type="password"
                                             name="password"
                                             value={formData.password}
-                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            onChange={(e) => setFormData({...formData, password: e.target.value})}
                                             placeholder="Enter new password"
                                             className="w-full p-2 border rounded"
                                         />
@@ -754,6 +928,7 @@ function ProfessionalProfile({ id }) {
                                         <p className="text-gray-600">*****</p>
                                     )}
                                 </div>
+
                                 <div>
                                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Descrição</h3>
                                     {editMode ? (
@@ -767,6 +942,53 @@ function ProfessionalProfile({ id }) {
                                         <p className="text-gray-600">{profileData?.description || "No description provided"}</p>
                                     )}
                                 </div>
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Métodos de Pagamento
+                                        Aceites</h3>
+                                    {editMode ? (
+                                        <Select
+                                            isMulti
+                                            options={paymentOptions} // This should be loaded from the GET /paymentMethods API
+                                            value={formData.acceptedPayments?.map((payment) => ({
+                                                value: payment.id,
+                                                label: payment.name,
+                                            }))}
+                                            onChange={(selectedOptions) => {
+                                                setFormData({
+                                                    ...formData,
+                                                    acceptedPayments: selectedOptions.map((option) => ({
+                                                        id: option.value,
+                                                        name: option.label,
+                                                    })),
+                                                });
+                                            }}
+                                            placeholder="Selecione métodos de pagamento"
+                                            className="w-full"
+                                        />
+                                    ) : (
+                                        <ul className="text-gray-600">
+                                            {profileData?.acceptedPayments && profileData.acceptedPayments.length > 0 ? (
+                                                profileData.acceptedPayments.map((payment) => (
+                                                    <li key={payment.id}>{payment.name}</li>
+                                                ))
+                                            ) : (
+                                                <p className="text-gray-600">Nenhum método de pagamento registrado.</p>
+                                            )}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Estado da Conta</h3>
+                                    <p className="text-gray-600">
+                                        {profileData?.suspended ? "Suspensa" : "Ativa"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Strikes</h3>
+                                    <p className="text-gray-600">{profileData?.strikes || 0}</p>
+                                </div>
+
                             </div>
                             <div className="mt-8">
                                 {editMode ? (
@@ -1078,6 +1300,49 @@ function ProfessionalProfile({ id }) {
                             </button>
                         </div>
                     </Tab.Panel>
+                    <Tab.Panel>
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Pagamentos Pendentes</h3>
+
+                            {fees && fees.length > 0 ? (
+                                <div className="border p-4 rounded-lg space-y-4">
+                                    {fees.map((fee) => (
+                                        <div key={fee.id} className="border-b pb-4 mb-4">
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <p className="text-gray-800"><strong>Mês:</strong> {fee.relatedMonthYear}</p>
+                                                    <p className="text-gray-800"><strong>Serviços Concluídos:</strong> {fee.numberServices}</p>
+                                                    <p className="text-gray-800"><strong>Valor:</strong> €{fee.value.toFixed(2)}</p>
+                                                    <p className="text-gray-800"><strong>Status:</strong> {fee.paymentStatus === "PENDING" ? "Pendente" : "Concluído"}</p>
+                                                </div>
+                                                {fee.paymentStatus === "PENDING" && (
+                                                    <button
+                                                        onClick={() => handleOpenPaymentModal(fee)}
+                                                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                                                    >
+                                                        Pagar
+                                                    </button>
+                                                )}
+                                                {fee.paymentStatus === "COMPLETED" && fee.invoice && (
+                                                    <button
+                                                        onClick={() => handleDownloadInvoice(fee.id)}
+                                                        className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition"
+                                                    >
+                                                        Download Recibo
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-gray-600">Sem pagamentos pendentes.</p>
+                            )}
+                        </div>
+                    </Tab.Panel>
+
+
+
                 </Tab.Panels>
             </Tab.Group>
         </div>
