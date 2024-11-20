@@ -62,20 +62,28 @@ function ProfessionalCalendar({ id }) {
     const handleAccept = async (appointmentId, serviceId) => {
         try {
             await axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`);
-            await axiosInstance.patch(`/services/${serviceId}`, { state: 'ACCEPTED' });
+
+            await axiosInstance.put(`/services/accept-service`, null, {
+                params: {
+                    professionalId: id,
+                    serviceId,
+                },
+            });
 
             setAppointments((prevAppointments) =>
                 prevAppointments.map((app) =>
                     app.id === appointmentId
-                        ? { ...app, state: 'ACCEPTED', color: '#43a047' }
+                        ? { ...app, state: 'CONFIRMED', color: '#43a047' }
                         : app
                 )
             );
 
+            setModalMessage('Serviço e horário aceites com sucesso!');
+            setIsErrorModal(false);
             setConfirmationModalVisible(true);
         } catch (error) {
-            console.error('Error accepting appointment:', error?.response?.data || error.message);
-            setModalMessage('Ocorreu um erro ao aceitar o horário e o serviço');
+            console.error('Error accepting appointment and service:', error?.response?.data || error.message);
+            setModalMessage('Ocorreu um erro ao aceitar o horário e o serviço.');
             setIsErrorModal(true);
         }
     };
