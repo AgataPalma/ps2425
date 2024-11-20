@@ -23,6 +23,7 @@ const PrincipalPageProfessional = ({ id }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [location, setLocation] = useState('');
     const [locationOptions, setLocationOptions] = useState([]);
+    const [selectedLanguages, setSelectedLanguages] = useState([]);
 
     const [filters, setFilters] = useState({
         location: '',
@@ -34,6 +35,14 @@ const PrincipalPageProfessional = ({ id }) => {
 
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
+    };
+
+    const handleLanguagesMethodClick = (language) => {
+        setSelectedLanguages((prev) =>
+            prev.includes(language)
+                ? prev.filter((lang) => lang !== language)
+                : [...prev, language]
+        );
     };
 
     const handleShowDescription = (request) => {
@@ -60,6 +69,14 @@ const PrincipalPageProfessional = ({ id }) => {
             }));
             setCategories(categoryData);
 
+            // Fetch languages
+            const languagesResponse = await axiosInstance.get('/languages');
+            const languagesData = languagesResponse.data.map((languages) => ({
+                value: languages.id,
+                label: languages.name,
+            }));
+            setLanguages(languagesData);
+
             axiosInstance.get('/services')
                 .then(response => {
                     SetRequests(response.data); // Set data with axios response
@@ -71,6 +88,44 @@ const PrincipalPageProfessional = ({ id }) => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+    };
+
+    const applyFilters = () => {
+        let filterQuery = [];
+
+        // Filtro de Categoria
+        if (selectedCategory) {
+            filterQuery.push(`categoryName=="${selectedCategory.label}"`);
+        }
+
+        // Filtro de Localização
+        if (location) {
+            filterQuery.push(`location=="${location}"`);
+        }
+
+        // Filtro de Linguagens
+        if (selectedLanguages.length > 0) {
+            const languageFilters = selectedLanguages
+                .map((lang) => `languages.name=="${lang}"`) // Use selectedLanguages, não languages
+                .join(',');
+            filterQuery.push(languageFilters);
+        }
+
+
+        // Gerar a string da query final
+        const filterString = filterQuery.join(';');
+
+        // Requisição para buscar profissionais com os filtros
+        const fetchFilteredProfessionals = async () => {
+            try {
+                const response = await axiosInstance.get(`/services?filter=${filterString}`);
+                SetRequests(response.data);
+            } catch (error) {
+                console.error('Erro ao aplicar filtros:', error);
+            }
+        };
+
+        fetchFilteredProfessionals();
     };
 
 
@@ -105,6 +160,13 @@ const PrincipalPageProfessional = ({ id }) => {
                     );
                 });
         }
+    };
+
+    const resetFilters = () => {
+        setLocation(null);
+        setSelectedCategory(null);
+        setLanguages([]);
+        fetchData();
     };
 
 
@@ -152,7 +214,18 @@ const PrincipalPageProfessional = ({ id }) => {
                 {isFilterModalOpen && (
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-sm">
-                            <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center">Filtrar por</h2>
+                            <h2 className="text-gray-800 text-2xl font-bold mb-4 text-center flex justify-between items-center">
+                                <span>Filtrar por</span>
+                                <a
+                                    onClick={() => {
+                                        resetFilters();  // Reseta todos os filtros
+                                        toggleFilterModal();  // Fecha o modal de filtros
+                                    }}
+                                    className="text-yellow-600 underline text-sm cursor-pointer"
+                                >
+                                    Remover Filtros
+                                </a>
+                            </h2>
 
                             <div className="mb-4">
                                 <label className="block text-black font-semibold mb-2">Localização *</label>
@@ -186,31 +259,20 @@ const PrincipalPageProfessional = ({ id }) => {
                                 />
                             </div>
 
-                            <div className="mb-4">
-                                <label className="text-sm font-medium">Classificação</label>
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, index) => (
-                                        <FaStar
-                                            key={index}
-                                            onClick={() => setFilters(prevFilters => ({
-                                                ...prevFilters,
-                                                classification: index + 1
-                                            }))}
-                                            className={index < filters.classification ? "text-yellow-600 w-6 h-6 cursor-pointer" : "text-gray-400 w-6 h-6 cursor-pointer"}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
                             <div className="mt-4">
                                 <h4 className="font-medium">Linguagens</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {['ENGLISH', 'PORTUGUESE', 'SPANISH', 'FRENCH'].map((lang) => (
+                                    {languages.map((language) => (
                                         <button
-                                            key={lang}
-                                            className={`px-4 py-2 rounded-full ${languages.includes(lang) ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                            key={language.value}
+                                            onClick={() => handleLanguagesMethodClick(language.label)}
+                                            className={`px-4 py-2 rounded-full ${
+                                                selectedLanguages.includes(language.label)
+                                                    ? 'bg-yellow-600 text-white'
+                                                    : 'bg-gray-300 text-gray-700'
+                                            }`}
                                         >
-                                            {lang}
+                                            {language.label}
                                         </button>
                                     ))}
                                 </div>
@@ -247,7 +309,10 @@ const PrincipalPageProfessional = ({ id }) => {
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={toggleFilterModal}
+                                    onClick={() => {
+                                        applyFilters();
+                                        toggleFilterModal();
+                                    }}
                                     className="px-4 py-2 bg-yellow-600 text-white rounded-lg"
                                 >
                                     Aplicar Filtros

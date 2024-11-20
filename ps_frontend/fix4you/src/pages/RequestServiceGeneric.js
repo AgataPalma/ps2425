@@ -20,11 +20,12 @@ function RequestServiceGeneric({ id }) {
 
   const handleLanguagesMethodClick = (language) => {
     setSelectedLanguages((prev) =>
-        prev.includes(language)
-            ? prev.filter((lang) => lang !== language)
+        prev.some((selected) => selected.value === language.value)
+            ? prev.filter((selected) => selected.value !== language.value)
             : [...prev, language]
     );
   };
+
 
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -72,6 +73,7 @@ function RequestServiceGeneric({ id }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
     if (!selectedCategory) {
       setError("A categoria é obrigatória.");
       return;
@@ -90,9 +92,9 @@ function RequestServiceGeneric({ id }) {
       description: description,
       title: title,
       location: location,
-      languages: selectedLanguages.map(lang => ({
-        id: lang.value,
-        name: lang.label
+      languages: selectedLanguages.map(language => ({
+        id: language.value,
+        name: language.label,
       })),
       state: 0
     };
@@ -182,24 +184,22 @@ function RequestServiceGeneric({ id }) {
                     />
                   </div>
 
-                  <div className="mt-4">
-                    <h4 className="font-medium">Linguagens</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {languages.map((language) => (
-                          <button
-                              key={language.value}
-                              onClick={() => handleLanguagesMethodClick(language.label)}
-                              className={`px-4 py-2 rounded-full ${
-                                  selectedLanguages.includes(language.label)
-                                      ? 'bg-yellow-600 text-white'
-                                      : 'bg-gray-300 text-gray-700'
-                              }`}
-                          >
-                            {language.label}
-                          </button>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-2">
+                    {languages.map((language) => (
+                        <div
+                            key={language.value}
+                            onClick={() => handleLanguagesMethodClick(language)}
+                            className={`px-4 py-2 rounded-full ${
+                                selectedLanguages.some((selected) => selected.value === language.value)
+                                    ? 'bg-yellow-600 text-white'
+                                    : 'bg-gray-300 text-gray-700'
+                            }`}
+                        >
+                          {language.label}
+                        </div>
+                    ))}
                   </div>
+
 
                   <div className="mb-6">
                     <label className="block text-black font-semibold mb-2">Descrição *</label>
