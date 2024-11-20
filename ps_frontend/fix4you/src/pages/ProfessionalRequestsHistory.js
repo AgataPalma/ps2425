@@ -104,10 +104,7 @@ function ProfessionalRequestsHistory({ id }) {
                                 <p className="text-gray-600">Date: {new Date(request.date).toLocaleDateString()}</p>
                                 <p className="text-gray-600">Price: ${request.price}</p>
                                 <p className="text-gray-600">Status: {request.state}</p>
-                                <p className="text-gray-600">Address: {request.address}, {request.postalCode}</p>
-                                {request.languages && (
-                                    <p className="text-gray-600">Languages: {request.languages.join(', ')}</p>
-                                )}
+                                <p className="text-gray-600">Languages: {request.languages.map(lang => lang.name).join(', ')}</p>
                                 <p className="text-gray-600">Location: {request.location || "Not specified"}</p>
                                 <p className="text-gray-600">Urgent: {request.urgent ? "Yes" : "No"}</p>
                             </div>

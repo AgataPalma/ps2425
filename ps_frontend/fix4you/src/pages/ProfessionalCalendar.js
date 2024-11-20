@@ -128,6 +128,9 @@ function ProfessionalCalendar({ id }) {
                 return axiosInstance.put(`/scheduleAppointments/approve/${selectedEvent.id}`);
             })
             .then(() => {
+                return axiosInstance.patch(`/services/${selectedEvent.serviceId}`, { state: 'ACCEPTED' });
+            })
+            .then(() => {
                 setAppointments((prevAppointments) =>
                     prevAppointments.map((app) =>
                         app.id === selectedEvent.id
@@ -147,10 +150,11 @@ function ProfessionalCalendar({ id }) {
             })
             .catch((error) => {
                 console.error('Error rescheduling appointment:', error);
-                setModalMessage('Ocorreu um erro ao alterar o horário');
+                setModalMessage('Ocorreu um erro ao alterar o horário e aceitar o serviço');
                 setIsErrorModal(true);
             });
     };
+
 
     const handleDownload = (appointment) => {
         const { title, start, end, description } = appointment;
@@ -352,22 +356,24 @@ function ProfessionalCalendar({ id }) {
                         )}
                         <div className="mt-4 flex justify-between items-center">
                             <div className="flex space-x-2">
-                                {selectedEvent?.state === 'PENDING' && (
-                                    <>
-                                        <button
-                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
-                                            onClick={() => handleAccept(selectedEvent.id, selectedEvent.serviceId)}
-                                        >
-                                            Accept
-                                        </button>
-                                        <button
-                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
-                                            onClick={() => handleCancel(selectedEvent.id)}
-                                        >
-                                            Refuse
-                                        </button>
-                                    </>
-                                )}
+                                {selectedEvent?.state === 'PENDING' &&
+                                    !(formatDateForAPI(selectedEvent.start) !== formatDateForAPI(selectedEvent.originalStart) ||
+                                        formatDateForAPI(selectedEvent.end) !== formatDateForAPI(selectedEvent.originalEnd)) && (
+                                        <>
+                                            <button
+                                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
+                                                onClick={() => handleAccept(selectedEvent.id, selectedEvent.serviceId)}
+                                            >
+                                                Accept
+                                            </button>
+                                            <button
+                                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
+                                                onClick={() => handleCancel(selectedEvent.id)}
+                                            >
+                                                Refuse
+                                            </button>
+                                        </>
+                                    )}
                                 {selectedEvent?.state === 'PENDING' &&
                                     (formatDateForAPI(selectedEvent.start) !== formatDateForAPI(selectedEvent.originalStart) ||
                                         formatDateForAPI(selectedEvent.end) !== formatDateForAPI(selectedEvent.originalEnd)) && (
@@ -385,7 +391,6 @@ function ProfessionalCalendar({ id }) {
                                                 Reset
                                             </button>
                                         </>
-
                                     )}
                                 {selectedEvent?.state === 'CONFIRMED' && (
                                     <button
@@ -395,7 +400,6 @@ function ProfessionalCalendar({ id }) {
                                         Download .ics
                                     </button>
                                 )}
-
                             </div>
                             <button
                                 className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
