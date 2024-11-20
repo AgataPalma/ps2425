@@ -16,14 +16,15 @@ function RequestServiceToProfessional({ id }) {
     const { state } = location;
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
-    const [local, setLocation] = useState('Lisboa, Portugal');
-    const [category, setCategory] = useState('1');
+    const [local, setLocation] = useState('');
+    const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [professional, setProfessional] = useState(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (state) {
+            console.log(state);
             setProfessional(state);
         }
     }, [state]);
@@ -32,6 +33,8 @@ function RequestServiceToProfessional({ id }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const selectedLanguages = professional.languages || [];
 
         const requestBody = {
             clientId: id,
@@ -46,7 +49,10 @@ function RequestServiceToProfessional({ id }) {
             description: description,
             title: title,
             location: professional.location,
-            languages: professional.languages,
+            languages: selectedLanguages.map(lang => ({
+                id: lang.id,
+                name: languageMap[lang.name] || lang.name
+            })),
             state: 0
         };
 
@@ -84,7 +90,7 @@ function RequestServiceToProfessional({ id }) {
                     <div className="absolute inset-0"></div>
                     <div className="relative z-10 flex justify-center items-center h-full m-8">
                         <div className="bg-white bg-opacity-80 p-8 rounded-lg max-w-lg w-full">
-                            <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir Um Serviço</h2>
+                            <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir Um Serviço a {professional.name}</h2>
                             {error && (
                                 <div className="mb-4 p-2 bg-red-200 text-red-800 text-center rounded">
                                     {error}
@@ -106,20 +112,20 @@ function RequestServiceToProfessional({ id }) {
                                     <input
                                         type="text"
                                         disabled
-                                        value={professional.location}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                        placeholder="eg Lisboa, Portugal"
+                                        value={professional.location || ""}
                                         className="w-full p-2 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-not-allowed"
                                     />
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Categoria *</label>
                                     <p className="w-full p-2 placeholder-gray-600 border-b-2 border-gray-400 bg-gray-100 text-gray-600 cursor-default">
-                                        {professional.category
-                                            ? professional.category.charAt(0).toUpperCase() + professional.category.slice(1).toLowerCase()
-                                            : "Nenhuma categoria selecionada"}
+                                        {professional.category.name && professional.category.name
+                                            ? professional.category.name.charAt(0).toUpperCase() +
+                                            professional.category.name.slice(1).toLowerCase()
+                                            : "Nenhuma categoria disponível"}
                                     </p>
                                 </div>
+
                                 <div className="mb-4">
                                     <label className="block text-black font-semibold mb-2">Idiomas *</label>
                                     <div className="flex flex-wrap gap-2">
@@ -127,7 +133,7 @@ function RequestServiceToProfessional({ id }) {
                                             <span
                                                 key={index}
                                                 className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-medium cursor-not-allowed">
-                                                {languageMap[language] || language}
+                                                    {languageMap[language.name] || language.name}
                                             </span>
                                         ))}
                                     </div>

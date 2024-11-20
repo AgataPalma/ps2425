@@ -163,12 +163,6 @@ const NewRequests = ({ id }) => {
                                         )}
                                     </div>
                                 </div>
-                                <div className="mt-4 flex justify-center">
-                                    <button
-                                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
-                                        Aceitar
-                                    </button>
-                                </div>
                             </div>
                         ))
                     )}

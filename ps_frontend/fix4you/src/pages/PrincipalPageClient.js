@@ -479,9 +479,9 @@ const PrincipalPageClient = ({ id }) => {
                                     onClick={() => {
                                         navigate('/RequestServiceToProfessional', {
                                             state: {
-                                                professionalId: professional.id,
+                                                professionalId: professional.professionalId,
                                                 name: professional.name,
-                                                category: professional.category.name,
+                                                category: { id: professional.categoryId, name: professional.categoryName },
                                                 location: professional.location,
                                                 languages: professional.languages,
                                                 price: professional.mediumPricePerService,
