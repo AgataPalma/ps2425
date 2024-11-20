@@ -188,7 +188,14 @@ public class ScheduleAppointmentController {
                     case "professionalId" -> scheduleAppointment.setProfessionalId((String) value);
                     case "dateStart" -> scheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
                     case "dateFinish" -> scheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
-                    case "state" -> scheduleAppointment.setState((ScheduleStateEnum) value);
+                    case "state" -> {
+                        try {
+                        scheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid value for state: " + value);
+                    }
+                }
+
                     default -> throw new RuntimeException("Invalid field update request");
                 }
             });
