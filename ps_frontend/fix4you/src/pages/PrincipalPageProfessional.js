@@ -24,6 +24,7 @@ const PrincipalPageProfessional = ({ id }) => {
     const [location, setLocation] = useState('');
     const [locationOptions, setLocationOptions] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
+    const [searchText, setSearchText] = useState('');
 
     const [filters, setFilters] = useState({
         location: '',
@@ -32,6 +33,25 @@ const PrincipalPageProfessional = ({ id }) => {
         classification: 0,
         urgent: false
     });
+
+    const handleSearch = async () => {
+        if (!searchText.trim()) {
+            fetchData(); // Recarrega todos os dados automaticamente quando o campo de busca está vazio
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.get(
+                `/services?filter=description=="${searchText}",title=="${searchText}"`
+            );
+            const results = response.data;
+
+            SetRequests(results);
+        } catch (error) {
+            console.error('Erro ao realizar a pesquisa:', error);
+        }
+    };
+
 
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
@@ -44,6 +64,7 @@ const PrincipalPageProfessional = ({ id }) => {
                 : [...prev, language]
         );
     };
+
 
     const handleShowDescription = (request) => {
         setSelectedRequest(request);
@@ -129,9 +150,28 @@ const PrincipalPageProfessional = ({ id }) => {
     };
 
 
+    const highlightSearchText = (text, searchText) => {
+        if (!searchText.trim()) return text;
+
+        const parts = text.split(new RegExp(`(${searchText})`, 'gi')); // Divide o texto em partes, preservando as palavras de busca
+
+        return parts.map((part, index) =>
+            part.toLowerCase() === searchText.toLowerCase() ? (
+                <span key={index} className="bg-yellow-400">{part}</span>
+            ) : (
+                part
+            )
+        );
+    };
+
+
     useEffect(() => {
-        fetchData();
-    }, [id]);
+        const delayDebounceFn = setTimeout(() => {
+            handleSearch(); // Realiza a pesquisa após um pequeno atraso
+        }, 300); // Aguarda 300ms após o último input para evitar chamadas excessivas
+
+        return () => clearTimeout(delayDebounceFn); // Limpa o timeout se o valor mudar antes de 300ms
+    }, [searchText]);
 
 
     const handleAcceptRequest = (request) => {
@@ -218,8 +258,8 @@ const PrincipalPageProfessional = ({ id }) => {
                                 <span>Filtrar por</span>
                                 <a
                                     onClick={() => {
-                                        resetFilters();  // Reseta todos os filtros
-                                        toggleFilterModal();  // Fecha o modal de filtros
+                                        resetFilters();
+                                        toggleFilterModal();
                                     }}
                                     className="text-yellow-600 underline text-sm cursor-pointer"
                                 >
@@ -328,8 +368,11 @@ const PrincipalPageProfessional = ({ id }) => {
                         <input
                             type="text"
                             placeholder="Pesquisar..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
                             className="bg-yellow-600 w-96 px-4 py-2 rounded-full focus:outline-none placeholder-black"
                         />
+
                         <button
                             onClick={toggleFilterModal}
                             className="bg-yellow-600 p-2 rounded-full hover:bg-yellow-700">
@@ -359,7 +402,9 @@ const PrincipalPageProfessional = ({ id }) => {
                                 <div className="flex items-center space-x-4">
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">{request.title}</h3>
+                                        <h3 className="text-xl font-semibold">
+                                            {highlightSearchText(request.title, searchText)}
+                                        </h3>
                                         <p className="text-sm">{request.category.name}</p>
                                     </div>
                                 </div>
@@ -383,8 +428,9 @@ const PrincipalPageProfessional = ({ id }) => {
                                     </p>
 
                                     <div className="mb-4">
-                                        <p className="text-gray-800 text-sm inline">{request.description.length > 100 ? `${request.description.slice(0, 100)}...` : request.description}</p>
-
+                                        <p className="text-gray-800 text-sm inline">
+                                            {highlightSearchText(request.description.length > 100 ? `${request.description.slice(0, 100)}...` : request.description, searchText)}
+                                        </p>
                                         {request.description.length > 100 && (
                                             <button
                                                 className="text-yellow-600 text-sm inline ml-2"

@@ -24,6 +24,7 @@ const PrincipalPageClient = ({ id }) => {
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [selectedProfessional, setSelectedProfessional] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState("information");
     const [filters, setFilters] = useState({
         priceRange: '',
@@ -38,6 +39,39 @@ const PrincipalPageClient = ({ id }) => {
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
     };
+
+    const handleSearch = async () => {
+        if (!searchText.trim()) {
+            fetchData();
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.get(
+                `professional-category-views/flattened?filter=description=="${searchText}",name=="${searchText}"`
+            );
+            const results = response.data;
+
+            setProfessionals(results);
+        } catch (error) {
+            console.error('Erro ao realizar a pesquisa:', error);
+        }
+    };
+
+    const highlightSearchText = (text, searchText) => {
+        if (!searchText.trim()) return text;
+
+        const parts = text.split(new RegExp(`(${searchText})`, 'gi')); // Divide o texto em partes, preservando as palavras de busca
+
+        return parts.map((part, index) =>
+            part.toLowerCase() === searchText.toLowerCase() ? (
+                <span key={index} className="bg-yellow-400">{part}</span>
+            ) : (
+                part
+            )
+        );
+    };
+
 
     const handlePaymentMethodClick = (paymentMethod) => {
         setSelectedPaymentMethods((prev) =>
@@ -138,19 +172,19 @@ const PrincipalPageClient = ({ id }) => {
                 .join(',');
             filterQuery.push(paymentFilters);
         }
-        // Filtro de Custos de Deslocação
+
         if (includeTravelCost !== null) {
             filterQuery.push(`chargesTravels==${includeTravelCost}`);
         }
 
-        // Gerar a string da query final
+
         const filterString = filterQuery.join(';');
 
-        // Requisição para buscar profissionais com os filtros
+
         const fetchFilteredProfessionals = async () => {
             try {
                 const response = await axiosInstance.get(`/professional-category-views/flattened?filter=${filterString}`);
-                setProfessionals(response.data);  // Atualiza a lista de profissionais com os resultados filtrados
+                setProfessionals(response.data);
             } catch (error) {
                 console.error('Erro ao aplicar filtros:', error);
             }
@@ -224,13 +258,22 @@ const PrincipalPageClient = ({ id }) => {
         fetchData();
     }, [selectedProfessional]);
 
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            handleSearch(); // Realiza a pesquisa após um pequeno atraso
+        }, 300); // Aguarda 300ms após o último input para evitar chamadas excessivas
+
+        return () => clearTimeout(delayDebounceFn); // Limpa o timeout se o valor mudar antes de 300ms
+    }, [searchText]);
+
+
 
     const resetFilters = () => {
-        setLocation(null);             // Limpa a seleção de localização
-        setSelectedCategory(null);     // Limpa a categoria selecionada
-        setFilters({ priceRange: '', classification: null }); // Limpa preço e classificação
-        setLanguages([]);              // Limpa as linguagens selecionadas
-        setPaymentMethods([]);         // Limpa as formas de pagamento selecionadas
+        setLocation(null);
+        setSelectedCategory(null);
+        setFilters({ priceRange: '', classification: null });
+        setLanguages([]);
+        setPaymentMethods([]);
         setIncludeTravelCost(false);
         fetchData();
     };
@@ -419,6 +462,8 @@ const PrincipalPageClient = ({ id }) => {
                         <input
                             type="text"
                             placeholder="Pesquisar..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
                             className="bg-yellow-600 w-96 px-4 py-2 rounded-full focus:outline-none placeholder-black"
                         />
                         <button
@@ -456,8 +501,9 @@ const PrincipalPageClient = ({ id }) => {
                                     onClick={() => handleProfessionalClick(professional)}
                                 />
                                 <div className="flex-1">
+
                                     <h2 className="text-2xl font-bold capitalize cursor-pointer"
-                                        onClick={() => handleProfessionalClick(professional)}>{professional.name}</h2>
+                                        onClick={() => handleProfessionalClick(professional)}> {highlightSearchText(professional.name, searchText)}</h2>
                                     <p className="text-sm font-medium capitalize">
                                         {professional.categoryName
                                             ? professional.categoryName.charAt(0).toUpperCase() + professional.categoryName.slice(1).toLowerCase()
@@ -494,15 +540,17 @@ const PrincipalPageClient = ({ id }) => {
                             </div>
 
                             <div className="mb-4">
-                                <p className="text-gray-800 text-sm inline">{professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description}</p>
+                                <p className="text-gray-800 text-sm inline">
+                                    {highlightSearchText(professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description, searchText)}
+                                </p>
                                 {professional.description.length > 100 && (
-                                    <button
-                                        className="text-yellow-600 text-sm inline ml-2"
-                                        onClick={() => handleShowDescription(professional.description)}
-                                    >
-                                        Mostrar mais
-                                    </button>
-                                )}
+                                <button
+                                    className="text-yellow-600 text-sm inline ml-2"
+                                    onClick={() => handleShowDescription(professional.description)}
+                                >
+                                    Mostrar mais
+                                </button>
+                            )}
                             </div>
 
                             <div className="flex justify-center items-center mb-6 space-x-4 m-4">
