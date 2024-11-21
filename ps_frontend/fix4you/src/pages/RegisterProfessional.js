@@ -4,6 +4,7 @@ import Select from 'react-select'; // Importa o react-select para dropdowns
 import '../index.css';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import Spinner from "../components/Spinner";
 
 const RegisterProfessional = () => {
   const navigate = useNavigate();
@@ -20,6 +21,10 @@ const RegisterProfessional = () => {
   const [locationsRange, setLocationsRange] = useState(0);
   const [acceptedPayments, setAcceptedPayments] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Estados para opções dinâmicas
   const [languageOptions, setLanguageOptions] = useState([]);
@@ -154,6 +159,7 @@ const RegisterProfessional = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     // Validação de idade
     const today = new Date();
@@ -166,7 +172,9 @@ const RegisterProfessional = () => {
     }
 
     if (age < 18) {
-      setErrorMessage('Você deve ter pelo menos 18 anos para se registar.');
+      setModalMessage('Deve ter pelo menos 18 anos para se registar.');
+      setIsSuccess(false);
+      setIsModalOpen(true);
       return;
     }
 
@@ -201,22 +209,47 @@ const RegisterProfessional = () => {
       // Enviar a requisição para criar o profissional (sem encapsulamento)
       const response = await axios.post('http://localhost:8080/professionals', professional);
 
-      if (response.status === 201 || response.status === 200) {
+     // if (response.status === 201 || response.status === 200) {
         const createdProfessional = response.data;
         const professionalId = createdProfessional.id; // Capturar o ID do profissional criado
 
         // Chamar função para enviar categoryDescriptions com o professionalId
         await createCategoryDescriptions(professionalId);
-
-        alert('Conta criada com sucesso!');
-        navigate('/Login');
-      } else {
-        setErrorMessage('Erro ao criar o profissional. Tente novamente.');
-      }
+        setLoading(false);
+        setModalMessage('Conta criada com sucesso! Verifique o seu email para validar a sua conta.');
+        setIsSuccess(true);
+        setIsModalOpen(true);
+      //} else {
+      //  setLoading(false);
+      //  setModalMessage('Erro ao criar o profissional. Tente novamente.');
+      //  setIsSuccess(false);
+      //  setIsModalOpen(true);
+     // }
     } catch (error) {
-      console.error('Erro ao criar o profissional:', error);
-      setErrorMessage('Erro ao criar o profissional. Por favor, tente novamente.');
+      if (error.response && error.response.data) {
+      const backendError = error.response.data;
+
+      if (typeof backendError === 'object') {
+        // Handle error when it's an object with fields like `nif` or `profileImage`
+        const detailedErrors = Object.entries(backendError)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join('\n');
+        setModalMessage(detailedErrors);
+      } else if (typeof backendError === 'string') {
+        // Handle error when it's a string
+        setModalMessage(backendError);
+      } else {
+        // Fallback for unexpected formats
+        setModalMessage('Erro inesperado. Por favor, tente novamente.');
+      }
+    } else {
+      setModalMessage('Erro ao criar o profissional. Por favor, tente novamente.');
     }
+      setLoading(false);
+      setIsSuccess(false);
+      setIsModalOpen(true);
+    }
+
   };
 
   const createCategoryDescriptions = async (professionalId) => {
@@ -249,16 +282,53 @@ const RegisterProfessional = () => {
       }
     }
   };
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    if (isSuccess) {
+      navigate('/Login'); // Redirect to the login page
+    }
+  };
+
+  const Modal = ({ message, isSuccess, onClose }) => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+          <h3 className={`text-lg font-bold ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+            {isSuccess ? 'Success' : 'Error'}
+          </h3>
+          <p className="mt-2 text-gray-800">{message}</p>
+          <div className="mt-4 flex justify-end">
+            <button
+                onClick={onClose}
+                className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+  );
 
 
+  if (loading) {
+    return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
+  }
 
   return (
+
     <div className="bg-gray-200">
       <div className="sm:mx-auto sm:w-full sm:max-w-lg py-12">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Registre-se como Profissional
         </h2>
       </div>
+
+      {isModalOpen && (
+          <Modal
+              message={modalMessage}
+              isSuccess={isSuccess}
+              onClose={handleModalClose}
+          />
+      )}
 
       <div className="p-8 bg-gray-100 shadow-lg rounded-lg bg-cover bg-center sm:mx-auto sm:w-full sm:max-w-lg mb-40">
         <form onSubmit={handleSubmit}>
