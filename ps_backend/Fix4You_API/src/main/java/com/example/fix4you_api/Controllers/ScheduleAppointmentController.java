@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class ScheduleAppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addScheduleAppointment(@RequestBody ScheduleAppointment scheduleAppointment) {
+    public ResponseEntity<String> addScheduleAppointment(@Valid @RequestBody ScheduleAppointment scheduleAppointment) {
         try {
             var conflicted = false;
             List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
@@ -127,7 +128,7 @@ public class ScheduleAppointmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateScheduleAppointment(@PathVariable String id, @RequestBody ScheduleAppointment scheduleAppointment) {
+    public ResponseEntity<?> updateScheduleAppointment(@PathVariable String id, @Valid @RequestBody ScheduleAppointment scheduleAppointment) {
         try {
             Optional<ScheduleAppointment> scheduleAppointmentOpt = this.scheduleAppointmentRepository.findById(id);
             if (scheduleAppointmentOpt.isPresent()) {

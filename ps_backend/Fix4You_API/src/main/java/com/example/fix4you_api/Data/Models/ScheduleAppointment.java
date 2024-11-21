@@ -46,4 +46,7 @@ public class ScheduleAppointment {
     @Field
     @NotNull(message = "State cannot be null")
     private ScheduleStateEnum state;
+
+    @Field
+    private boolean jobChecked;
 }
