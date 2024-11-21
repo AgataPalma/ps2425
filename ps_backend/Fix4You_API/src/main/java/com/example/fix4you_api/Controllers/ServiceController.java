@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -25,11 +26,22 @@ public class ServiceController {
 
     @PostMapping
     public ResponseEntity<?> addService(@RequestBody Service service) {
-        if (service.getClientId().equals(service.getProfessionalId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+        try {
+            if(service.getClientId().equals(service.getProfessionalId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+            }
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
+            if (service.getClientId().equals(service.getProfessionalId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+            }
+            this.serviceService.createService(service);
+            return ResponseEntity.ok(service.getId());
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        this.serviceService.createService(service);
-        return ResponseEntity.ok(service.getId());
     }
 
     @GetMapping
@@ -61,7 +73,15 @@ public class ServiceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateService(@PathVariable String id, @RequestBody Service service) {
-        return ResponseEntity.ok(serviceService.updateService(id, service));
+        try {
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
+            return ResponseEntity.ok(serviceService.updateService(id, service));
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/accept-service")
@@ -87,7 +107,9 @@ public class ServiceController {
         if (professional.isSupended()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O Profissional está suspenso!");
         }
-
+        if(service.getClientId() != null && service.getProfessionalId() != null){
+            service.setAgreementDate(LocalDateTime.now());
+        }
         service.setProfessionalId(professionalId);
         service.setState(ServiceStateEnum.ACCEPTED);
         serviceService.createService(service);
@@ -120,7 +142,9 @@ public class ServiceController {
                 default -> throw new RuntimeException("Invalid field update request");
             }
         });
-
+        if(service.getClientId() != null && service.getProfessionalId() != null){
+            service.setAgreementDate(LocalDateTime.now());
+        }
         serviceService.createService(service);
         return ResponseEntity.ok(service);
     }

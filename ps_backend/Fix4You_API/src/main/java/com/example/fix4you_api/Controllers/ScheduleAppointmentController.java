@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

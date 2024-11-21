@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PortfolioItemController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addPortfolioItem(@RequestBody PortfolioItem portfolioItem) {
+    public ResponseEntity<String> addPortfolioItem(@Valid @RequestBody PortfolioItem portfolioItem) {
         try {
             this.portfolioItemRepository.save(portfolioItem);
             return ResponseEntity.ok("Portfolio item Added!");
