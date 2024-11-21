@@ -197,7 +197,7 @@ public class ScheduleAppointmentController {
             @RequestBody Map<String, Object> updates) {
         try {
             AtomicBoolean definedDates = new AtomicBoolean(false);
-            ScheduleAppointment scheduleAppointment = scheduleAppointmentRepository.findById(id)
+            ScheduleAppointment existingScheduleAppointment = scheduleAppointmentRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("Schedule Appointment not found"));
 
             updates.forEach((key, value) -> {
@@ -205,13 +205,13 @@ public class ScheduleAppointmentController {
                     definedDates.set(true);
                 }
                 switch (key) {
-                    case "clientId" -> scheduleAppointment.setClientId((String) value);
-                    case "professionalId" -> scheduleAppointment.setProfessionalId((String) value);
-                    case "dateStart" -> scheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
-                    case "dateFinish" -> scheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
+                    case "clientId" -> existingScheduleAppointment.setClientId((String) value);
+                    case "professionalId" -> existingScheduleAppointment.setProfessionalId((String) value);
+                    case "dateStart" -> existingScheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
+                    case "dateFinish" -> existingScheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
                     case "state" -> {
                         try {
-                        scheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
+                            existingScheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Invalid value for state: " + value);
                     }
@@ -223,17 +223,17 @@ public class ScheduleAppointmentController {
 
             if(definedDates.get()){
                 var conflicted = false;
-                List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
+                List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(existingScheduleAppointment.getProfessionalId());
                 for (var i=0; i<scheduleAppointments.size(); i++){
-                    if(!Objects.equals(scheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
+                    if(!Objects.equals(existingScheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
                         LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
                         LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
 
-                        if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
+                        if(existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)){
                             conflicted = true;
-                        } else if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateStart().isBefore(dateFinish)){
+                        } else if(existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateStart().isBefore(dateFinish)){
                             conflicted = true;
-                        } else if(scheduleAppointment.getDateFinish().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
+                        } else if(existingScheduleAppointment.getDateFinish().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)){
                             conflicted = true;
                         }
                         if (conflicted == true) {
@@ -246,8 +246,8 @@ public class ScheduleAppointmentController {
                 }
             }
 
-            scheduleAppointmentRepository.save(scheduleAppointment);
-            return ResponseEntity.ok(scheduleAppointment);
+            scheduleAppointmentRepository.save(existingScheduleAppointment);
+            return ResponseEntity.ok(existingScheduleAppointment);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
