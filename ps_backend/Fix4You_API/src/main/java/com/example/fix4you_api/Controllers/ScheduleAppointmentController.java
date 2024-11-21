@@ -257,9 +257,9 @@ public class ScheduleAppointmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteScheduleAppointment(@PathVariable String id) {
         try {
-            Optional<ScheduleAppointment> scheduleAppointment = this.scheduleAppointmentRepository.findById(id);
+            Optional<ScheduleAppointment> existingScheduleAppointment = this.scheduleAppointmentRepository.findById(id);
             this.scheduleAppointmentRepository.deleteById(id);
-            String msg = (scheduleAppointment.isPresent() ? "Schedule appointment with id '" + id + "' was deleted!" : "Couldn't find any schedule appointment with the id: '" + id + "'!");
+            String msg = (existingScheduleAppointment.isPresent() ? "Schedule appointment with id '" + id + "' was deleted!" : "Couldn't find any schedule appointment with the id: '" + id + "'!");
             return ResponseEntity.ok(msg);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
