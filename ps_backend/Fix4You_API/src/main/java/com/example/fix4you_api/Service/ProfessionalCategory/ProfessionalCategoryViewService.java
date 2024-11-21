@@ -112,7 +112,7 @@ public class ProfessionalCategoryViewService {
                 .map(cd -> new FlattenedProfessionalCategoryView(view.getId(), view.getEmail(), view.getDateCreation(), view.getUserType(),
                         view.getName(), view.getPhoneNumber(), view.getLocation(), view.getProfileImage(), view.getDescription(),
                         view.getNif(), view.getLanguages() /*, view.getLocationsRange()*/, view.getAcceptedPayments(), view.getRating(),
-                        cd.getCategory().getId(), cd.getCategory().getName(), cd.getChargesTravels(), cd.getProvidesInvoices(),
+                        cd.getCategory().getId(), cd.getCategory().getName(), cd.getChargesTravels() /*cd.getProvidesInvoices()*/,
                         cd.getMediumPricePerService()))
                 .toList();
     }

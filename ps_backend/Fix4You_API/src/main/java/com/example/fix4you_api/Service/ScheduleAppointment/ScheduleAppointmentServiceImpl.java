@@ -26,4 +26,5 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
     public void deleteScheduleAppointment(String serviceId) {
         scheduleAppointmentRepository.deleteByServiceId(serviceId);
     }
+
 }

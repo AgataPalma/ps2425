@@ -1,13 +1,16 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
+import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
 import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +26,8 @@ public class ProfessionalFeeController {
     private final ProfessionalService professionalService;
 
     @PostMapping
-    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFee professionalsFee) {
-        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFee);
+    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFee) {
+        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFee.toDomain());
         return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
     }
 
@@ -53,8 +56,10 @@ public class ProfessionalFeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProfessionalsFee> updateProfessionalFee(@PathVariable String id, @RequestBody ProfessionalsFee professionalFee) {
-        ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.updateProfessionalsFee(id, professionalFee);
+    public ResponseEntity<ProfessionalsFee> updateProfessionalFee(@PathVariable String id,
+                                                                  @RequestBody ProfessionalsFeeSaveDto professionalFee
+    ) {
+        ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.updateProfessionalsFee(id, professionalFee.toDomain());
         return new ResponseEntity<>(updatedProfessionalsFee, HttpStatus.OK);
     }
 
@@ -65,7 +70,7 @@ public class ProfessionalFeeController {
     }
 
     @PutMapping("/{id}/pay")
-    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id)throws DocumentException {
+    public ResponseEntity<ProfessionalsFee> setFeeAsPaid(@PathVariable String id) throws DocumentException {
         ProfessionalsFee fee = professionalsFeeService.setFeeAsPaid(id);
 
         // check if he has more fees to pay -> if not (suspended = false)
@@ -88,5 +93,17 @@ public class ProfessionalFeeController {
 
         //Generate invoice
         return new ResponseEntity<>(fee, HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/invoice")
+    public ResponseEntity<byte[]> getInvoice(@PathVariable String id) {
+        ProfessionalsFee professionalsFee = professionalsFeeService.getProfessionalsFeeById(id);
+        if (professionalsFee.getInvoice() == null) {
+            throw new RuntimeException("Fee hasn't been payed yet");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice_" + id + ".pdf");
+        return new ResponseEntity<>(professionalsFee.getInvoice(), headers, HttpStatus.OK);
     }
 }

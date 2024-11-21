@@ -76,7 +76,7 @@ function ScheduleAppointments({ id }) {
                 },
             });
 
-            if (response.status === 200) {
+            if (response.status === 200 || response.status === 201) {
                 navigate(`/PrincipalPageClient`);
                 console.log("Agendamento realizado com sucesso!");
             } else {

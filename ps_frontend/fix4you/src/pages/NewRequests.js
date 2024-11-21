@@ -37,7 +37,8 @@ const NewRequests = ({ id }) => {
         return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
-    const filteredRequests = requests.filter(request => request.professionalId === id);
+    const filteredRequests = requests.filter(request => request.professionalId === id && request.state === "PENDING");
+
 
     return (
         <div className="h-screen flex flex-col text-black font-sans">
@@ -162,12 +163,12 @@ const NewRequests = ({ id }) => {
                                             </button>
                                         )}
                                     </div>
-                                </div>
-                                <div className="mt-4 flex justify-center">
-                                    <button
-                                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
-                                        Aceitar
-                                    </button>
+                                    <div className="mt-4 flex justify-center">
+                                        <button
+                                            className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
+                                            Aceitar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))

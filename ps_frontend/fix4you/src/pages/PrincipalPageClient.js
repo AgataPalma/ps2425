@@ -23,6 +23,8 @@ const PrincipalPageClient = ({ id }) => {
     const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [selectedProfessional, setSelectedProfessional] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState("information");
     const [filters, setFilters] = useState({
         priceRange: '',
@@ -37,6 +39,39 @@ const PrincipalPageClient = ({ id }) => {
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
     };
+
+    const handleSearch = async () => {
+        if (!searchText.trim()) {
+            fetchData();
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.get(
+                `professional-category-views/flattened?filter=description=="${searchText}",name=="${searchText}"`
+            );
+            const results = response.data;
+
+            setProfessionals(results);
+        } catch (error) {
+            console.error('Erro ao realizar a pesquisa:', error);
+        }
+    };
+
+    const highlightSearchText = (text, searchText) => {
+        if (!searchText.trim()) return text;
+
+        const parts = text.split(new RegExp(`(${searchText})`, 'gi')); // Divide o texto em partes, preservando as palavras de busca
+
+        return parts.map((part, index) =>
+            part.toLowerCase() === searchText.toLowerCase() ? (
+                <span key={index} className="bg-yellow-400">{part}</span>
+            ) : (
+                part
+            )
+        );
+    };
+
 
     const handlePaymentMethodClick = (paymentMethod) => {
         setSelectedPaymentMethods((prev) =>
@@ -54,16 +89,49 @@ const PrincipalPageClient = ({ id }) => {
         );
     };
 
-
     const handleIncludeTravelCostClick = (value) => {
         setIncludeTravelCost((prevValue) => (prevValue === value ? null : value));
     };
 
+    const handleProfessionalClick = async (professional) => {
+        try {
+            setSelectedProfessional(professional);
+            console.log("Professional clicked:", professional);
+            setActiveTab("information");
 
+            const response = await axiosInstance.get(`/portfolioItems/user/${professional.professionalId}`);
+            console.log(professional.professionalId)
 
-    const handleProfessionalClick = (professional) => {
-        setSelectedProfessional(professional);
-        setActiveTab("information"); // Reset to information tab on open
+            if (response.data && response.data.length > 0) {
+                const portfolioItem = response.data[0];
+                console.log("Portfolio Item Description:", portfolioItem.description);
+
+                setSelectedProfessional((prev) => ({
+                    ...prev,
+                    portfolio: {
+                        description: portfolioItem.description || "Sem descrição disponível.",
+                        images: portfolioItem.byteContent || [],
+                    },
+                }));
+            } else {
+                setSelectedProfessional((prev) => ({
+                    ...prev,
+                    portfolio: {
+                        description: "Nenhum portfólio disponível.",
+                        images: [],
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching portfolio:", error);
+            setSelectedProfessional((prev) => ({
+                ...prev,
+                portfolio: {
+                    description: "Erro ao carregar o portfólio.",
+                    images: [],
+                },
+            }));
+        }
     };
 
     const applyFilters = () => {
@@ -104,19 +172,19 @@ const PrincipalPageClient = ({ id }) => {
                 .join(',');
             filterQuery.push(paymentFilters);
         }
-        // Filtro de Custos de Deslocação
+
         if (includeTravelCost !== null) {
             filterQuery.push(`chargesTravels==${includeTravelCost}`);
         }
 
-        // Gerar a string da query final
+
         const filterString = filterQuery.join(';');
 
-        // Requisição para buscar profissionais com os filtros
+
         const fetchFilteredProfessionals = async () => {
             try {
                 const response = await axiosInstance.get(`/professional-category-views/flattened?filter=${filterString}`);
-                setProfessionals(response.data);  // Atualiza a lista de profissionais com os resultados filtrados
+                setProfessionals(response.data);
             } catch (error) {
                 console.error('Erro ao aplicar filtros:', error);
             }
@@ -171,18 +239,41 @@ const PrincipalPageClient = ({ id }) => {
         }
     };
 
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                if (!selectedProfessional) return;
+                const response = await axiosInstance.get(`/reviews?reviewedId=${selectedProfessional.professionalId}`);
+                const filteredReviews = response.data.filter(
+                    (review) => review.reviewedId === selectedProfessional.professionalId
+                );
+                setReviews(filteredReviews);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                setReviews([]);
+            }
+        };
+
+        fetchReviews();
+        fetchData();
+    }, [selectedProfessional]);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        const delayDebounceFn = setTimeout(() => {
+            handleSearch(); // Realiza a pesquisa após um pequeno atraso
+        }, 300); // Aguarda 300ms após o último input para evitar chamadas excessivas
+
+        return () => clearTimeout(delayDebounceFn); // Limpa o timeout se o valor mudar antes de 300ms
+    }, [searchText]);
+
 
 
     const resetFilters = () => {
-        setLocation(null);             // Limpa a seleção de localização
-        setSelectedCategory(null);     // Limpa a categoria selecionada
-        setFilters({ priceRange: '', classification: null }); // Limpa preço e classificação
-        setLanguages([]);              // Limpa as linguagens selecionadas
-        setPaymentMethods([]);         // Limpa as formas de pagamento selecionadas
+        setLocation(null);
+        setSelectedCategory(null);
+        setFilters({ priceRange: '', classification: null });
+        setLanguages([]);
+        setPaymentMethods([]);
         setIncludeTravelCost(false);
         fetchData();
     };
@@ -371,6 +462,8 @@ const PrincipalPageClient = ({ id }) => {
                         <input
                             type="text"
                             placeholder="Pesquisar..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
                             className="bg-yellow-600 w-96 px-4 py-2 rounded-full focus:outline-none placeholder-black"
                         />
                         <button
@@ -408,8 +501,9 @@ const PrincipalPageClient = ({ id }) => {
                                     onClick={() => handleProfessionalClick(professional)}
                                 />
                                 <div className="flex-1">
+
                                     <h2 className="text-2xl font-bold capitalize cursor-pointer"
-                                        onClick={() => handleProfessionalClick(professional)}>{professional.name}</h2>
+                                        onClick={() => handleProfessionalClick(professional)}> {highlightSearchText(professional.name, searchText)}</h2>
                                     <p className="text-sm font-medium capitalize">
                                         {professional.categoryName
                                             ? professional.categoryName.charAt(0).toUpperCase() + professional.categoryName.slice(1).toLowerCase()
@@ -446,15 +540,17 @@ const PrincipalPageClient = ({ id }) => {
                             </div>
 
                             <div className="mb-4">
-                                <p className="text-gray-800 text-sm inline">{professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description}</p>
+                                <p className="text-gray-800 text-sm inline">
+                                    {highlightSearchText(professional.description.length > 100 ? `${professional.description.slice(0, 100)}...` : professional.description, searchText)}
+                                </p>
                                 {professional.description.length > 100 && (
-                                    <button
-                                        className="text-yellow-600 text-sm inline ml-2"
-                                        onClick={() => handleShowDescription(professional.description)}
-                                    >
-                                        Mostrar mais
-                                    </button>
-                                )}
+                                <button
+                                    className="text-yellow-600 text-sm inline ml-2"
+                                    onClick={() => handleShowDescription(professional.description)}
+                                >
+                                    Mostrar mais
+                                </button>
+                            )}
                             </div>
 
                             <div className="flex justify-center items-center mb-6 space-x-4 m-4">
@@ -479,9 +575,9 @@ const PrincipalPageClient = ({ id }) => {
                                     onClick={() => {
                                         navigate('/RequestServiceToProfessional', {
                                             state: {
-                                                professionalId: professional.id,
+                                                professionalId: professional.professionalId,
                                                 name: professional.name,
-                                                category: professional.category.name,
+                                                category: { id: professional.categoryId, name: professional.categoryName },
                                                 location: professional.location,
                                                 languages: professional.languages,
                                                 price: professional.mediumPricePerService,
@@ -513,9 +609,9 @@ const PrincipalPageClient = ({ id }) => {
 
                     {selectedProfessional && (
                         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+                                {/* Modal Header */}
                                 <div className="flex justify-between items-center mb-4">
-                                    {/* Professional's profile picture and name */}
                                     <div className="flex items-center space-x-4">
                                         <img
                                             src={
@@ -537,21 +633,25 @@ const PrincipalPageClient = ({ id }) => {
                                 </div>
 
                                 {/* Tabs */}
-                                <div className="border-b mb-4">
+                                <div className="border-b mb-4 flex space-x-4">
                                     <button
                                         className={`px-4 py-2 ${activeTab === "information" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
                                         onClick={() => setActiveTab("information")}
                                     >
                                         Information
                                     </button>
-                                    {selectedProfessional.portfolio && (
-                                        <button
-                                            className={`px-4 py-2 ${activeTab === "portfolio" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
-                                            onClick={() => setActiveTab("portfolio")}
-                                        >
-                                            Portfolio
-                                        </button>
-                                    )}
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "portfolio" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                        onClick={() => setActiveTab("portfolio")}
+                                    >
+                                        Portfolio
+                                    </button>
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "reviews" ? "border-b-2 border-yellow-600 text-yellow-600" : "text-gray-500"}`}
+                                        onClick={() => setActiveTab("reviews")}
+                                    >
+                                        Reviews
+                                    </button>
                                 </div>
 
                                 {/* Tab Content */}
@@ -559,20 +659,87 @@ const PrincipalPageClient = ({ id }) => {
                                     <div>
                                         <p className="text-sm mb-2"><strong>Descrição:</strong> {selectedProfessional.description}</p>
                                         <p className="text-sm mb-2"><strong>Localização:</strong> {selectedProfessional.location}</p>
-                                        <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages?.join(', ')}</p>
-                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods}</p>
+                                        <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages.map(lang => lang.name).join(', ')}</p>
+                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods && selectedProfessional.paymentMethods.length > 0
+                                            ? selectedProfessional.paymentMethods.map((method, index) => (
+                                                <span key={index}>
+                                {method.name}{index < selectedProfessional.paymentMethods.length - 1 ? ', ' : ''}
+                            </span>
+                                            ))
+                                            : 'Nenhuma forma de pagamento disponível'}</p>
                                     </div>
                                 )}
 
                                 {activeTab === "portfolio" && selectedProfessional.portfolio && (
                                     <div>
-                                        {/* Display portfolio items here, e.g., images or project details */}
-                                        <p className="text-sm mb-2">Portfolio Content Here</p>
+                                        <p className="text-sm mb-4"><strong>Descrição:</strong> {selectedProfessional.portfolio.description || "Sem descrição disponível."}</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {selectedProfessional.portfolio.images && selectedProfessional.portfolio.images.length > 0 ? (
+                                                selectedProfessional.portfolio.images.map((image, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={`data:image/jpeg;base64,${image}`}
+                                                        alt={`Portfolio Image ${index + 1}`}
+                                                        className="w-full h-32 object-cover rounded cursor-pointer"
+                                                        onClick={() => setActiveModalDescription(`data:image/jpeg;base64,${image}`)}
+                                                    />
+                                                ))
+                                            ) : (
+                                                <p className="text-gray-500">Nenhuma imagem disponível.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                {activeTab === "reviews" && (
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-4">Avaliações</h3>
+                                        {reviews.length > 0 ? (
+                                            reviews.map((review, index) => (
+                                                <div key={index} className="mb-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-yellow-500">
+                                                            {Array.from({ length: 5 }, (_, starIndex) => (
+                                                                <span key={starIndex} className={`${starIndex < review.classification ? "text-yellow-500" : "text-gray-300"}`}>
+                                                                    ★
+                                                                </span>
+                                                            ))}
+                                                        </span>
+                                                        <span className="text-sm text-gray-600">({review.classification}/5)</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-800">{review.reviewDescription}</p>
+                                                    <p className="text-xs text-gray-500">Data: {new Date(review.date).toLocaleDateString()}</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 italic">Nenhuma avaliação disponível para este profissional.</p>
+                                        )}
+                                    </div>
+                                )}
+                                {/* Enlarged Image Modal */}
+                                {activeModalDescription && (
+                                    <div
+                                        className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
+                                        onClick={() => setActiveModalDescription(null)}
+                                    >
+                                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-lg relative">
+                                            <img
+                                                src={activeModalDescription}
+                                                alt="Enlarged Portfolio"
+                                                className="w-full h-auto object-contain"
+                                            />
+                                            <button
+                                                onClick={() => setActiveModalDescription(null)}
+                                                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
+
                 </section>
 
 

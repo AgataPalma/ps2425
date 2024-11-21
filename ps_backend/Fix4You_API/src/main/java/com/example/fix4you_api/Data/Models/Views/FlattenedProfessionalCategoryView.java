@@ -32,6 +32,6 @@ public class FlattenedProfessionalCategoryView {
     private String categoryId;
     private String categoryName;
     private Boolean chargesTravels;
-    private Boolean providesInvoices;
+    //private Boolean providesInvoices;
     private Float mediumPricePerService;
 }

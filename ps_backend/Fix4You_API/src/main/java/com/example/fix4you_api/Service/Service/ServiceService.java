@@ -13,4 +13,14 @@ public interface ServiceService {
     void deleteServicesForClient(String clientId);
     void deleteServicesForProfessional(String professionalId);
     boolean serviceExists(String serviceId);
+
+    Service getById(String id);
+
+    Service createService(Service service);
+
+    List<Service> getServices(String filter, String sort);
+
+    Service updateService(String id, Service service);
+
+    void deleteService(String id);
 }
