@@ -69,17 +69,23 @@ public class ServiceController {
         Service service = this.serviceService.getById(serviceId);
 
         if (service.getProfessionalId() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This service is already assigned to other professional");
+            if(!service.getProfessionalId().equals(professionalId) ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este serviço já está atribuído a outro profissional!");
+            }
+
+            if(service.getState().equals(ServiceStateEnum.ACCEPTED)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este serviço já foi aceito por si!");
+            }
         }
 
         // check if the professional is suspended
         Professional professional = professionalService.getProfessionalById(professionalId);
         if (professional == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional not found!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Profissional não encontrado!");
         }
 
         if (professional.isSupended()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional is suspended!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O Profissional está suspenso!");
         }
 
         service.setProfessionalId(professionalId);
