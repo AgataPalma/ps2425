@@ -25,7 +25,7 @@ const PrincipalPageProfessional = ({ id }) => {
     const [locationOptions, setLocationOptions] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [searchText, setSearchText] = useState('');
-
+    const [professionalCategories, setprofessionalCategories] = useState([]);
 
     const [filters, setFilters] = useState({
         location: '',
@@ -85,6 +85,12 @@ const PrincipalPageProfessional = ({ id }) => {
             }));
             setLocationOptions(organizedData);
 
+            const professionalCategoriesResponse = await axiosInstance.get(`/professionals/professional-categories/${id}`);
+            const professionalCategories = professionalCategoriesResponse.data;
+
+            console.log(professionalCategories)
+
+
             // Fetch categories
             const categoryResponse = await axiosInstance.get('/categories');
             const categoryData = categoryResponse.data.map((category) => ({
@@ -102,13 +108,33 @@ const PrincipalPageProfessional = ({ id }) => {
             setLanguages(languagesData);
 
 
-            axiosInstance.get('/services')
-                .then(response => {
-                    SetRequests(response.data); // Set data with axios response
-                })
-                .catch(error => {
-                    console.error('Error fetching professionals:', error);
-                });
+            if (professionalCategories.length > 0) {
+
+                const filterQuery = professionalCategories
+                    .map((category) => `category.name=="${category}"`)
+                    .join(',');
+
+
+                axiosInstance
+                    .get(`/services?filter=${filterQuery}`)
+                    .then((response) => {
+                        SetRequests(response.data); // Definir os dados dos serviços
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao buscar serviços:', error);
+                    });
+            } else {
+
+                axiosInstance
+                    .get('/services')
+                    .then((response) => {
+                        SetRequests(response.data);
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao buscar serviços:', error);
+                    });
+            }
+
 
         } catch (error) {
             console.error('Error fetching data:', error);
