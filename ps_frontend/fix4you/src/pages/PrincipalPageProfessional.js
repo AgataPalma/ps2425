@@ -26,6 +26,7 @@ const PrincipalPageProfessional = ({ id }) => {
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [searchText, setSearchText] = useState('');
 
+
     const [filters, setFilters] = useState({
         location: '',
         category: '',
@@ -34,9 +35,11 @@ const PrincipalPageProfessional = ({ id }) => {
         urgent: false
     });
 
+
+
     const handleSearch = async () => {
         if (!searchText.trim()) {
-            fetchData(); // Recarrega todos os dados automaticamente quando o campo de busca está vazio
+            fetchData();
             return;
         }
 
@@ -98,6 +101,7 @@ const PrincipalPageProfessional = ({ id }) => {
             }));
             setLanguages(languagesData);
 
+
             axiosInstance.get('/services')
                 .then(response => {
                     SetRequests(response.data); // Set data with axios response
@@ -116,7 +120,7 @@ const PrincipalPageProfessional = ({ id }) => {
 
         // Filtro de Categoria
         if (selectedCategory) {
-            filterQuery.push(`categoryName=="${selectedCategory.label}"`);
+            filterQuery.push(`category.name=="${selectedCategory.label}"`);
         }
 
         // Filtro de Localização
@@ -395,7 +399,8 @@ const PrincipalPageProfessional = ({ id }) => {
                 </section>
                 <br/><br/>
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                    {requests
+                    {requests.length > 0 ? (
+                        requests
                         .filter(request => request.professionalId === null)
                         .map(request => (
                             <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
@@ -448,8 +453,12 @@ const PrincipalPageProfessional = ({ id }) => {
                                     </button>
                                 </div>
                             </div>
-                        ))}
-
+                        ))
+                        ) : (
+                        <p className="text-center text-gray-700 font-medium col-span-full">
+                        Não foram encontrados serviços.
+                        </p>
+                        )}
                 </section>
 
                 {selectedRequest && (
