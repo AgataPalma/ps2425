@@ -2,6 +2,7 @@ package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.*;
+import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
@@ -221,6 +222,17 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         Professional existingProfessional = findOrThrow(professionalId);
         existingProfessional.setSupended(isSuspended);
         professionalRepository.save(existingProfessional);
+    }
+
+    public List<String> getProfessionalCategories(String professionalId){
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionRepository.findByProfessionalId(professionalId);
+        List<String> categoriesNames = new ArrayList<>();
+
+        for(CategoryDescription categoryDescription : categoryDescriptions) {
+            categoriesNames.add(categoryDescription.getCategory().getName());
+        }
+
+        return categoriesNames;
     }
 
     private Professional findOrThrow(String id) {
