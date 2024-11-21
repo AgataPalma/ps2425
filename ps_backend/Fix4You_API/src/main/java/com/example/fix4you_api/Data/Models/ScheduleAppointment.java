@@ -1,9 +1,7 @@
 package com.example.fix4you_api.Data.Models;
 
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,7 +34,6 @@ public class ScheduleAppointment {
 
     @Field
     @NotNull(message = "Finish date cannot be null")
-    @Future(message = "Finish date must be in the future")
     private LocalDateTime dateFinish;
 
     @Field
