@@ -3,12 +3,21 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,8 +26,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequestMapping("/scheduleAppointments")
 @RequiredArgsConstructor
 public class ScheduleAppointmentController {
+    @Autowired
+    private ScheduleAppointmentRepository scheduleAppointmentRepository;
 
-    private final ScheduleAppointmentRepository scheduleAppointmentRepository;
+    @Autowired
+    private ScheduleAppointmentService scheduleAppointmentService;
+
+    @Autowired
+    public ScheduleAppointmentController(ScheduleAppointmentRepository scheduleAppointmentRepository) {
+        this.scheduleAppointmentRepository = scheduleAppointmentRepository;
+    }
 
     @PostMapping
     public ResponseEntity<?> addScheduleAppointment(@RequestBody ScheduleAppointment scheduleAppointment) {
@@ -265,5 +282,110 @@ public class ScheduleAppointmentController {
             System.out.println("[ERROR] - " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was an error trying to delete the schedule appointment with id: '" + id + "'!");
         }
+    }
+
+    @GetMapping("/connect")
+    public ResponseEntity<?> connectGoogle() {
+        try {
+            String clientId = "980766458886-llsr892dnsvifd706dlog2lc4flr2a1d.apps.googleusercontent.com";
+            String redirect_uri = "http://localhost:8080/professionals";
+            String scope = "https://www.googleapis.com/auth/calendar";
+            String response_type = "code";
+            String access_type = "offline";
+
+            String url = String.format("https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&scope=%s&response_type=%s&access_type=%s", clientId, redirect_uri, scope, response_type, access_type);
+
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not connect");
+        }
+    }
+
+    @PostMapping("/save-token")
+    public ResponseEntity<?> saveNewToken(@RequestParam String userId, @RequestParam String code) {
+        try {
+            String clientId = "980766458886-llsr892dnsvifd706dlog2lc4flr2a1d.apps.googleusercontent.com";
+            String client_secret = "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";
+            String codeURL = code;
+            String redirect_uri = "http://localhost:8080/professionals";
+            String grant_type = "authorization_code";
+
+            String url = String.format("https://oauth2.googleapis.com/token");
+
+            String requestBody = String.format(
+                    "client_id=%s&client_secret=%s&code=%s&grant_type=%s&redirect_uri=%s",
+                    URLEncoder.encode(clientId, StandardCharsets.UTF_8),
+                    URLEncoder.encode(client_secret, StandardCharsets.UTF_8),
+                    URLEncoder.encode(codeURL, StandardCharsets.UTF_8),
+                    URLEncoder.encode(grant_type, StandardCharsets.UTF_8),
+                    URLEncoder.encode(redirect_uri, StandardCharsets.UTF_8)
+            );
+
+            URL obj = new URL(url);
+            // Open a connection
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setDoOutput(true); // Needed to send a request body
+
+            // Write request body
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8))) {
+                writer.write(requestBody);
+                writer.flush();
+            }
+
+            // Read the response
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // error
+            if(connection.getResponseCode() != 200) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not connect");
+            }
+            else {
+                JSONObject jsonObject = new JSONObject(response.toString());
+                String accessToken = jsonObject.getString("access_token");
+                String refreshToken = jsonObject.getString("refresh_token");
+                scheduleAppointmentService.connectUserToGoogleToken(userId, accessToken, refreshToken);
+                return ResponseEntity.ok(accessToken);
+            }
+
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not connect");
+        }
+    }
+
+    @PostMapping("/create-google-event")
+    public ResponseEntity<?> createGoogleAppointment(@RequestParam String userId, @RequestParam String appointmentId) throws IOException {
+
+        return ResponseEntity.ok(scheduleAppointmentService.createGoogleCalendarEvent(userId, appointmentId));
+    }
+
+    @GetMapping("/google-events-between")
+    public ResponseEntity<?> createGoogleAppointment(@RequestParam String userId,
+                                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+                                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
+
+        return ResponseEntity.ok(scheduleAppointmentService.getGoogleCalendarEventsBetween(userId, start, end));
+    }
+
+    @GetMapping("/token-valid")
+    public ResponseEntity<?> tokenValid(@RequestParam String token) throws IOException {
+
+        return ResponseEntity.ok(scheduleAppointmentService.isTokenValid(token));
+    }
+
+    @GetMapping("/token-refresh")
+    public ResponseEntity<?> refreshToken(@RequestParam String token) {
+
+        return ResponseEntity.ok(scheduleAppointmentService.refreshToken(token));
     }
 }
