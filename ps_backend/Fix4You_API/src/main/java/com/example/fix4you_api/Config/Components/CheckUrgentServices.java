@@ -42,7 +42,7 @@ public class CheckUrgentServices {
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
                         professionalOpt.get().setSupended(true);
-                        services.get(i).setState(ServiceStateEnum.CANCELLED);
+                        services.get(i).setState(ServiceStateEnum.CANCELED);
                     }
                 }
             }
