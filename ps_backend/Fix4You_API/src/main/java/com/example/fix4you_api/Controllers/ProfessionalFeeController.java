@@ -26,8 +26,8 @@ public class ProfessionalFeeController {
     private final ProfessionalService professionalService;
 
     @PostMapping
-    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFee) {
-        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFee.toDomain());
+    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFee professionalsFee) {
+        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFee);
         return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
     }
 
