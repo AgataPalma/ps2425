@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -33,6 +34,9 @@ public class ServiceController {
         try {
             if(service.getClientId().equals(service.getProfessionalId())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+            }
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
             }
             this.serviceRepository.save(service);
             return ResponseEntity.ok(service.getId());
@@ -90,6 +94,9 @@ public class ServiceController {
     public ResponseEntity<?> updateService(@PathVariable String id, @RequestBody Service service) {
         try {
             Optional<Service> serviceOpt = this.serviceRepository.findById(id);
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
             if (serviceOpt.isPresent()) {
                 this.serviceRepository.save(service);
                 return ResponseEntity.ok(service);
@@ -125,6 +132,9 @@ public class ServiceController {
 
                 service.setProfessionalId(professionalId);
                 service.setState(ServiceStateEnum.ACCEPTED);
+                if(service.getClientId() != null && service.getProfessionalId() != null){
+                    service.setAgreementDate(LocalDateTime.now());
+                }
                 serviceRepository.save(service);
 
                 return ResponseEntity.ok(service);
@@ -159,6 +169,9 @@ public class ServiceController {
                 }
             });
 
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
             serviceRepository.save(service);
             return ResponseEntity.ok(service);
         } catch (Exception e) {

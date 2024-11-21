@@ -9,6 +9,7 @@ public interface ServiceService {
     List<Service> getServicesByProfessionalId(String professionalId);
     List<Service> getServicesByClientId(String clientId);
     List<Service> getServicesByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
+    List<Service> getServicesByUrgency();
     void deleteServicesForClient(String clientId);
     void deleteServicesForProfessional(String professionalId);
     boolean serviceExists(String serviceId);
