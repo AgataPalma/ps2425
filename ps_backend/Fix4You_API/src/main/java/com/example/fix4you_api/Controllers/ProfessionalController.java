@@ -81,6 +81,12 @@ public class ProfessionalController {
         return new ResponseEntity<>(professional, HttpStatus.OK);
     }
 
+    @GetMapping("/professional-categories/{id}")
+    public ResponseEntity<List<String>> getProfessionalCategories(@PathVariable("id") String id) {
+
+        return new ResponseEntity<>(professionalService.getProfessionalCategories(id), HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Professional> updateProfessional(@PathVariable String id,
                                                            @RequestBody Professional professional) throws IOException {

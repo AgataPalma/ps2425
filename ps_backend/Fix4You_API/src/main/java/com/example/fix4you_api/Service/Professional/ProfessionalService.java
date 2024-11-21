@@ -32,4 +32,6 @@ public interface ProfessionalService {
     boolean nifExists(String nif);
 
     void setRating(float rating, Professional professional);
+
+    List<String> getProfessionalCategories(String professionalId);
 }
