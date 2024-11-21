@@ -77,12 +77,12 @@ public class CategoryServiceImpl implements CategoryService {
             double minPrice = categoryDescriptions.stream()
                     .mapToDouble(CategoryDescription::getMediumPricePerService)
                     .min()
-                    .orElseThrow(() -> new RuntimeException("Unable to calculate minimum price"));
+                    .orElseThrow(() -> new RuntimeException("Não é possível calcular o preço mínimo!"));
 
             double maxPrice = categoryDescriptions.stream()
                     .mapToDouble(CategoryDescription::getMediumPricePerService)
                     .max()
-                    .orElseThrow(() -> new RuntimeException("Unable to calculate maximum price"));
+                    .orElseThrow(() -> new RuntimeException("Não é possível calcular o preço máximo!"));
 
 
             updates.put("minValue", (float) minPrice);
@@ -100,7 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Category findOrThrow(String id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Category %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Categoria %s não encontrada!", id)));
     }
 
     @Override

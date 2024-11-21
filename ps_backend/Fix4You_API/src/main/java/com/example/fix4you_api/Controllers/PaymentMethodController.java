@@ -25,7 +25,7 @@ public class PaymentMethodController {
     @PostMapping
     public ResponseEntity<?> createPaymentMethod(@RequestBody PaymentMethod paymentMethod) {
         if(paymentMethodService.nameExists(paymentMethod.getName())){
-            return new ResponseEntity<>("PaymentMethod already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("O método de pagamento já existe!", HttpStatus.CONFLICT);
         }
 
         PaymentMethod createdPaymentMethod = paymentMethodService.createPaymentMethod(paymentMethod);

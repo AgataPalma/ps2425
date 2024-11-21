@@ -28,14 +28,12 @@ public class ServiceController {
     public ResponseEntity<?> addService(@RequestBody Service service) {
         try {
             if(service.getClientId().equals(service.getProfessionalId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O profissional e o cliente não podem ser o mesmo utilizador!");
             }
             if(service.getClientId() != null && service.getProfessionalId() != null){
                 service.setAgreementDate(LocalDateTime.now());
             }
-            if (service.getClientId().equals(service.getProfessionalId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
-            }
+
             this.serviceService.createService(service);
             return ResponseEntity.ok(service.getId());
         } catch (Exception e) {
@@ -136,10 +134,10 @@ public class ServiceController {
                     try {
                         service.setState(ServiceStateEnum.valueOf(value.toString().toUpperCase()));
                     } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Invalid value for state: " + value);
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
                     }
                 }
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
         if(service.getClientId() != null && service.getProfessionalId() != null){

@@ -43,7 +43,7 @@ public class LanguageServiceImpl implements LanguageService {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "name" -> existingLanguage.setName((String) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
@@ -58,7 +58,7 @@ public class LanguageServiceImpl implements LanguageService {
 
     private Language findOrThrow(String id) {
         return languageRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Language %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Linguagem %s não encontrada!", id)));
     }
 
     @Override

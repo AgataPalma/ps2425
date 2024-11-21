@@ -25,7 +25,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
         if(categoryService.nameExists(category.getName())){
-            return new ResponseEntity<>("Name already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("O nome da categoria já existe!", HttpStatus.CONFLICT);
         }
 
         Category createdCategory = categoryService.createCategory(category);

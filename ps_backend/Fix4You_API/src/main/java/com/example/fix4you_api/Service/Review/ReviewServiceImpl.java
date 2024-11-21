@@ -42,17 +42,17 @@ public class ReviewServiceImpl implements ReviewService {
         Client reviwedUser;     // could be either a professional or a client
 
         if(review.getClassification() < 1 && review.getClassification() > 5) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid classification [1-5]");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Classificação inválida [1-5]!");
         }
 
         // check if service exists
         Optional<com.example.fix4you_api.Data.Models.Service> service = serviceRepository.findById(review.getServiceId());
         if(!service.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Service doesnt exist");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Serviço não encontrado!");
         }
 
         if(!service.get().getState().equals(ServiceStateEnum.COMPLETED)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Service is not completed yet");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O serviço ainda não está completo!");
         }
 
         List<ScheduleAppointment> scheduleAppointmentList = scheduleAppointmentRepository.findByServiceId(review.getServiceId());
@@ -64,45 +64,45 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if(scheduleDate == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Schedule appointment not found");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Marcação do serviço não encontrada!");
         }
 
         // check if review date is valid (can only be made within 3 months)
         if(review.getDate().isAfter(scheduleDate.plusMonths(3))) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Date to make the review as expired");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("A data para fazer a avaliação do serviço já expirou!");
         }
 
         // check if reviewer exists
         User reviewer = userService.getUserById(review.getReviewerId());
         if(reviewer == null ) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reviewer doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O utilizador revisor não existe!");
         }
 
         // check if reviewed exists
         User reviewed = userService.getUserById(review.getReviewedId());
         if(reviewed == null ) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reviewed doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O utilizador revisto não existe");
         }
 
         if(!service.get().getProfessionalId().equals(reviewed.getId()) && !service.get().getProfessionalId().equals(reviewer.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional not found in service");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Profissional não encontrado no serviço!");
         }
 
         if(!service.get().getClientId().equals(reviewed.getId()) && !service.get().getClientId().equals(reviewer.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client not found in service");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cliente não encontrado no serviço!");
         }
 
         // check if users types are valid
         if(reviewer.getUserType() == EnumUserType.ADMIN || reviewed.getUserType() == EnumUserType.ADMIN) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user type");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tipo de utilizador inválido!");
         }
 
         if(reviewer.getUserType() == reviewed.getUserType()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Users type can't be the same");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Os tipos de utilizador não podem ser os mesmos!");
         }
 
         if(CheckIfUserAlreadyMakeReviewToService(review, reviewer.getId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already make review to this service");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O utilizador já fez uma avaliação a este serviço!");
         }
 
         reviwedUser = (Client) reviewed;

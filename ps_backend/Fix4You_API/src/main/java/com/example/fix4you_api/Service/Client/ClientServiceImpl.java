@@ -71,7 +71,7 @@ public class ClientServiceImpl implements ClientService {
                 case "rating" -> client.setRating((float) value);
                 //case "IsDeleted" -> client.setIsDeleted((Boolean) value);
                 case "IsEmailConfirmed" -> client.setIsEmailConfirmed((Boolean) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
@@ -106,7 +106,7 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findById(id)
                 .filter(client -> client.getUserType() == EnumUserType.CLIENT)
                 .orElseThrow(() -> new NoSuchElementException(
-                        String.format("Client %s not found or user is not a client", id)));
+                        String.format("Cliente %s não encontrado! Ou o utilizador não é um cliente!", id)));
     }
 
 }

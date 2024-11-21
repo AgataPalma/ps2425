@@ -34,7 +34,7 @@ public class ClientController {
 
         // check if email already exists
         if(userService.emailExists(client.getEmail())){
-            return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("O email já existe!", HttpStatus.CONFLICT);
         }
 
         Client createdClient = clientService.createClient(client);

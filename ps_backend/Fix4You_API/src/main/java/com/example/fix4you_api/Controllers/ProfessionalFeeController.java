@@ -99,7 +99,7 @@ public class ProfessionalFeeController {
     public ResponseEntity<byte[]> getInvoice(@PathVariable String id) {
         ProfessionalsFee professionalsFee = professionalsFeeService.getProfessionalsFeeById(id);
         if (professionalsFee.getInvoice() == null) {
-            throw new RuntimeException("Fee hasn't been payed yet");
+            throw new RuntimeException("A taxa ainda não foi paga!");
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

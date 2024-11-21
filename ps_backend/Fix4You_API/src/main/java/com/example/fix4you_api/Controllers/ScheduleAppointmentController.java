@@ -124,11 +124,11 @@ public class ScheduleAppointmentController {
             if (updatedScheduleAppointment.isPresent()) {
                 return ResponseEntity.ok(updatedScheduleAppointment.get());
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ScheduleAppointment not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento de serviço não encontrado!");
             }
         } catch (Exception e) {
             System.err.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
         }
     }
 
@@ -145,11 +145,11 @@ public class ScheduleAppointmentController {
             if (updatedScheduleAppointment.isPresent()) {
                 return ResponseEntity.ok(updatedScheduleAppointment.get());
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ScheduleAppointment not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento de serviço não encontrado!");
             }
         } catch (Exception e) {
             System.err.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ public class ScheduleAppointmentController {
     public ResponseEntity<?> updateScheduleAppointment(@PathVariable String id, @RequestBody ScheduleAppointment scheduleAppointment) {
         try {
             ScheduleAppointment existingScheduleAppointment = scheduleAppointmentRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("Schedule Appointment not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Agendamento de serviço não encontrado!"));
 
             var conflicted = false;
             List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
@@ -175,8 +175,8 @@ public class ScheduleAppointmentController {
                         conflicted = true;
                     }
                     if (conflicted == true) {
-                        String msg = "Schedule appointment conflicted. Previous one existed where date start: " + dateStart +
-                                " and date finish: " + dateFinish;
+                        String msg = "Agendamento de serviço com conflitos!. Existia um anterior com a data de início: " + dateStart +
+                                " e data de fim: " + dateFinish;
                         return ResponseEntity.ok(msg);
                     }
                 }
@@ -199,7 +199,7 @@ public class ScheduleAppointmentController {
         try {
             AtomicBoolean definedDates = new AtomicBoolean(false);
             ScheduleAppointment existingScheduleAppointment = scheduleAppointmentRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("Schedule Appointment not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Agendamento de serviço não encontrado!"));
 
             updates.forEach((key, value) -> {
                 if(Objects.equals(key, "dateStart") || Objects.equals(key, "dateFinish")){
@@ -214,11 +214,11 @@ public class ScheduleAppointmentController {
                         try {
                             existingScheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
                     } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Invalid value for state: " + value);
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
                     }
                 }
 
-                    default -> throw new RuntimeException("Invalid field update request");
+                    default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
                 }
             });
 
@@ -238,8 +238,8 @@ public class ScheduleAppointmentController {
                             conflicted = true;
                         }
                         if (conflicted == true) {
-                            String msg = "Schedule appointment conflicted. Previous one existed where date start: " + dateStart +
-                                    " and date finish: " + dateFinish;
+                            String msg = "Agendamento de serviço com conflitos! Existia um anterior com a data de início: " + dateStart +
+                                    " e data de fim: " + dateFinish;
                             return ResponseEntity.ok(msg);
                         }
                     }
@@ -260,11 +260,11 @@ public class ScheduleAppointmentController {
         try {
             Optional<ScheduleAppointment> existingScheduleAppointment = this.scheduleAppointmentRepository.findById(id);
             this.scheduleAppointmentRepository.deleteById(id);
-            String msg = (existingScheduleAppointment.isPresent() ? "Schedule appointment with id '" + id + "' was deleted!" : "Couldn't find any schedule appointment with the id: '" + id + "'!");
+            String msg = (existingScheduleAppointment.isPresent() ? "Agendamento de serviço com o id: '" + id + "' foi eliminado!" : "Não foi possível encontrar nenhum agendamento de serviço com o id: '" + id + "'!");
             return ResponseEntity.ok(msg);
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There was an error trying to delete the schedule appointment with id: '" + id + "'!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocorreu um erro ao tentar eliminar o agendamento de serviço com o id: '" + id + "'!");
         }
     }
 }

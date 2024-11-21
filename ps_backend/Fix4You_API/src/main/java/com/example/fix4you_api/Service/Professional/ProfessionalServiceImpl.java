@@ -167,7 +167,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Transactional
     public Professional partialUpdateProfessional(String id, Map<String, Object> updates) {
         Professional professional = professionalRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Professional not found"));
+                .orElseThrow(() -> new NoSuchElementException("Professional não encontrado!"));
 
         updates.forEach((key, value) -> {
             switch (key) {
@@ -181,7 +181,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentMethod>) value);
                 case "strikes" -> professional.setStrikes((Integer) value);
                 case "isSupended" -> professional.setSupended((boolean) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
@@ -238,7 +238,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     private Professional findOrThrow(String id) {
         return professionalRepository.findById(id)
                 .filter(professional -> professional.getUserType() == EnumUserType.PROFESSIONAL)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Professional %s not found or user is not a professional", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Professional %s não encontrado! Ou o utilizador não é um professional", id)));
     }
 
     private String extractCategoryFromFilter(String filter) {

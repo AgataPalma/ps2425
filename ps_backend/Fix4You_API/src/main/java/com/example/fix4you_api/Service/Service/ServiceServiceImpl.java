@@ -118,7 +118,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private com.example.fix4you_api.Data.Models.Service findOrThrow(String id) {
         return serviceRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Service %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Serviço %s não encontrado!", id)));
     }
 
 }
