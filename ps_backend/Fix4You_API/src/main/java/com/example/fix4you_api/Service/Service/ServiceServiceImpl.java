@@ -72,6 +72,11 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    public List<com.example.fix4you_api.Data.Models.Service> getServicesByUrgency() {
+        return this.serviceRepository.findByUrgentTrueAndState(ServiceStateEnum.PENDING);
+    }
+
+    @Override
     public List<com.example.fix4you_api.Data.Models.Service> getServicesByProfessionalIdAndState(String professionalId, ServiceStateEnum state) {
         return this.serviceRepository.findByProfessionalIdAndState(professionalId, state);
     }
@@ -113,7 +118,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private com.example.fix4you_api.Data.Models.Service findOrThrow(String id) {
         return serviceRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("Service %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Serviço %s não encontrado!", id)));
     }
 
 }

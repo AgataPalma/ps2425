@@ -100,12 +100,12 @@ public class UserController {
         // retrieve data from dataBase
         User userLogin = userService.loginUser(request);
         if(userLogin == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email ou palavra-passe incorretos!");
         }
 
         // check if email is confirmed
         if(!userLogin.isIsEmailConfirmed()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You need to confirm your email!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tem de confirmar o seu e-mail!");
         }
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(),userLogin.getPassword()));
@@ -123,12 +123,12 @@ public class UserController {
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            return ResponseEntity.ok("User not found");
+            return ResponseEntity.ok("Utilizador não encontrado!");
         }
 
         userService.sendEmailWithVerificationToken(user);
 
-        return ResponseEntity.ok("Email sent successfully");
+        return ResponseEntity.ok("Email enviado com sucesso!");
     }
 
     @GetMapping("/resetPasswordToken/{token}")
@@ -162,18 +162,18 @@ public class UserController {
         // Busca o token no repositório
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token);
         if (resetToken == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token inválido!");
         }
 
         // Verifica se o token ainda é válido
         if (resetToken.getExpiryDateTime().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token has expired");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O token expirou!");
         }
 
         // Usa o userId do token para encontrar o usuário no repositório
         User user = userRepository.findById(resetToken.getUserId()).orElse(null);
         if (user == null || !user.getEmail().equals(email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email or token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email ou token inválido!");
         }
 
         // Redefine a senha do usuário e salva
@@ -183,7 +183,7 @@ public class UserController {
         // Remove o token após o uso
         passwordResetTokenRepository.delete(resetToken);
 
-        return ResponseEntity.ok("Password reset successfully");
+        return ResponseEntity.ok("Reposição da palavra-passe realizada com sucesso!");
     }
 
 
@@ -191,11 +191,11 @@ public class UserController {
     public ResponseEntity<?> emailConfirmation(@PathVariable String email) {
         User user = userRepository.findByEmail(email);
         if(user == null) {
-            return ResponseEntity.ok("User not found");
+            return ResponseEntity.ok("Utilizador não encontrado!");
         }
 
         user.setIsEmailConfirmed(true);
         userRepository.save(user);
-        return ResponseEntity.ok("Email confirmed");
+        return ResponseEntity.ok("Email confirmado!");
     }
 }

@@ -43,7 +43,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "name" -> existingPaymentMethod.setName((String) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
@@ -58,7 +58,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
     private PaymentMethod findOrThrow(String id) {
         return paymentMethodRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("PaymentMethod %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Método de pagamento %s não encontrado!", id)));
     }
 
     @Override

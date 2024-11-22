@@ -102,7 +102,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 case "relatedMonthYear" -> existingProfessionalsFee.setRelatedMonthYear((String) value);
                 case "paymentDate" -> existingProfessionalsFee.setPaymentDate((LocalDateTime) value);
                 case "paymentStatus" -> existingProfessionalsFee.setPaymentStatus((PaymentStatusEnum) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!\n");
             }
         });
 
@@ -186,7 +186,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     private ProfessionalsFee findOrThrow(String id) {
         return professionalFeeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("ProfessionalsFee %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Taxa do profissional com o id %s não encontrada!", id)));
     }
 
 }

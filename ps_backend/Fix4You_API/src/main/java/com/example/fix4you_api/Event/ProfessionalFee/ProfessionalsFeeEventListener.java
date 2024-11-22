@@ -22,12 +22,12 @@ public class ProfessionalsFeeEventListener {
         ProfessionalsFee fee = event.getProfessionalsFee();
         String currentUserId = getCurrentUserId();
         String notification = String.format(
-                "Payment Notification. " +
-                        "Fee amount: %s. " +
-                        "Number of services: %s. " +
-                        "Related period: %s. " +
-                        "Payment date: %s. " +
-                        "Payment status: %s",
+                "Notificação de pagamento. " +
+                        "Valor da taxa: %s. " +
+                        "Número de serviços: %s. " +
+                        "Período relacionado: %s. " +
+                        "Data de pagamento: %s. " +
+                        "Estado do pagamento: %s",
                 fee.getValue(), fee.getNumberServices(), fee.getRelatedMonthYear(), fee.getPaymentDate(), fee.getPaymentStatus());
 
         if (fee.getProfessional().getId().equals(currentUserId)) {
@@ -40,8 +40,8 @@ public class ProfessionalsFeeEventListener {
         ProfessionalsFee fee = event.getProfessionalsFee();
         Professional professional = event.getProfessional();
         emailSenderService.sendEmail(
-                professional.getEmail(), "Payment Invoice", "",
-                fee.getInvoice(), String.format("Invoice %s ", fee.getPaymentDate())
+                professional.getEmail(), "Fatura de pagamento", "",
+                fee.getInvoice(), String.format("Fatura %s ", fee.getPaymentDate())
         );
     }
 

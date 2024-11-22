@@ -66,7 +66,7 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
                 case "chargesTravels" -> existingCategory.setChargesTravels((Boolean) value);
                 //case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
                 case "mediumPricePerService" -> existingCategory.setMediumPricePerService(((Double) value).floatValue());
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
@@ -87,7 +87,7 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
 
     private CategoryDescription findOrThrow(String id) {
         return categoryDescriptionRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("CategoryDescription %s not found", id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format("Descrição da categoria %s não encontrada!", id)));
     }
 
 }

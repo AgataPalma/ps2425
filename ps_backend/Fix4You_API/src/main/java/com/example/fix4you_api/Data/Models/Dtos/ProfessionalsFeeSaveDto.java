@@ -25,10 +25,10 @@ public class ProfessionalsFeeSaveDto {
     @Id
     private String id;
 
-    @NotNull(message = "Professional cannot be null")
+    @NotNull(message = "Profissional não pode ser nulo")
     private ProfessionalsFee.Professional professional;
 
-    @NotNull(message = "Value cannot be null")
+    @NotNull(message = "Valor não pode ser nulo")
     @DecimalMin(value = "0.0", message = "Value must be a positive value")
     @Digits(integer = 3, fraction = 2, message = "Value must be a numeric value with up to 3 digits and 2 decimal places")
     private float value;

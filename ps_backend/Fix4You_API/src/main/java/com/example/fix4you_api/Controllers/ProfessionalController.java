@@ -38,11 +38,11 @@ public class ProfessionalController {
     public ResponseEntity<?> createProfessional(@RequestBody Professional professional) throws IOException {
         // verify if the email and nif are unique
         if(userService.emailExists(professional.getEmail())){
-            return new ResponseEntity<>("Email already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("O email já existe!", HttpStatus.CONFLICT);
         }
 
         if(professionalService.nifExists(professional.getNif())) {
-            return new ResponseEntity<>("NIF already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("O NIF já existe!", HttpStatus.CONFLICT);
         }
 
         Professional createdProfessional = professionalService.createProfessional(professional);

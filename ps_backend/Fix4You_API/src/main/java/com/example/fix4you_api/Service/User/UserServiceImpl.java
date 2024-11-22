@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User partialUpdateUser(String id, Map<String, Object> updates) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("Utilizador não encontrado!"));
 
         updates.forEach((key, value) -> {
             switch (key) {
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 case "userType" -> user.setUserType((EnumUserType) value);
                 case "IsEmailConfirmed" -> user.setIsEmailConfirmed((Boolean) value);
                 //case "IsDeleted" -> user.setIsDeleted((Boolean) value);
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!\n");
             }
         });
 
@@ -90,15 +90,7 @@ public class UserServiceImpl implements UserService {
 
     private User findOrThrow(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("User %s not found", id)));
-    }
-
-    private User findByEmailOrThrow(String email) {
-        User user = userRepository.findByEmail(email);
-        if(user == null) {
-            throw new NoSuchElementException(String.format("User %s not found", email));
-        }
-        return user;
+                .orElseThrow(() -> new NoSuchElementException(String.format("Utilizador %s não encontrado!", id)));
     }
 
     @Override
@@ -118,10 +110,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean sendEmailWithVerificationToken(User user) {
         String resetLink = generateResetToken(user);
-        String body = "Hello \n\n" + "Please click on this link to Reset your Password: " + resetLink + " \n\n";
+        String body = "Hello \n\n" + "Clique neste link para redefinir a sua palavra-passe: " + resetLink + " \n\n";
 
         emailSenderService.sendEmail(user.getEmail(),
-                "Verify OTP Fix4You",
+                "Verificar OTP Fix4You",
                 body);
 
         return true;
@@ -131,10 +123,10 @@ public class UserServiceImpl implements UserService {
     public void sendValidationEmailUserRegistration(String email) {
         try {
             String endpointURL = "http://localhost:8080/users/email-confirmation/" + email;
-            String body = "Hello \n\n" + "Please Click on this link to confirm your email address and complete your registration at Fix4You: " + endpointURL + " \n\n";
+            String body = "Hello \n\n" + "Clique neste link para confirmar o seu endereço de email e completar o seu registo na Fix4You: " + endpointURL + " \n\n";
 
             emailSenderService.sendEmail(email,
-                    "Email confirmation Fix4You",
+                    "Confirmação de email Fix4You",
                     body);
         } catch (Exception e) {
             System.err.println("[ERROR] - " + e.getMessage());

@@ -25,7 +25,7 @@ public class LanguageController {
     @PostMapping
     public ResponseEntity<?> createLanguage(@RequestBody Language language) {
         if(languageService.nameExists(language.getName())){
-            return new ResponseEntity<>("Language already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("A linguagem já existe!", HttpStatus.CONFLICT);
         }
 
         Language createdLanguage = languageService.createLanguage(language);

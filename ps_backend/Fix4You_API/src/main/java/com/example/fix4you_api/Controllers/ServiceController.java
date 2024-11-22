@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -25,11 +26,20 @@ public class ServiceController {
 
     @PostMapping
     public ResponseEntity<?> addService(@RequestBody Service service) {
-        if (service.getClientId().equals(service.getProfessionalId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional and client cant be the same");
+        try {
+            if(service.getClientId().equals(service.getProfessionalId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O profissional e o cliente não podem ser o mesmo utilizador!");
+            }
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
+
+            this.serviceService.createService(service);
+            return ResponseEntity.ok(service.getId());
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        this.serviceService.createService(service);
-        return ResponseEntity.ok(service.getId());
     }
 
     @GetMapping
@@ -61,7 +71,15 @@ public class ServiceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateService(@PathVariable String id, @RequestBody Service service) {
-        return ResponseEntity.ok(serviceService.updateService(id, service));
+        try {
+            if(service.getClientId() != null && service.getProfessionalId() != null){
+                service.setAgreementDate(LocalDateTime.now());
+            }
+            return ResponseEntity.ok(serviceService.updateService(id, service));
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/accept-service")
@@ -69,19 +87,27 @@ public class ServiceController {
         Service service = this.serviceService.getById(serviceId);
 
         if (service.getProfessionalId() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This service is already assigned to other professional");
+            if(!service.getProfessionalId().equals(professionalId) ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este serviço já está atribuído a outro profissional!");
+            }
+
+            if(service.getState().equals(ServiceStateEnum.ACCEPTED)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este serviço já foi aceito por si!");
+            }
         }
 
         // check if the professional is suspended
         Professional professional = professionalService.getProfessionalById(professionalId);
         if (professional == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional not found!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Profissional não encontrado!");
         }
 
         if (professional.isSupended()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professional is suspended!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O Profissional está suspenso!");
         }
-
+        if(service.getClientId() != null && service.getProfessionalId() != null){
+            service.setAgreementDate(LocalDateTime.now());
+        }
         service.setProfessionalId(professionalId);
         service.setState(ServiceStateEnum.ACCEPTED);
         serviceService.createService(service);
@@ -108,13 +134,15 @@ public class ServiceController {
                     try {
                         service.setState(ServiceStateEnum.valueOf(value.toString().toUpperCase()));
                     } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Invalid value for state: " + value);
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
                     }
                 }
-                default -> throw new RuntimeException("Invalid field update request");
+                default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
-
+        if(service.getClientId() != null && service.getProfessionalId() != null){
+            service.setAgreementDate(LocalDateTime.now());
+        }
         serviceService.createService(service);
         return ResponseEntity.ok(service);
     }
