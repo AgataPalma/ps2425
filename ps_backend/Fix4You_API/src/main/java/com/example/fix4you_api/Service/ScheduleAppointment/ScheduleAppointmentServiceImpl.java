@@ -263,12 +263,11 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
 
             // Get the response code
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
 
             // Check if the deletion was successful (HTTP 204 No Content indicates success)
             return responseCode == HttpURLConnection.HTTP_NO_CONTENT;
         } catch (IOException e) {
-            System.out.println("Error while deleting event: " + e.getMessage());
+            System.out.println("Erro ao eliminar o evento: " + e.getMessage());
             return false;
         }
     }
