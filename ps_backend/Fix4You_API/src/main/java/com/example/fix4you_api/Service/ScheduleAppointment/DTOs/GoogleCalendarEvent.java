@@ -4,11 +4,16 @@ import java.time.LocalDateTime;
 
 public class GoogleCalendarEvent {
 
+    private String eventId;
     private String title;
     private String description;
     private String location;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    public String getEventId() {
+        return eventId;
+    }
 
     public String getTitle() {
         return title;
@@ -28,6 +33,10 @@ public class GoogleCalendarEvent {
 
     public LocalDateTime getEndTime() {
         return endTime;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
     public void setTitle(String title) {

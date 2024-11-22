@@ -16,4 +16,5 @@ public interface ScheduleAppointmentService {
     boolean isTokenValid(String accessToken) throws IOException;
     String refreshToken(String refreshToken);
     List<GoogleCalendarEvent> getGoogleCalendarEventsBetween(String userId, LocalDateTime start, LocalDateTime end);
+    boolean deleteGoogleCalendarEvent(String userId, String eventId);
 }

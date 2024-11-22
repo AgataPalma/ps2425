@@ -18,6 +18,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +76,12 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
                 googleTokenUserRepository.save(tokenUser);
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            String formattedStart = start.format(formatter);
+            String formattedEnd = end.format(formatter);
 
             String url = String.format("https://www.googleapis.com/calendar/v3/calendars/primary/events?" +
-                    "timeMin=%s&timeMax=%s",start, end);
+                    "timeMin=%s&timeMax=%s",formattedStart, formattedEnd);
 
             HttpURLConnection connection = null;
             URL obj = new URL(url);
@@ -115,17 +118,18 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
                 event.setTitle(item.path("summary").asText());
                 event.setDescription(item.path("description").asText(null)); // Null-safe
                 event.setLocation(item.path("location").asText(null));
+                event.setEventId(item.path("id").asText(null));
 
                 // Parse start time
                 JsonNode startNode = item.path("start").path("dateTime");
                 if (!startNode.isMissingNode()) {
-                    event.setStartTime(LocalDateTime.parse(startNode.asText()));
+                    event.setStartTime(ZonedDateTime.parse(startNode.asText()).toLocalDateTime());
                 }
 
                 // Parse end time
                 JsonNode endNode = item.path("end").path("dateTime");
                 if (!endNode.isMissingNode()) {
-                    event.setEndTime(LocalDateTime.parse(endNode.asText()));
+                    event.setEndTime(ZonedDateTime.parse(endNode.asText()).toLocalDateTime());
                 }
 
                 googleEvents.add(event);
@@ -232,6 +236,40 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
             errorReader.close();
             System.out.println("Error response: " + errorResponse.toString()); // Log the error response
             return "Error occurred: " + e.getMessage();
+        }
+    }
+
+    public boolean deleteGoogleCalendarEvent(String userId, String eventId) {
+        try {
+            // Retrieve the Google token user from the repository
+            GoogleTokenUser tokenUser = googleTokenUserRepository.findByUserId(userId);
+
+            // Check if the token is valid, and refresh if necessary
+            if (!isTokenValid(tokenUser.getToken())) {
+                String newToken = refreshToken(tokenUser.getRefreshToken());
+                tokenUser.setToken(newToken);
+                googleTokenUserRepository.save(tokenUser);
+            }
+
+            // Construct the URL to delete the specific event
+            String url = String.format("https://www.googleapis.com/calendar/v3/calendars/primary/events/%s", eventId);
+
+            // Open an HTTP connection
+            HttpURLConnection connection = null;
+            URL obj = new URL(url);
+            connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Authorization", "Bearer " + tokenUser.getToken());
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+            // Check if the deletion was successful (HTTP 204 No Content indicates success)
+            return responseCode == HttpURLConnection.HTTP_NO_CONTENT;
+        } catch (IOException e) {
+            System.out.println("Error while deleting event: " + e.getMessage());
+            return false;
         }
     }
 

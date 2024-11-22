@@ -378,6 +378,12 @@ public class ScheduleAppointmentController {
         return ResponseEntity.ok(scheduleAppointmentService.getGoogleCalendarEventsBetween(userId, start, end));
     }
 
+    @DeleteMapping("/delete-google-event")
+    public ResponseEntity<?> deleteGoogleAppointment(@RequestParam String userId, @RequestParam String eventId) {
+        boolean result = scheduleAppointmentService.deleteGoogleCalendarEvent(userId, eventId);
+        return ResponseEntity.ok(result ? "Evento eliminado com sucesso!" : "Ocorreu um erro ao eliminar o evento!");
+    }
+
     @GetMapping("/token-valid")
     public ResponseEntity<?> tokenValid(@RequestParam String token) throws IOException {
 
