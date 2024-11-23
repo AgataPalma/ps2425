@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProfessionalRepository extends MongoRepository<Professional, String> {
     List<Professional> findByUserType(EnumUserType userType);
@@ -13,4 +14,5 @@ public interface ProfessionalRepository extends MongoRepository<Professional, St
     List<Professional> findActiveProfessionalsByUserType(EnumUserType userType);
 
     Professional findByEmail(String email);
+    Optional<Professional> findById(String id);
 }
