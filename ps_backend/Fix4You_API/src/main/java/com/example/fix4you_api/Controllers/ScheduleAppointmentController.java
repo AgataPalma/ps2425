@@ -3,6 +3,7 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import com.example.fix4you_api.Service.ScheduleAppointment.DTOs.GoogleCalendarEvent;
 import jakarta.validation.Valid;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -368,6 +369,12 @@ public class ScheduleAppointmentController {
     public ResponseEntity<?> createGoogleAppointment(@RequestParam String userId, @RequestParam String appointmentId) throws IOException {
 
         return ResponseEntity.ok(scheduleAppointmentService.createGoogleCalendarEvent(userId, appointmentId));
+    }
+
+    @PutMapping("/edit-google-event")
+    public ResponseEntity<?> editGoogleAppointment(@RequestParam String userId, @RequestParam String eventId, @RequestBody GoogleCalendarEvent event) {
+        boolean result = scheduleAppointmentService.editGoogleCalendarEvent(userId, eventId, event);
+        return ResponseEntity.ok(result ? "Evento editado com sucesso!" : "Ocorreu um erro ao editar o evento!");
     }
 
     @GetMapping("/google-events-between")

@@ -9,6 +9,7 @@ import com.example.fix4you_api.Data.MongoRepositories.*;
 import com.example.fix4you_api.Service.ScheduleAppointment.DTOs.GoogleCalendarEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 
@@ -268,6 +269,68 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
             return responseCode == HttpURLConnection.HTTP_NO_CONTENT;
         } catch (IOException e) {
             System.out.println("Erro ao eliminar o evento: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean editGoogleCalendarEvent(String userId, String eventId, GoogleCalendarEvent updatedEvent) {
+        try {
+            // Retrieve the Google token user from the repository
+            GoogleTokenUser tokenUser = googleTokenUserRepository.findByUserId(userId);
+
+            // Check if the token is valid, and refresh if necessary
+            if (!isTokenValid(tokenUser.getToken())) {
+                String newToken = refreshToken(tokenUser.getRefreshToken());
+                tokenUser.setToken(newToken);
+                googleTokenUserRepository.save(tokenUser);
+            }
+
+            // Construct the URL for updating the event
+            String url = String.format("https://www.googleapis.com/calendar/v3/calendars/primary/events/%s", eventId);
+
+            // Open an HTTP connection
+            HttpURLConnection connection = null;
+            URL obj = new URL(url);
+            connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Authorization", "Bearer " + tokenUser.getToken());
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Build the JSON payload with the updated event details
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode eventNode = mapper.createObjectNode();
+
+            // Add updated fields
+            eventNode.put("summary", updatedEvent.getTitle());
+            eventNode.put("description", updatedEvent.getDescription());
+            eventNode.put("location", updatedEvent.getLocation());
+
+            // Add start and end times
+            ObjectNode startNode = eventNode.putObject("start");
+            startNode.put("dateTime", updatedEvent.getStartTime().format(DateTimeFormatter.ISO_DATE_TIME));
+            startNode.put("timeZone", "UTC");
+
+            ObjectNode endNode = eventNode.putObject("end");
+            endNode.put("dateTime", updatedEvent.getEndTime().format(DateTimeFormatter.ISO_DATE_TIME));
+            endNode.put("timeZone", "UTC");
+
+            // Convert the payload to a JSON string
+            String jsonPayload = mapper.writeValueAsString(eventNode);
+
+            // Send the JSON payload
+            connection.setDoOutput(true);
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+
+            // Check if the update was successful (HTTP 200 OK indicates success)
+            return responseCode == HttpURLConnection.HTTP_OK;
+        } catch (IOException e) {
+            System.out.println("Erro ao editar google event: " + e.getMessage());
             return false;
         }
     }
