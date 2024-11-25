@@ -23,6 +23,8 @@ import PasswordReset from "./pages/PasswordReset";
 import ScheduleAppointments from "./pages/ScheduleAppointments";
 import NotificationsClient from './pages/NotificationsClient';
 import NotificationsProfessional from './pages/NotificationsProfessional';
+import Dashboard from './pages/Admin/Dashboard';
+
 
 function App() {
 
@@ -55,6 +57,9 @@ function App() {
             setUserId(id);
         }
         setLoading(false);
+
+
+
     }, []);
 
     if (loading) {
@@ -204,6 +209,14 @@ function App() {
                         element={
                             <ProtectedRoute allowedUserType="PROFESSIONAL">
                                 <NotificationsProfessional id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Dashboard"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Dashboard id={userId} />
                             </ProtectedRoute>
                         }
                     />
