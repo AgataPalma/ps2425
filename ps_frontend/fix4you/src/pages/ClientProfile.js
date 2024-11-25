@@ -83,8 +83,8 @@ function ClientProfile({ id }) {
         setEditMode(false);
 
         const profileImage = profileData.profileImage.includes('http')
-            ? profileData.profileImage
-            : atob(profileData.profileImage);
+                ? profileData.profileImage
+                : DICEBEAR_BASE_URL + "avatar3.svg";
 
         setFormData({
             ...profileData,
