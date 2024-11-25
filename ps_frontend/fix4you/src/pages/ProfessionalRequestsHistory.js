@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../components/axiosInstance';
 import Spinner from "../components/Spinner";
+import MessageModal from "../components/MessageModal";
 
 function ProfessionalRequestsHistory({ id }) {
     const [requests, setRequests] = useState([]);
@@ -17,55 +18,59 @@ function ProfessionalRequestsHistory({ id }) {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-
-                const servicesResponse = await axiosInstance.get(`/services/professional/${id}`);
-                setRequests(servicesResponse.data);
-
-                const categoriesResponse = await axiosInstance.get(`/categoryDescriptions/user/${id}`);
-                setCategories(categoriesResponse.data);
-
-                const scheduleResponse = await axiosInstance.get(`/scheduleAppointments/professional/${id}`);
-                setScheduleAppointments(scheduleResponse.data);
-
-                const reviewsResponse = await axiosInstance.get(`/reviews?reviewedId=${id}`);
-                const reviewMap = {};
-                reviewsResponse.data.forEach((review) => {
-                    if (!reviewMap[review.serviceId]) {
-                        reviewMap[review.serviceId] = {};
-                    }
-                    if (review.reviewerId === id) {
-                        reviewMap[review.serviceId].professionalToClient = review;
-                    } else {
-                        reviewMap[review.serviceId].clientToProfessional = review;
-                    }
-                });
-                setReviews(reviewMap);
-
-                const acceptedRequests = servicesResponse.data.filter(
-                    (request) => request.state === "ACCEPTED"
-                );
-                const clientDetailsMap = {};
-                for (const request of acceptedRequests) {
-                    if (request.clientId) {
-                        const clientResponse = await axiosInstance.get(`/clients/${request.clientId}`);
-                        clientDetailsMap[request.clientId] = clientResponse.data;
-                    }
-                }
-                setClientDetails(clientDetailsMap);
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, [id]);
 
+    const fetchData = async () => {
+        try {
+            setLoading(true);
 
+            const servicesResponse = await axiosInstance.get(`/services/professional/${id}`);
+            setRequests(servicesResponse.data);
+
+            const categoriesResponse = await axiosInstance.get(`/categoryDescriptions/user/${id}`);
+            setCategories(categoriesResponse.data);
+
+            const scheduleResponse = await axiosInstance.get(`/scheduleAppointments/professional/${id}`);
+            const appointmentsMap = {};
+            scheduleResponse.data.forEach((appointment) => {
+                console.log('Mapping appointment:', appointment);
+                appointmentsMap[appointment.serviceId] = appointment;
+            });
+            console.log('Mapped Appointments:', appointmentsMap);
+            setScheduleAppointments(appointmentsMap);
+
+            const reviewsResponse = await axiosInstance.get(`/reviews?reviewedId=${id}`);
+            const reviewMap = {};
+            reviewsResponse.data.forEach((review) => {
+                if (!reviewMap[review.serviceId]) {
+                    reviewMap[review.serviceId] = {};
+                }
+                if (review.reviewerId === id) {
+                    reviewMap[review.serviceId].professionalToClient = review;
+                } else {
+                    reviewMap[review.serviceId].clientToProfessional = review;
+                }
+            });
+            setReviews(reviewMap);
+
+            const acceptedRequests = servicesResponse.data.filter(
+                (request) => request.state === "ACCEPTED"
+            );
+            const clientDetailsMap = {};
+            for (const request of acceptedRequests) {
+                if (request.clientId) {
+                    const clientResponse = await axiosInstance.get(`/clients/${request.clientId}`);
+                    clientDetailsMap[request.clientId] = clientResponse.data;
+                }
+            }
+            setClientDetails(clientDetailsMap);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -120,12 +125,18 @@ function ProfessionalRequestsHistory({ id }) {
             });
     };
 
+    //const getAppointmentState = (serviceId) => {
+    //    const appointment = scheduleAppointments.find(appointment => appointment.serviceId === serviceId);
+   //     return appointment ? appointment.state : 'Unknown';
+   // };
+
     const getAppointmentState = (serviceId) => {
-        const appointment = scheduleAppointments.find(appointment => appointment.serviceId === serviceId);
+        const appointment = scheduleAppointments[serviceId];
+        console.log('Appointment: ', appointment);
+        console.log('serviceId: ', serviceId)
         return appointment ? appointment.state : 'Unknown';
     };
 
-    // Filter requests based on the active tab and selected category
     const filteredRequests = requests.filter(request => {
         const isCategoryMatch = selectedCategory
             ? request.category?.name === selectedCategory
@@ -165,7 +176,8 @@ function ProfessionalRequestsHistory({ id }) {
 
             {/* Filter by Category */}
             <div className="mb-6">
-                <label htmlFor="category" className="block text-lg font-medium text-gray-700 mb-2">Filtrar por categoria</label>
+                <label htmlFor="category" className="block text-lg font-medium text-gray-700 mb-2">Filtrar por
+                    categoria</label>
                 <select
                     id="category"
                     value={selectedCategory}
@@ -188,7 +200,7 @@ function ProfessionalRequestsHistory({ id }) {
                         <div key={request.id} className="p-4 bg-gray-100 rounded-lg shadow-md flex justify-between">
                             <div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">{request.title}</h3>
-                                <p className="text-gray-600">Preço por hora: ${request.price}</p>
+                                <p className="text-gray-600">Preço por hora: {request.price}€</p>
                                 <p className="text-gray-600">Estado: {request.state}</p>
                                 <p className="text-gray-600">Estado da marcação: {getAppointmentState(request.id)}</p>
                                 {request.state === "ACCEPTED" && clientDetails[request.clientId] && (
@@ -196,7 +208,7 @@ function ProfessionalRequestsHistory({ id }) {
                                 )}
                             </div>
                             <div className="flex flex-col items-end space-y-2">
-                                {request.state === 'COMPLETED' && !reviews[request.id] && (
+                            {request.state === 'COMPLETED' && !reviews[request.id] && (
                                     <button
                                         onClick={() => handleViewDetails(request)}
                                         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
@@ -248,7 +260,7 @@ function ProfessionalRequestsHistory({ id }) {
                             >
                                 Reviews
                             </button>
-                            {!reviews[selectedRequest.id] && (
+                            {!reviews[selectedRequest.id] && selectedRequest.state === "COMPLETED" && (
                                 <button
                                     className={`px-4 py-2 ${
                                         activeModalTab === 'writeReview' ? 'border-b-2 border-yellow-600 text-yellow-600' : 'text-gray-500'
@@ -266,7 +278,7 @@ function ProfessionalRequestsHistory({ id }) {
                                 <h3 className="text-lg font-bold text-gray-800">Serviço</h3>
                                 <p className="text-gray-600">Título: {selectedRequest.title}</p>
                                 <p className="text-gray-600">Descrição: {selectedRequest.description}</p>
-                                <p className="text-gray-600">Preço: ${selectedRequest.price}</p>
+                                <p className="text-gray-600">Preço: {selectedRequest.price}€</p>
                                 <p className="text-gray-600">Categoria: {selectedRequest.category?.name}</p>
                             </div>
                         )}
@@ -286,7 +298,8 @@ function ProfessionalRequestsHistory({ id }) {
                                             </p>
                                         </div>
                                     ) : (
-                                        <p className="text-gray-600 italic">Ainda não escreveu uma revisão para este cliente.</p>
+                                        <p className="text-gray-600 italic">Ainda não escreveu uma revisão para este
+                                            cliente.</p>
                                     )}
                                 </div>
 
@@ -302,7 +315,8 @@ function ProfessionalRequestsHistory({ id }) {
                                             </p>
                                         </div>
                                     ) : (
-                                        <p className="text-gray-600 italic">O cliente ainda não escreveu uma revisão para este serviço.</p>
+                                        <p className="text-gray-600 italic">O cliente ainda não escreveu uma revisão
+                                            para este serviço.</p>
                                     )}
                                 </div>
                             </div>
