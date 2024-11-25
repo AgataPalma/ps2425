@@ -96,15 +96,15 @@ const PrincipalPageClient = ({ id }) => {
     const handleProfessionalClick = async (professional) => {
         try {
             setSelectedProfessional(professional);
-            console.log("Professional clicked:", professional);
+            //console.log("Professional clicked:", professional);
             setActiveTab("information");
 
             const response = await axiosInstance.get(`/portfolioItems/user/${professional.professionalId}`);
-            console.log(professional.professionalId)
+            //console.log(professional.professionalId)
 
             if (response.data && response.data.length > 0) {
                 const portfolioItem = response.data[0];
-                console.log("Portfolio Item Description:", portfolioItem.description);
+                //console.log("Portfolio Item Description:", portfolioItem.description);
 
                 setSelectedProfessional((prev) => ({
                     ...prev,
@@ -660,10 +660,10 @@ const PrincipalPageClient = ({ id }) => {
                                         <p className="text-sm mb-2"><strong>Descrição:</strong> {selectedProfessional.description}</p>
                                         <p className="text-sm mb-2"><strong>Localização:</strong> {selectedProfessional.location}</p>
                                         <p className="text-sm mb-2"><strong>Idiomas:</strong> {selectedProfessional.languages.map(lang => lang.name).join(', ')}</p>
-                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceitas:</strong> {selectedProfessional.paymentMethods && selectedProfessional.paymentMethods.length > 0
-                                            ? selectedProfessional.paymentMethods.map((method, index) => (
+                                        <p className="text-sm mb-2"><strong>Formas de Pagamento Aceites:</strong> {selectedProfessional.acceptedPayments && selectedProfessional.acceptedPayments.length > 0
+                                            ? selectedProfessional.acceptedPayments.map((method, index) => (
                                                 <span key={index}>
-                                {method.name}{index < selectedProfessional.paymentMethods.length - 1 ? ', ' : ''}
+                                {method.name}{index < selectedProfessional.acceptedPayments.length - 1 ? ', ' : ''}
                             </span>
                                             ))
                                             : 'Nenhuma forma de pagamento disponível'}</p>
