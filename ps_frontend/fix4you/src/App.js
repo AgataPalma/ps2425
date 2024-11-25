@@ -24,6 +24,7 @@ import ScheduleAppointments from "./pages/ScheduleAppointments";
 import NotificationsClient from './pages/NotificationsClient';
 import NotificationsProfessional from './pages/NotificationsProfessional';
 import Dashboard from './pages/Admin/Dashboard';
+import UsersManagement from "./pages/Admin/UsersManagement";
 
 
 function App() {
@@ -220,6 +221,14 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/UsersManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <UsersManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
                     {/*<Route
                         path="/Tickets"
                         element={
@@ -236,14 +245,7 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route
-                        path="/UsersManagement"
-                        element={
-                            <ProtectedRoute allowedUserType="ADMIN">
-                                <UsersManagement id={userId} />
-                            </ProtectedRoute>
-                        }
-                    />
+
                     <Route
                         path="/PlatformManagement"
                         element={

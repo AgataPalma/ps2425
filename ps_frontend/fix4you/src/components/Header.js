@@ -38,9 +38,9 @@ const Header = ({ userType, handleLogout }) => {
                     {userType === 'ADMIN' && (
                         <>
                             <Link to="/Dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+                            <Link to="/UsersManagement" className="text-gray-600 hover:text-gray-900">Utilizadores</Link>
                             {/*<Link to="/Tickets" className="text-gray-600 hover:text-gray-900">Tickets</Link>
                             <Link to="/AdminManagement" className="text-gray-600 hover:text-gray-900">Administração</Link>
-                            <Link to="/UsersManagement" className="text-gray-600 hover:text-gray-900">Utilizadores</Link>
                             <Link to="/PlatformManagement" className="text-gray-600 hover:text-gray-900">Plataforma</Link>
                             <Link to="/Payments" className="text-gray-600 hover:text-gray-900">Pagamentos</Link>
                             <Link to="/Top10" className="text-gray-600 hover:text-gray-900">Top 10</Link>*/}
