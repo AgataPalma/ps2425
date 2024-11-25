@@ -22,6 +22,19 @@ const NewRequests = ({ id }) => {
         setSelectedRequest(request); // Show the full description in the modal
     };
 
+
+    const handleAcceptRequest = (request) => {
+            axiosInstance.put(`/services/accept-service?professionalId=${id}&serviceId=${request.id}`)
+                .then(response => {
+                    SetRequests(prevRequests => prevRequests.filter(r => r.id !== request.id));
+                    console.log('Serviço aceito com sucesso:', response.data);
+                })
+                .catch(error => {
+                    console.error('Erro ao aceitar o serviço:', error);
+                });
+
+    };
+
     useEffect(() => {
         axiosInstance.get('/services')
             .then(response => {
@@ -165,6 +178,7 @@ const NewRequests = ({ id }) => {
                                     </div>
                                     <div className="mt-4 flex justify-center">
                                         <button
+                                            onClick={() => handleAcceptRequest(request)}
                                             className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
                                             Aceitar
                                         </button>

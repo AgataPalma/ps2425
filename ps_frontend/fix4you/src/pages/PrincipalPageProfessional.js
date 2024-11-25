@@ -35,8 +35,6 @@ const PrincipalPageProfessional = ({ id }) => {
         urgent: false
     });
 
-
-
     const handleSearch = async () => {
         if (!searchText.trim()) {
             fetchData();

@@ -17,6 +17,8 @@ function RequestServiceGeneric({ id }) {
   const [languages, setLanguages] = useState([]);
   const [error, setError] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [urgent, setUrgent] = useState(false);
+
 
   const handleLanguagesMethodClick = (language) => {
     setSelectedLanguages((prev) =>
@@ -96,7 +98,8 @@ function RequestServiceGeneric({ id }) {
         id: language.value,
         name: language.label,
       })),
-      state: 0
+      state: 0,
+      urgent: urgent,
     };
 
     try {
@@ -151,7 +154,6 @@ function RequestServiceGeneric({ id }) {
                         className="w-full p-2 border-b-2 border-black placeholder-black placeholder-opacity-80 bg-transparent focus:outline-none focus:border-black"
                     />
                   </div>
-
                   <div className="mb-4">
                     <label className="block text-black font-semibold mb-2">Localização *</label>
                     <Select
@@ -210,6 +212,28 @@ function RequestServiceGeneric({ id }) {
                         placeholder="Descrição"
                     ></textarea>
                   </div>
+
+
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-black font-semibold">Pedido Urgente</span>
+                    <div
+                        onClick={() => setUrgent(!urgent)}
+                        className={`relative inline-flex items-center cursor-pointer w-12 h-6 rounded-full ${
+                            urgent ? 'bg-yellow-600' : 'bg-gray-300'
+                        }`}
+                    >
+    <span
+        className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-transform ${
+            urgent ? 'translate-x-6' : 'translate-x-0'
+        }`}
+    ></span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-2">
+                    {urgent ? 'Este pedido será tratado como urgente.' : 'Este pedido não é urgente.'}
+                  </p>
+
+                  <br/>
 
                   <button
                       type="submit"

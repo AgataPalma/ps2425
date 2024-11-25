@@ -48,7 +48,7 @@ function ScheduleAppointments({ id }) {
         e.preventDefault();
 
         if (!selectedTimeSlot) {
-            setShowModal(true); // Exibe o modal
+            setShowModal(true);
             return;
         }
 
