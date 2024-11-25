@@ -61,14 +61,18 @@ function ProfessionalCalendar({ id }) {
 
     const handleAccept = async (appointmentId, serviceId) => {
         try {
+
+            await axiosInstance.patch(`/services/${serviceId}`, { state: 'ACCEPTED' });
             await axiosInstance.put(`/scheduleAppointments/approve/${appointmentId}`);
 
-            await axiosInstance.put(`/services/accept-service`, null, {
-                params: {
-                    professionalId: id,
-                    serviceId,
-                },
-            });
+            //await axiosInstance.put(`/services/accept-service`, {
+            //    params: {
+             //       professionalId: id,
+            //        serviceId,
+            //    },
+            //});
+
+
 
             setAppointments((prevAppointments) =>
                 prevAppointments.map((app) =>
