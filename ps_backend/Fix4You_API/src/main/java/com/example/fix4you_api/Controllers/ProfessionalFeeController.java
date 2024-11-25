@@ -1,8 +1,10 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
+import com.example.fix4you_api.Data.Models.ClientTotalSpent;
 import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
 import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
@@ -47,6 +49,12 @@ public class ProfessionalFeeController {
     public ResponseEntity<ProfessionalsFee> getProfessionalFee(@PathVariable String id) {
         ProfessionalsFee professionalsFee = professionalsFeeService.getProfessionalsFeeById(id);
         return new ResponseEntity<>(professionalsFee, HttpStatus.OK);
+    }
+
+    @GetMapping("/topExpensesProfessionals")
+    public ResponseEntity<?> getTopExpensesProfessionals() {
+        List<ProfessionalTotalSpent> clientIds = professionalsFeeService.getTopPriceProfessionals();
+        return ResponseEntity.ok(clientIds);
     }
 
     @DeleteMapping("/{id}")

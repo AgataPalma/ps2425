@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,27 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     public List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId) {
         return professionalFeeRepository.findByProfessionalId(professionalId);
+    }
+
+    @Override
+    public List<ProfessionalTotalSpent> getTopPriceProfessionals() {
+        // Fetch the raw results: clientId and totalSpent
+        List<ProfessionalsFee> results = professionalFeeRepository.findTopProfessionalsByTotalSpending();
+
+        // Group by clientId and count services
+        Map<String, Long> clientServiceCounts = results.stream()
+                .filter(professionalFee -> professionalFee.getProfessional().getId() != null)
+                .collect(Collectors.groupingBy(professionalFee -> professionalFee.getProfessional().getId(), Collectors.counting()));
+
+        // Process the results
+        return clientServiceCounts.entrySet().stream()
+                .map(result -> new ProfessionalTotalSpent(
+                        (String) result.getKey(),
+                        ((Number) result.getValue()).doubleValue()     // totalSpent
+                ))
+                .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
+                .limit(10) // Top 10 clients
+                .collect(Collectors.toList());
     }
 
     @Override

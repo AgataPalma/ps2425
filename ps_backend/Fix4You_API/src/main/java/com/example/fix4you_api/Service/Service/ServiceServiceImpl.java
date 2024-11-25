@@ -1,8 +1,7 @@
 package com.example.fix4you_api.Service.Service;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.Professional;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import com.example.fix4you_api.Service.Client.ClientService;
@@ -13,8 +12,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -35,6 +37,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public com.example.fix4you_api.Data.Models.Service createService(com.example.fix4you_api.Data.Models.Service service) {
+        service.setDateCreation(LocalDateTime.now());
         return serviceRepository.save(service);
     }
 
@@ -44,6 +47,63 @@ public class ServiceServiceImpl implements ServiceService {
             return serviceRepository.findAll();
         }
         return rsqlQueryService.findAll(com.example.fix4you_api.Data.Models.Service.class, filter, sort);
+    }
+
+    @Override
+    public List<ClientServiceCount> getTopActivitiesClients() {
+        List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ClientsWithMostServices();
+
+        // Group by clientId and count services
+        Map<String, Long> clientServiceCounts = services.stream()
+                .filter(service -> service.getClientId() != null)
+                .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
+
+        // Sort and limit to top 10
+        return clientServiceCounts.entrySet().stream()
+                .filter(service -> service.getKey() != null)
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(entry -> new ClientServiceCount(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProfessionalServiceCount> getTopActivitiesProfessionals() {
+        List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ProfessionalsWithMostServices();
+
+        // Group by clientId and count services
+        Map<String, Long> professionalServiceCounts = services.stream()
+                .filter(service -> service.getProfessionalId() != null)
+                .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getProfessionalId, Collectors.counting()));
+
+        // Sort and limit to top 10
+        return professionalServiceCounts.entrySet().stream()
+                .filter(service -> service.getKey() != null)
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(entry -> new ProfessionalServiceCount(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClientTotalSpent> getTopPriceClients() {
+        // Fetch the raw results: clientId and totalSpent
+        List<com.example.fix4you_api.Data.Models.Service> results = serviceRepository.findTopClientsByTotalSpending();
+
+        // Group by clientId and count services
+        Map<String, Long> clientServiceCounts = results.stream()
+                .filter(service -> service.getClientId() != null)
+                .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
+
+        // Process the results
+        return clientServiceCounts.entrySet().stream()
+                .map(result -> new ClientTotalSpent(
+                        (String) result.getKey(),
+                        ((Number) result.getValue()).doubleValue()     // totalSpent
+                ))
+                .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
+                .limit(10) // Top 10 clients
+                .collect(Collectors.toList());
     }
 
     @Transactional
