@@ -12,6 +12,7 @@
     "file-saver": "^2.0.5",
     "fix4you": "file:",
     "ics": "^2.33.1",
+    "jwt-decode": "^4.0.0",
     "react": "^18.0.0",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.0.0",
@@ -44,5 +45,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "jest": "^27.5.1"
   }
 }
