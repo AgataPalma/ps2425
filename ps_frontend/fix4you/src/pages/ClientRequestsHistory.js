@@ -23,12 +23,21 @@ function ClientRequestsHistory({ id }) {
                 setRequests(relevantRequests);
 
                 axiosInstance
-                    .get(`/reviews?reviewerId=${id}`)
+                    .get(`/reviews?reviewedId=${id}&reviewerId=${id}`)
                     .then((reviewResponse) => {
                         const reviewMap = {};
                         reviewResponse.data.forEach((review) => {
+                            if (!reviewMap[review.serviceId]) {
+                                reviewMap[review.serviceId] = {};
+                            }
 
-                            reviewMap[review.serviceId] = review;
+                            if (review.reviewerId === id) {
+                                // Client's review for the professional
+                                reviewMap[review.serviceId].clientToProfessional = review;
+                            } else {
+                                // Professional's review for the client
+                                reviewMap[review.serviceId].professionalToClient = review;
+                            }
                         });
                         setReviews(reviewMap);
                     })
@@ -239,45 +248,40 @@ function ClientRequestsHistory({ id }) {
                             </div>
                         )}
 
-                        {activeTab === "reviews" && (
+                        {activeTab === "reviews" && selectedDetails && (
                             <div>
-                                <h3 className="text-lg font-bold"></h3>
-                                {reviews[selectedDetails.service.id] ? (
-                                    <div>
-                                        <p className="text-yellow-500">
-                                            {"★".repeat(reviews[selectedDetails.service.id].classification)}
-                                        </p>
-                                        <p className="text-gray-600">
-                                            {reviews[selectedDetails.service.id].reviewDescription}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-600 italic">
-                                        Ainda não escreveu uma review para este serviço.
-                                    </p>
-                                )}
 
-                                <h3 className="text-lg font-bold mt-4 text-gray-800">Review do Profissional</h3>
-                                {reviews[selectedDetails.service.id]?.reviewedByProfessional ? (
-                                    <div>
-                                        <p className="text-yellow-500">
-                                            {"★".repeat(
-                                                reviews[selectedDetails.service.id].reviewedByProfessional
-                                                    .classification
-                                            )}
-                                        </p>
-                                        <p className="text-gray-600">
-                                            {
-                                                reviews[selectedDetails.service.id].reviewedByProfessional
-                                                    .reviewDescription
-                                            }
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-600 italic">
-                                        O profissional ainda não escreveu nenhuma review.
-                                    </p>
-                                )}
+                                <div className="mt-6">
+                                    <h4 className="text-md font-bold text-gray-700">A sua avaliação</h4>
+                                    {reviews[selectedDetails.service.id]?.clientToProfessional ? (
+                                        <div className="mt-2">
+                                            <p className="text-yellow-500">
+                                                {"★".repeat(reviews[selectedDetails.service.id].clientToProfessional.classification)}
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {reviews[selectedDetails.service.id].clientToProfessional.reviewDescription}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-600 italic">Ainda não avaliou este profissional.</p>
+                                    )}
+                                </div>
+
+                                <div className="mt-6">
+                                    <h4 className="text-md font-bold text-gray-700">Review do Profissional</h4>
+                                    {reviews[selectedDetails.service.id]?.professionalToClient ? (
+                                        <div className="mt-2">
+                                            <p className="text-yellow-500">
+                                                {"★".repeat(reviews[selectedDetails.service.id].professionalToClient.classification)}
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {reviews[selectedDetails.service.id].professionalToClient.reviewDescription}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-600 italic">O profissional ainda não submeteu nenhuma review.</p>
+                                    )}
+                                </div>
                             </div>
                         )}
 
