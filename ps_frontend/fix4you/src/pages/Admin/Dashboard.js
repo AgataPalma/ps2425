@@ -185,12 +185,12 @@ function Dashboard() {
                 <div className="border p-4 rounded-lg bg-gray-100">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Pending Payments</h2>
                     <ul className="space-y-2">
-                        {pendingPayments.map((payment) => (
+                        {pendingPayments.slice(0, 5).map((payment) => (
                             <li
                                 key={payment.id}
                                 className="flex justify-between items-center bg-white p-2 rounded shadow"
                             >
-                                <span>{payment.professional.name || "Unknown Professional"}</span>
+                                <span>{payment.professional?.name || "Unknown Professional"}</span>
                                 <span>€{payment.value.toFixed(2)}</span>
                             </li>
                         ))}

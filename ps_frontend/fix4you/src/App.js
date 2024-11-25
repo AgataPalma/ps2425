@@ -220,6 +220,55 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    {/*<Route
+                        path="/Tickets"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Tickets id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/AdminManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <AdminManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/UsersManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <UsersManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/PlatformManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <PlatformManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Payments"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Payments id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Top10"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Top10 id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />*/}
+
                 </Routes>
             </div>
         </Router>
