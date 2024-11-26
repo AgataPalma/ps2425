@@ -29,7 +29,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/login").permitAll()    // all users are allowed
-                        .requestMatchers("/users").hasAnyRole("ADMIN","PROFESSIONAL")   // if only the role USER is allowed (hasRole("CLIENT"))
+                        .requestMatchers("/users").permitAll()   // if only the role USER is allowed (hasRole("CLIENT"))
+                        .requestMatchers("/users/*").permitAll()
                         .requestMatchers("/users/admins").hasAnyRole("ADMIN","PROFESSIONAL")
                         .requestMatchers("/users/email-confirmation/**").permitAll()
                         .requestMatchers("/users/send-email-verification/**").permitAll()

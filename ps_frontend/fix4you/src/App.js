@@ -25,6 +25,7 @@ import NotificationsClient from './pages/NotificationsClient';
 import NotificationsProfessional from './pages/NotificationsProfessional';
 import Dashboard from './pages/Admin/Dashboard';
 import UsersManagement from "./pages/Admin/UsersManagement";
+import AdminManagement from "./pages/Admin/AdminManagement";
 
 
 function App() {
@@ -229,14 +230,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    {/*<Route
-                        path="/Tickets"
-                        element={
-                            <ProtectedRoute allowedUserType="ADMIN">
-                                <Tickets id={userId} />
-                            </ProtectedRoute>
-                        }
-                    />
                     <Route
                         path="/AdminManagement"
                         element={
@@ -245,6 +238,15 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    {/*<Route
+                        path="/Tickets"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Tickets id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+
 
                     <Route
                         path="/PlatformManagement"
