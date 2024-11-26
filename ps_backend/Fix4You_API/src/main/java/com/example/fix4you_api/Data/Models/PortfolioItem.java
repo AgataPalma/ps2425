@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Document("PortfolioItems")
 public class PortfolioItem {
-
     @Id
     private String id;
 

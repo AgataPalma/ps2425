@@ -3,6 +3,8 @@ package com.example.fix4you_api.Service.ProfessionalsFee;
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
+import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
@@ -70,7 +72,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         updates.put("isSupended", true);
         professionalService.partialUpdateProfessional(professionalId, updates);
 
-        ProfessionalsFee.Professional feeProfessional = new ProfessionalsFee.Professional();
+        SimpleProfessionalDTO feeProfessional = new SimpleProfessionalDTO();
         feeProfessional.setId(professional.getId());
         feeProfessional.setEmail(professional.getEmail());
         feeProfessional.setName(professional.getName());
@@ -96,12 +98,24 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "professional" -> existingProfessionalsFee.setProfessional((ProfessionalsFee.Professional) value);
+                case "professional" -> existingProfessionalsFee.setProfessional((SimpleProfessionalDTO) value);
                 case "value" -> existingProfessionalsFee.setValue((float) value);
                 case "numberServices" -> existingProfessionalsFee.setNumberServices((int) value);
                 case "relatedMonthYear" -> existingProfessionalsFee.setRelatedMonthYear((String) value);
-                case "paymentDate" -> existingProfessionalsFee.setPaymentDate((LocalDateTime) value);
-                case "paymentStatus" -> existingProfessionalsFee.setPaymentStatus((PaymentStatusEnum) value);
+                case "paymentDate" -> {
+                    if (value instanceof LocalDateTime) {
+                        existingProfessionalsFee.setPaymentDate((LocalDateTime) value);
+                    } else if (value instanceof String) {
+                        existingProfessionalsFee.setPaymentDate(LocalDateTime.parse((CharSequence) value));
+                    }
+                }
+                case "paymentStatus" -> {
+                    try {
+                        existingProfessionalsFee.setPaymentStatus(PaymentStatusEnum.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
+                    }
+                }
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!\n");
             }
         });
@@ -117,7 +131,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     @Override
     @Transactional
-    public void deleteProfessionalFees(String professionalId) {
+    public void deleteProfessionalFeesForProfessional(String professionalId) {
         professionalFeeRepository.deleteByProfessionalId(professionalId);
     }
 

@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Data.Models;
 
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class CategoryDescription {
     private String professionalId;
 
     @Field
-    private Category category;
+    private SimpleCategoryDTO category;
 
     @Field
     @NotNull(message = "Charges travels cannot be null")
@@ -40,9 +41,4 @@ public class CategoryDescription {
     @Digits(integer = 5, fraction = 2, message = "Medium price must be a numeric value with up to 5 digits and 2 decimal places")
     private float mediumPricePerService;
 
-    @Data
-    public static class Category {
-        private String id;
-        private String name;
-    }
 }

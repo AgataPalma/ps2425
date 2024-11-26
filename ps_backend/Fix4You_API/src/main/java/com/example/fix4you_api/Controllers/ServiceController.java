@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Service.Category.CategoryService;
@@ -33,6 +34,8 @@ public class ServiceController {
             if(service.getClientId() != null && service.getProfessionalId() != null){
                 service.setAgreementDate(LocalDateTime.now());
             }
+
+            service.setState(ServiceStateEnum.PENDING);
 
             this.serviceService.createService(service);
             return ResponseEntity.ok(service.getId());
@@ -128,7 +131,7 @@ public class ServiceController {
                 case "price" -> service.setPrice(((Double) value).floatValue());
                 case "address" -> service.setAddress((String) value);
                 case "postalCode" -> service.setPostalCode((String) value);
-                case "category" -> service.setCategory((Service.Category) value);
+                case "category" -> service.setCategory((SimpleCategoryDTO) value);
                 case "title" -> service.setTitle((String) value);
                 case "state" -> {
                     try {

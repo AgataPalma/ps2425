@@ -3,6 +3,7 @@ package com.example.fix4you_api.Service.User;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Service.Login.LoginRequest;
+import jakarta.mail.MessagingException;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public interface UserService {
 
     List<User> getAllAdmins();
 
-    boolean sendEmailWithVerificationToken(User user);
+    boolean sendEmailWithVerificationToken(User user) throws MessagingException;
 
     void sendValidationEmailUserRegistration(String email);
 

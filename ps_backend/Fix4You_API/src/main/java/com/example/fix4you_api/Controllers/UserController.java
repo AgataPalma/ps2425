@@ -1,15 +1,14 @@
 package com.example.fix4you_api.Controllers;
 
-import com.example.fix4you_api.Auth.JwtResponse;
 import com.example.fix4you_api.Auth.JwtUtil;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
-import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Login.DTOs.ResponseLogin;
 import com.example.fix4you_api.Service.Login.LoginRequest;
 import com.example.fix4you_api.Service.User.UserService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,7 +118,7 @@ public class UserController {
     }
 
     @PostMapping("/send-email-verification/{email}")
-    public ResponseEntity<?> sendEmail(@PathVariable String email) {
+    public ResponseEntity<?> sendEmail(@PathVariable String email) throws MessagingException {
 
         User user = userRepository.findByEmail(email);
         if (user == null) {

@@ -2,6 +2,7 @@ package com.example.fix4you_api.Testing;
 
 import com.example.fix4you_api.Controllers.CategoryDescriptionController;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,7 @@ class CategoryDescriptionControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        CategoryDescription.Category mockCategory = new CategoryDescription.Category();
+        SimpleCategoryDTO mockCategory = new SimpleCategoryDTO();
         mockCategory.setId("cat123");
         mockCategory.setName("TestCategory");
 
@@ -48,7 +49,7 @@ class CategoryDescriptionControllerTest {
         mockCategoryDescription.setProfessionalId("prof123");
         mockCategoryDescription.setCategory(mockCategory);
         mockCategoryDescription.setChargesTravels(true);
-        mockCategoryDescription.setProvidesInvoices(false);
+        //mockCategoryDescription.setProvidesInvoices(false);
         mockCategoryDescription.setMediumPricePerService(100.50f);
     }
 

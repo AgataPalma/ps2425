@@ -26,7 +26,7 @@ public class ProfessionalsFeeSaveDto {
     private String id;
 
     @NotNull(message = "Profissional não pode ser nulo")
-    private ProfessionalsFee.Professional professional;
+    private SimpleProfessionalDTO professional;
 
     @NotNull(message = "Valor não pode ser nulo")
     @DecimalMin(value = "0.0", message = "Value must be a positive value")

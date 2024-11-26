@@ -1,10 +1,12 @@
 package com.example.fix4you_api.Service.Service;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
+import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
+import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
@@ -26,6 +28,7 @@ public class ServiceServiceImpl implements ServiceService {
     private final ClientService clientService;
     private final ProfessionalService professionalService;
     private final ScheduleAppointmentService scheduleAppointmentService;
+    private final CategoryDescriptionService categoryDescriptionService;
     private final RsqlQueryService rsqlQueryService;
 
     @Override
@@ -35,6 +38,32 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public com.example.fix4you_api.Data.Models.Service createService(com.example.fix4you_api.Data.Models.Service service) {
+
+        if(service.getProfessionalId() != null) {
+            List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByProfessionalIdAndCategoryId(service.getProfessionalId(), service.getCategory().getId());
+
+            if (categoryDescriptions.size() > 1) {
+                throw new IllegalStateException(
+                        "Existe mais de uma descrição de categoria para o profissional "
+                                + service.getProfessionalId()
+                                + " na categoria "
+                                + service.getCategory().getName()
+                );
+            }
+
+            if (categoryDescriptions.isEmpty()) {
+                throw new IllegalStateException(
+                        "Nenhuma descrição de categoria encontrada para o profissional "
+                                + service.getProfessionalId()
+                                + " na categoria "
+                                + service.getCategory().getName()
+                );
+            }
+
+            CategoryDescription professionalCategoryDescription = categoryDescriptions.get(0);
+            service.setPrice(professionalCategoryDescription.getMediumPricePerService());
+        }
+
         return serviceRepository.save(service);
     }
 
