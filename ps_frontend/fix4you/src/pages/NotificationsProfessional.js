@@ -2,41 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const NotificationsProfessional = () => {
-    const [notificacoesTaxas, setNotificacoesTaxas] = useState([]);
-    const [notificacoesServicos, setNotificacoesServicos] = useState([]);
+    const [notificacoes, setNotificacoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
-    const [notificacaoExpandidaId, setNotificacaoExpandidaId] = useState(null);
+    const [notificacaoExpandidaId, setNotificacaoExpandidaId] = useState(null); // ID da notificação expandida
     const navigate = useNavigate();
 
     useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            setErro('O ID do utilizador não foi encontrado no armazenamento local.');
+            setLoading(false);
+            return;
+        }
+
         const buscarNotificacoes = async () => {
             setLoading(true);
-
-            const userId = localStorage.getItem('userId');
-            if (!userId) {
-                setErro('O ID do utilizador não foi encontrado no armazenamento local.');
-                setLoading(false);
-                return;
-            }
-
             try {
-                const respostas = await Promise.all([
-                    fetch(`http://localhost:8080/professionalFees/user/${userId}`),
-                    fetch(`http://localhost:8080/services/professional/${userId}`)
-                ]);
+                const resposta = await fetch(`http://localhost:8080/notifications/professional/${userId}`);
 
-                const [dadosTaxas, dadosServicos] = await Promise.all(
-                    respostas.map((resposta) => {
-                        if (!resposta.ok) {
-                            throw new Error('Falha ao buscar notificações');
-                        }
-                        return resposta.json();
-                    })
-                );
+                if (!resposta.ok) {
+                    throw new Error('Falha ao buscar notificações');
+                }
 
-                setNotificacoesTaxas(dadosTaxas);
-                setNotificacoesServicos(dadosServicos);
+                const dadosNotificacoes = await resposta.json();
+                setNotificacoes(dadosNotificacoes);
             } catch (err) {
                 setErro(err.message || 'Ocorreu um erro ao buscar notificações.');
                 console.error(err);
@@ -46,22 +36,69 @@ const NotificationsProfessional = () => {
         };
 
         buscarNotificacoes();
+
+        // Conectar ao endpoint SSE com o professionalId
+        const eventSource = new EventSource(`http://localhost:8080/professionalFees/sse?professionalId=${userId}`);
+
+        eventSource.onmessage = (event) => {
+            console.log('Mensagem SSE recebida:', event.data);
+            // Recarregar notificações
+            buscarNotificacoes();
+        };
+
+        eventSource.onerror = (event) => {
+            console.error('EventSource falhou:', event);
+            eventSource.close();
+        };
+
+        // Limpar a conexão quando o componente for desmontado
+        return () => {
+            eventSource.close();
+        };
     }, []);
 
-    const alternarNotificacao = (id) => {
-        setNotificacaoExpandidaId((prevId) => (prevId === id ? null : id));
+    const deletarNotificacao = async (id) => {
+        try {
+            const resposta = await fetch(`http://localhost:8080/notifications/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!resposta.ok) {
+                throw new Error('Falha ao apagar notificação');
+            }
+
+            // Remover a notificação do estado
+            setNotificacoes((prev) => prev.filter((notificacao) => notificacao.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const fazerDownloadInvoice = (invoice, id) => {
-        try {
-            const blob = new Blob([atob(invoice)], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `invoice_${id}.pdf`;
-            link.click();
-        } catch (error) {
-            console.error('Erro ao fazer download do invoice:', error);
+    const alternarNotificacao = async (id, read) => {
+        // Se a notificação não está lida, marcar como lida
+        if (!read) {
+            try {
+                const resposta = await fetch(`http://localhost:8080/notifications/${id}/read`, {
+                    method: 'PUT',
+                });
+
+                if (!resposta.ok) {
+                    throw new Error('Falha ao marcar notificação como lida');
+                }
+
+                // Atualizar o estado para refletir que a notificação foi lida
+                setNotificacoes((prev) =>
+                    prev.map((notificacao) =>
+                        notificacao.id === id ? { ...notificacao, read: true } : notificacao
+                    )
+                );
+            } catch (err) {
+                console.error(err);
+            }
         }
+
+        // Alternar a notificação expandida
+        setNotificacaoExpandidaId((prevId) => (prevId === id ? null : id));
     };
 
     if (loading) {
@@ -77,78 +114,61 @@ const NotificationsProfessional = () => {
             <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
                 <h1 className="text-2xl font-bold mb-6">Notificações</h1>
 
-                {/* Notificações de taxas */}
-                <h2 className="text-xl font-semibold mb-4">Notificações de Taxas</h2>
-                {notificacoesTaxas.length === 0 ? (
-                    <p>Não há notificações de taxas disponíveis.</p>
+                {notificacoes.length === 0 ? (
+                    <p>Não há notificações disponíveis.</p>
                 ) : (
                     <ul className="space-y-4 mb-8">
-                        {notificacoesTaxas.map((notificacao) => (
+                        {notificacoes.map((notificacao) => (
                             <li
                                 key={notificacao.id}
-                                className="border rounded-lg shadow-sm p-4 bg-gray-100"
+                                className={`border rounded-lg shadow-sm p-4 ${
+                                    notificacao.read ? 'bg-gray-100' : 'bg-yellow-100'
+                                }`}
                             >
                                 <div
                                     className="flex justify-between items-center cursor-pointer"
-                                    onClick={() => alternarNotificacao(notificacao.id)}
+                                    onClick={() => alternarNotificacao(notificacao.id, notificacao.read)}
                                 >
-                                    <p className="font-semibold">Taxa para {notificacao.relatedMonthYear}</p>
-                                    <span className="text-gray-500">
-                                        {notificacaoExpandidaId === notificacao.id ? '-' : '+'}
-                                    </span>
-                                </div>
-
-                                {notificacaoExpandidaId === notificacao.id && (
-                                    <div className="mt-4">
-                                        <p><strong>Serviços:</strong> {notificacao.numberServices}</p>
-                                        <p><strong>Valor:</strong> €{notificacao.value}</p>
-                                        <p><strong>Estado do Pagamento:</strong> {notificacao.paymentStatus}</p>
-                                        <p><strong>Data do Pagamento:</strong> {new Date(notificacao.paymentDate).toLocaleDateString()}</p>
-                                        {notificacao.invoice && (
-                                            <button
-                                                onClick={() => fazerDownloadInvoice(notificacao.invoice, notificacao.id)}
-                                                className="mt-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-600"
-                                            >
-                                                Download
-                                            </button>
+                                    <p className="font-semibold">{notificacao.message}</p>
+                                    <div className="flex items-center">
+                                        {!notificacao.read && (
+                                            <span className="text-sm text-red-500 mr-2">Novo</span>
                                         )}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Impedir que o clique expanda a notificação
+                                                deletarNotificacao(notificacao.id);
+                                            }}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            Apagar
+                                        </button>
                                     </div>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-                <br></br>
-                {/* Notificações de serviços */}
-                <h2 className="text-xl font-semibold mb-4">Notificações de Serviço</h2>
-                {notificacoesServicos.length === 0 ? (
-                    <p>Não há pedidos de serviço no momento.</p>
-                ) : (
-                    <ul className="space-y-4">
-                        {notificacoesServicos.map((notificacao) => (
-                            <li
-                                key={notificacao.id}
-                                className="border rounded-lg shadow-sm p-4 bg-gray-100"
-                            >
-                                <div
-                                    className="flex justify-between items-center cursor-pointer"
-                                    onClick={() => alternarNotificacao(notificacao.id)}
-                                >
-                                    <p className="font-semibold">{notificacao.title}</p>
-                                    <span className="text-gray-500">
-                                        {notificacaoExpandidaId === notificacao.id ? '-' : '+'}
-                                    </span>
                                 </div>
+                                <p className="text-sm text-gray-500">
+                                    {new Date(notificacao.createdAt).toLocaleString()}
+                                </p>
 
                                 {notificacaoExpandidaId === notificacao.id && (
                                     <div className="mt-4">
-                                        <p>Verifica a página de Novos Pedidos para mais detalhes.</p>
-                                        <button
-                                            onClick={() => navigate('/NewRequests')}
-                                            className="mt-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-600"
-                                        >
-                                            Ir para Novos Pedidos
-                                        </button>
+                                        <p>
+                                            <strong>Serviços:</strong> {notificacao.numberServices}
+                                        </p>
+                                        <p>
+                                            <strong>Valor:</strong> €{notificacao.feeValue}
+                                        </p>
+                                        <p>
+                                            <strong>Período:</strong> {notificacao.relatedMonthYear}
+                                        </p>
+                                        <p>
+                                            <strong>Estado do Pagamento:</strong> {notificacao.paymentStatus}
+                                        </p>
+                                        <p>
+                                            <strong>Data do Pagamento:</strong>{' '}
+                                            {notificacao.paymentDate
+                                                ? new Date(notificacao.paymentDate).toLocaleDateString()
+                                                : 'N/A'}
+                                        </p>
                                     </div>
                                 )}
                             </li>
