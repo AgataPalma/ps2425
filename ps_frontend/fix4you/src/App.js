@@ -26,6 +26,8 @@ import NotificationsProfessional from './pages/NotificationsProfessional';
 import Dashboard from './pages/Admin/Dashboard';
 import UsersManagement from "./pages/Admin/UsersManagement";
 import AdminManagement from "./pages/Admin/AdminManagement";
+import Payments from "./pages/Admin/Payments";
+import Top10 from "./pages/Admin/Top10";
 
 
 function App() {
@@ -238,6 +240,22 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/Payments"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Payments id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Top10"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Top10 id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
                     {/*<Route
                         path="/Tickets"
                         element={
@@ -256,22 +274,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route
-                        path="/Payments"
-                        element={
-                            <ProtectedRoute allowedUserType="ADMIN">
-                                <Payments id={userId} />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/Top10"
-                        element={
-                            <ProtectedRoute allowedUserType="ADMIN">
-                                <Top10 id={userId} />
-                            </ProtectedRoute>
-                        }
-                    />*/}
+
+                    */}
 
                 </Routes>
             </div>
