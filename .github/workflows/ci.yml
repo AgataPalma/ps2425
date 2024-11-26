@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'ps2425/ps_backend/**'  # Only trigger on changes in this directory
+      - 'ps_backend/**'  # Only trigger on changes in this directory
 
 jobs:
   test:
