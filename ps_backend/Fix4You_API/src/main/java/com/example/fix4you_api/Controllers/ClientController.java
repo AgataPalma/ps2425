@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Review.ReviewService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,16 +41,24 @@ public class ClientController {
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Client>> getAllClients() {
+        List<Client> clients = clientService.getAllClients();
+
+        // remove suspended clients
+        for (var i=0; i < clients.size(); i++){
+            if(clients.get(i).isSupended()) {
+                clients.remove(clients.get(i));
+            }
+        }
+
+        return new ResponseEntity<>(clients, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable String id) {
         Client client = clientService.getClientById(id);
         return new ResponseEntity<>(client, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Client>> getAllClients() {
-        List<Client> clients = clientService.getAllClients();
-        return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -79,7 +85,7 @@ public class ClientController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable String id) {
         reviewService.deleteReviewsForUser(id);
-        ticketService.deleteTickets(id);
+        ticketService.deleteTicketsForUser(id);
         serviceService.deleteServicesForClient(id);
         clientService.deleteClient(id);
         return new ResponseEntity<>(HttpStatus.OK);

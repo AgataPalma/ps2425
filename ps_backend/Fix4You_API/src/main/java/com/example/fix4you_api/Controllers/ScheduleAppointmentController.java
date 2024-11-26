@@ -4,10 +4,8 @@ import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
 import com.example.fix4you_api.Service.ScheduleAppointment.DTOs.GoogleCalendarEvent;
-import jakarta.validation.Valid;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.json.JSONObject;
@@ -21,6 +19,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,16 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequestMapping("/scheduleAppointments")
 @RequiredArgsConstructor
 public class ScheduleAppointmentController {
-    @Autowired
-    private ScheduleAppointmentRepository scheduleAppointmentRepository;
 
-    @Autowired
-    private ScheduleAppointmentService scheduleAppointmentService;
+    private final ScheduleAppointmentRepository scheduleAppointmentRepository;
 
-    @Autowired
-    public ScheduleAppointmentController(ScheduleAppointmentRepository scheduleAppointmentRepository) {
-        this.scheduleAppointmentRepository = scheduleAppointmentRepository;
-    }
+    private final ScheduleAppointmentService scheduleAppointmentService;
 
     @PostMapping
     public ResponseEntity<?> addScheduleAppointment(@RequestBody ScheduleAppointment scheduleAppointment) {
@@ -226,8 +220,20 @@ public class ScheduleAppointmentController {
                 switch (key) {
                     case "clientId" -> existingScheduleAppointment.setClientId((String) value);
                     case "professionalId" -> existingScheduleAppointment.setProfessionalId((String) value);
-                    case "dateStart" -> existingScheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
-                    case "dateFinish" -> existingScheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
+                    case "dateStart" -> {
+                        if (value instanceof LocalDateTime) {
+                            existingScheduleAppointment.setDateStart((LocalDateTime) value);
+                        } else if (value instanceof String) {
+                            existingScheduleAppointment.setDateStart(LocalDateTime.parse((CharSequence) value));
+                        }
+                    }
+                    case "dateFinish" -> {
+                        if (value instanceof LocalDateTime) {
+                            existingScheduleAppointment.setDateFinish((LocalDateTime) value);
+                        } else if (value instanceof String) {
+                            existingScheduleAppointment.setDateFinish(LocalDateTime.parse((CharSequence) value));
+                        }
+                    }
                     case "state" -> {
                         try {
                             existingScheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));

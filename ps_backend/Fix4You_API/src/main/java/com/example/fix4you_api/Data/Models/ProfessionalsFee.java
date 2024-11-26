@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Data.Models;
 
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class ProfessionalsFee {
 
     @Field
     @NotNull(message = "Professional cannot be null")
-    private Professional professional;
+    private SimpleProfessionalDTO professional;
 
     @Field
     @NotNull(message = "Value cannot be null")
@@ -51,7 +52,7 @@ public class ProfessionalsFee {
     @Field
     private byte[] invoice;
 
-    public ProfessionalsFee(Professional professional, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
+    public ProfessionalsFee(SimpleProfessionalDTO professional, int numberServices, String relatedMonthYear, PaymentStatusEnum paymentStatus) {
         this.professional = professional;
         this.value = FEE_PRICE;
         this.numberServices = numberServices;
@@ -59,11 +60,4 @@ public class ProfessionalsFee {
         this.paymentStatus = paymentStatus;
     }
 
-    @Data
-    public static class Professional {
-        private String id;
-        private String email;
-        private String name;
-        private String nif;
-    }
 }

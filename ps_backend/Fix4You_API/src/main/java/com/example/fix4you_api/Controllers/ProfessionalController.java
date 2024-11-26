@@ -111,11 +111,11 @@ public class ProfessionalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
-        portfolioItemService.deletePortfolioItems(id);
-        categoryDescriptionService.deleteCategoryDescriptionsByProfessionalId(id);
+        portfolioItemService.deletePortfolioItemsForProfessional(id);
+        categoryDescriptionService.deleteCategoryDescriptionsForProfessional(id);
         reviewService.deleteReviewsForUser(id);
-        professionalsFeeService.deleteProfessionalFees(id);
-        ticketService.deleteTickets(id);
+        professionalsFeeService.deleteProfessionalFeesForProfessional(id);
+        ticketService.deleteTicketsForUser(id);
         serviceService.deleteServicesForProfessional(id);
         professionalService.deleteProfessional(id);
         return new ResponseEntity<>(HttpStatus.OK);

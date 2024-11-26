@@ -2,7 +2,6 @@ package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.*;
-import com.example.fix4you_api.Data.Models.Views.ProfessionalCategoryView;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
@@ -10,10 +9,10 @@ import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
 import com.example.fix4you_api.Rsql.RsqlQueryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -134,23 +133,8 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Override
     @Transactional
     public Professional updateProfessional(String id, Professional professional) {
-
         Professional existingProfessional = findOrThrow(id);
-        existingProfessional.setEmail(professional.getEmail());
-        existingProfessional.setPassword(professional.getPassword());
-        existingProfessional.setUserType(professional.getUserType());
-        existingProfessional.setName(professional.getName());
-        existingProfessional.setPhoneNumber(professional.getPhoneNumber());
-        existingProfessional.setLanguages(professional.getLanguages());
-        existingProfessional.setAgeValidation(professional.isAgeValidation());
-        existingProfessional.setDescription(professional.getDescription());
-        existingProfessional.setNif(professional.getNif());
-        existingProfessional.setLocation(professional.getLocation());
-        //existingProfessional.setLocationsRange(professional.getLocationsRange());
-        existingProfessional.setAcceptedPayments(professional.getAcceptedPayments());
-        existingProfessional.setIsEmailConfirmed(professional.isIsEmailConfirmed());
-        existingProfessional.setProfileImage(professional.getProfileImage());
-
+        BeanUtils.copyProperties(professional, existingProfessional, "id", "dateCreation", "strikes", "rating");
         return professionalRepository.save(existingProfessional);
     }
 
@@ -171,7 +155,15 @@ public class ProfessionalServiceImpl implements ProfessionalService {
 
         updates.forEach((key, value) -> {
             switch (key) {
+                case "email" -> professional.setEmail((String) value);
                 case "password" -> professional.setPassword((String) value);
+                case "userType" -> {
+                    try {
+                        professional.setUserType(EnumUserType.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
+                    }
+                }
                 case "name" -> professional.setName((String) value);
                 case "phoneNumber" -> professional.setPhoneNumber((String) value);
                 case "languages" -> professional.setLanguages((List<Language>) value);

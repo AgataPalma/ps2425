@@ -17,13 +17,21 @@ public class EmailSenderService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String toEmail, String subject, String body) {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(toEmail);
-            message.setText(body);
-            message.setSubject(subject);
-            mailSender.send(message);
+    public void sendEmail(String toEmail, String subject, String body) throws MessagingException {
+        /*SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setText(body);
+        message.setSubject(subject);
+        mailSender.send(message);*/
 
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(toEmail);
+        helper.setSubject(subject);
+        helper.setText(body, true); // O segundo parâmetro 'true' indica que o conteúdo é HTML.
+
+        mailSender.send(message);
 
         System.out.println("Mail Send...");
     }

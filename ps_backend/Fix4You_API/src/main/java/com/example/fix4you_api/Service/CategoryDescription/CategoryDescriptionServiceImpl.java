@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Service.CategoryDescription;
 
-import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Event.CategoryDescription.CategoryDescriptionCreationEvent;
@@ -34,6 +33,11 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
     @Override
     public List<CategoryDescription> getCategoriesDescriptionByProfessionalId(String professionalId) {
         return categoryDescriptionRepository.findByProfessionalId(professionalId);
+    }
+
+    @Override
+    public List<CategoryDescription> getCategoriesDescriptionByProfessionalIdAndCategoryId(String professionalId, String categoryId) {
+        return categoryDescriptionRepository.findByProfessionalIdAndCategory_Id(professionalId, categoryId);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
 
     @Override
     @Transactional
-    public void deleteCategoryDescriptionsByProfessionalId(String professionalId) {
+    public void deleteCategoryDescriptionsForProfessional(String professionalId) {
         categoryDescriptionRepository.deleteByProfessionalId(professionalId);
     }
 

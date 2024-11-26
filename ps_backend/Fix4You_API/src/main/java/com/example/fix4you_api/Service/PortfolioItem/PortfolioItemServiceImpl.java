@@ -1,6 +1,5 @@
 package com.example.fix4you_api.Service.PortfolioItem;
 
-import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.PortfolioItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ public class PortfolioItemServiceImpl implements PortfolioItemService {
 
     @Override
     @Transactional
-    public void deletePortfolioItems(String professionalId) {
+    public void deletePortfolioItemsForProfessional(String professionalId) {
         portfolioItemRepository.deleteByProfessionalId(professionalId);
     }
 

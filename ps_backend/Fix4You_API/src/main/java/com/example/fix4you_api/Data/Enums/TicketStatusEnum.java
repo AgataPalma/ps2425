@@ -2,10 +2,9 @@ package com.example.fix4you_api.Data.Enums;
 
 public enum TicketStatusEnum {
     NEW,
-    IN_PROGRESS,
-    PENDING_INFORMATION,
+    IN_REVIEW,
     RESOLVED,
-    CLOSED,
     CANCELED,
+    PENDING_INFORMATION,
     AWAITING_FEEDBACK
 }

@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Document("Reviews")
 public class Review {
-
     @Id
     private String id;
 

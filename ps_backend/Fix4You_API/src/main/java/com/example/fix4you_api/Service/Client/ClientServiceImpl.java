@@ -30,6 +30,7 @@ public class ClientServiceImpl implements ClientService {
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         client.setRating(0);
+        client.setSupended(false);
 
         return clientRepository.save(client);
     }
@@ -65,12 +66,19 @@ public class ClientServiceImpl implements ClientService {
                 case "phoneNumber" -> client.setPhoneNumber((String) value);
                 case "ageValidation" -> client.setAgeValidation((Boolean) value);
                 case "email" -> client.setEmail((String) value);
-                case "userType" -> client.setUserType((EnumUserType) value);
+                case "userType" -> {
+                    try {
+                        client.setUserType(EnumUserType.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
+                    }
+                }
                 case "password" -> client.setPassword((String) value);
                 case "location" -> client.setLocation((String) value);
                 case "rating" -> client.setRating((float) value);
                 //case "IsDeleted" -> client.setIsDeleted((Boolean) value);
                 case "IsEmailConfirmed" -> client.setIsEmailConfirmed((Boolean) value);
+                case "isSupended" -> client.setSupended((boolean) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
