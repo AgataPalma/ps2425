@@ -23,6 +23,8 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean install
+      working-directory: ps_backend/Fix4You_API
 
     - name: Run tests
       run: mvn test
+      working-directory: ps_backend/Fix4You_API
