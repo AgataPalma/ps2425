@@ -181,7 +181,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         return fee;
     }
 
-    private byte[] generateInvoice(ProfessionalsFee fee, Professional professional) throws DocumentException {
+    public byte[] generateInvoice(ProfessionalsFee fee, Professional professional) throws DocumentException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Document document = new Document();
         PdfWriter.getInstance(document, byteArrayOutputStream);
