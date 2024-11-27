@@ -6,6 +6,8 @@ import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
+import com.example.fix4you_api.Data.Models.Notification;
+import com.example.fix4you_api.Service.Notification.NotificationService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ProfessionalsFee.ProfessionalsFeeService;
 import com.itextpdf.text.DocumentException;
@@ -16,22 +18,103 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("professionalFees")
 @RequiredArgsConstructor
 public class ProfessionalFeeController {
 
+    private final NotificationService notificationService;
     private final ProfessionalsFeeService professionalsFeeService;
     private final ProfessionalService professionalService;
 
-    @PostMapping
-    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFee) {
-        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFee.toDomain());
-        return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
+    // Map para associar o ID do profissional ao seu SseEmitter
+    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+
+    // Endpoint SSE modificado para receber o ID do profissional
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamSse(@RequestParam String professionalId) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        // Associa o emitter ao ID do profissional
+        emitters.put(professionalId, emitter);
+
+        // Remover o emitter quando a conexão for finalizada
+        emitter.onCompletion(() -> emitters.remove(professionalId));
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            emitters.remove(professionalId);
+        });
+        emitter.onError((e) -> {
+            emitter.completeWithError(e);
+            emitters.remove(professionalId);
+        });
+
+        return emitter;
     }
+
+    // Método para enviar mensagens a um profissional específico
+    private void sendSseMessageToProfessional(String professionalId, String message) {
+        SseEmitter emitter = emitters.get(professionalId);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                    .name("message")
+                    .data(message));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+                emitters.remove(professionalId);
+            }
+        }
+    }
+
+@PostMapping
+public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFeeDto) {
+    ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFeeDto.toDomain());
+
+    // Criar uma notificação com detalhes da taxa
+    Notification notification = new Notification();
+    notification.setProfessionalId(createdProfessionalsFee.getProfessional().getId());
+    notification.setMessage("Tem taxas para pagar!");
+    notification.setRead(false);
+    notification.setType("fee");
+    notification.setReferenceId(createdProfessionalsFee.getId());
+    notification.setCreatedAt(new Date());
+
+    // Adicionar detalhes da taxa
+    notification.setFeeValue(createdProfessionalsFee.getValue());
+    notification.setNumberServices(createdProfessionalsFee.getNumberServices());
+    notification.setRelatedMonthYear(createdProfessionalsFee.getRelatedMonthYear());
+
+    // Corrigir paymentStatus
+    notification.setPaymentStatus(createdProfessionalsFee.getPaymentStatus().toString());
+
+    // Corrigir paymentDate
+    LocalDateTime localDateTime = createdProfessionalsFee.getPaymentDate();
+    if (localDateTime != null) {
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        notification.setPaymentDate(date);
+    } else {
+        notification.setPaymentDate(null);
+    }
+
+    notificationService.createNotification(notification);
+
+    // Enviar notificação via SSE
+    sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
+
+    return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
+}
 
     @GetMapping
     public ResponseEntity<List<ProfessionalsFee>> getProfessionalFee() {

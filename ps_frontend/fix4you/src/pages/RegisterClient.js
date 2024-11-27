@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios for API requests
-import Select from 'react-select'; // Import react-select
+import axios from 'axios'; // Importa o axios para requisições à API
+import Select from 'react-select'; // Importa o react-select para dropdowns
 import '../index.css';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '../components/Spinner'; // Importa o Spinner
 
 const RegisterClient = () => {
     const navigate = useNavigate();
 
-    // State variables for form fields
+    // Variáveis de estado para os campos do formulário
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-
-    // State for location dropdown and options
-    const [locationOptions, setLocationOptions] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [editMode, setEditMode] = useState(true); // For toggling between view and edit
+    const [locationOptions, setLocationOptions] = useState([]);
+    const [editMode, setEditMode] = useState(true); // Para alternar entre visualização e edição
+    const profileImage = '';
 
-    const profileImage = "";
+    // Estados para os modais e carregamento
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchLocationData = async () => {
@@ -36,7 +39,7 @@ const RegisterClient = () => {
                 }));
                 setLocationOptions(organizedData);
             } catch (error) {
-                console.error('Error fetching location data:', error);
+                console.error('Erro ao buscar dados de localização:', error);
             }
         };
 
@@ -47,10 +50,37 @@ const RegisterClient = () => {
         setSelectedLocation(selectedOption.value);
     };
 
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        if (isSuccess) {
+            navigate('/Login'); // Redireciona para a página de login após sucesso
+        }
+    };
+
+    const Modal = ({ message, isSuccess, onClose }) => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                <h3 className={`text-lg font-bold ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+                    {isSuccess ? 'Sucesso' : 'Erro'}
+                </h3>
+                <p className="mt-2 text-gray-800">{message}</p>
+                <div className="mt-4 flex justify-end">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500"
+                    >
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
 
-        // Age validation
+        // Validação de idade
         const today = new Date();
         const birthDate = new Date(dateOfBirth);
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -61,11 +91,14 @@ const RegisterClient = () => {
         }
 
         if (age < 18) {
-            setErrorMessage('Para se registar, é necessário ter pelo menos 18 anos de idade.');
+            setLoading(false);
+            setModalMessage('Para se registar, é necessário ter pelo menos 18 anos de idade.');
+            setIsSuccess(false);
+            setIsModalOpen(true);
             return;
         }
 
-        // Construct the request body
+        // Construir o corpo da requisição
         const requestBody = {
             name: name,
             email: email,
@@ -75,8 +108,8 @@ const RegisterClient = () => {
             profileImage: profileImage,
             ageValidation: true,
             dateOfBirth: dateOfBirth,
-            userType: "CLIENT",
-            IsEmailConfirmed: true,
+            userType: 'CLIENT',
+            isEmailConfirmed: false,
             dateCreation: new Date().toISOString(),
         };
 
@@ -90,18 +123,48 @@ const RegisterClient = () => {
             });
 
             if (response.ok) {
-                alert('Conta criada com sucesso!');
-                navigate('/Login');
+                // Sucesso na criação do cliente
+                setLoading(false);
+                setModalMessage('Conta criada com sucesso! Verifique o seu email para validar a sua conta.');
+                setIsSuccess(true);
+                setIsModalOpen(true);
             } else {
+                // Erro na resposta do servidor
                 const errorData = await response.json();
-                console.error('Error:', errorData);
-                setErrorMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
+
+                if (errorData) {
+                    if (typeof errorData === 'object') {
+                        // Manipular erros quando é um objeto com campos específicos
+                        const detailedErrors = Object.entries(errorData)
+                            .map(([field, message]) => `${field}: ${message}`)
+                            .join('\n');
+                        setModalMessage(detailedErrors);
+                    } else if (typeof errorData === 'string') {
+                        // Manipular erros quando é uma string
+                        setModalMessage(errorData);
+                    } else {
+                        // Caso de formatos inesperados
+                        setModalMessage('Erro inesperado. Por favor, tente novamente.');
+                    }
+                } else {
+                    setModalMessage('Erro ao criar o cliente. Por favor, tente novamente.');
+                }
+                setLoading(false);
+                setIsSuccess(false);
+                setIsModalOpen(true);
             }
         } catch (error) {
-            console.error('Error:', error);
-            setErrorMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
+            console.error('Erro:', error);
+            setModalMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
+            setLoading(false);
+            setIsSuccess(false);
+            setIsModalOpen(true);
         }
     };
+
+    if (loading) {
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
+    }
 
     return (
         <div className="bg-gray-200">
@@ -111,13 +174,16 @@ const RegisterClient = () => {
                 </h2>
             </div>
 
+            {isModalOpen && (
+                <Modal
+                    message={modalMessage}
+                    isSuccess={isSuccess}
+                    onClose={handleModalClose}
+                />
+            )}
+
             <div className="p-8 w-1/3 bg-gray-100 shadow-lg rounded-lg bg-cover bg-center sm:mx-auto sm:w-full sm:max-w-sm mb-40">
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    {errorMessage && (
-                        <div className="text-red-500 text-sm text-center">
-                            {errorMessage}
-                        </div>
-                    )}
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
                             Nome
@@ -216,6 +282,27 @@ const RegisterClient = () => {
                             />
                         </div>
                     </div>
+
+                    <div>
+                        <h3 className="block text-sm font-medium leading-6 text-gray-900">Localização</h3>
+                        {editMode ? (
+                            <Select
+                                options={locationOptions}
+                                onChange={handleLocationChange}
+                                placeholder="Selecione a freguesia"
+                                value={locationOptions
+                                    .flatMap((option) => option.options)
+                                    .find((option) => option.value === selectedLocation)
+                                }
+                                className="mt-2"
+                            />
+                        ) : (
+                            <p className="text-gray-600">{selectedLocation || 'Sem localização definida'}</p>
+                        )}
+                    </div>
+
+                    <br />
+
 
                     <div>
                         <h3 className="block text-sm font-medium leading-6 text-gray-900">Localização</h3>

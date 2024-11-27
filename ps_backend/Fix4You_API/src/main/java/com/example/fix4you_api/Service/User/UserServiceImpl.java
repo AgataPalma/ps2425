@@ -1,12 +1,14 @@
 package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.Login.LoginRequest;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -66,9 +68,15 @@ public class UserServiceImpl implements UserService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "password" -> user.setPassword((String) value);
                 case "email" -> user.setEmail((String) value);
-                case "userType" -> user.setUserType((EnumUserType) value);
+                case "password" -> user.setPassword((String) value);
+                case "userType" -> {
+                    try {
+                        user.setUserType(EnumUserType.valueOf(value.toString().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Valor inválido para o estado: " + value);
+                    }
+                }
                 case "IsEmailConfirmed" -> user.setIsEmailConfirmed((Boolean) value);
                 //case "IsDeleted" -> user.setIsDeleted((Boolean) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!\n");
@@ -108,7 +116,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean sendEmailWithVerificationToken(User user) {
+    public boolean sendEmailWithVerificationToken(User user) throws MessagingException {
         String resetLink = generateResetToken(user);
         String body = "Hello \n\n" + "Clique neste link para redefinir a sua palavra-passe: " + resetLink + " \n\n";
 

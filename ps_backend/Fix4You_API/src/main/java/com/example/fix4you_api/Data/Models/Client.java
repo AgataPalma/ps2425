@@ -15,10 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Client extends User {
-
     @Field
     @NotBlank(message = "Name cannot be blank")
-    @Size(max = 50, message = "Description must be less than 500 characters")
+    @Size(max = 50, message = "Name must be less than 500 characters")
     private String name;
 
     @Field
@@ -42,4 +41,6 @@ public class Client extends User {
     @Size(max = 1048576, message = "Profile image must be less than 1 MB")
     private byte[] profileImage;
 
+    @Field
+    private boolean isSupended;
 }

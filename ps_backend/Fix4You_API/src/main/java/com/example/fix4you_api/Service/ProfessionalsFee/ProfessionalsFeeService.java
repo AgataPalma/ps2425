@@ -17,7 +17,7 @@ public interface ProfessionalsFeeService {
     ProfessionalsFee updateProfessionalsFee(String id, ProfessionalsFee professionalsFee);
     ProfessionalsFee partialUpdateProfessionalsFee(String id, Map<String, Object> updates);
     void deleteProfessionalFee(String id);
-    void deleteProfessionalFees(String professionalId);
+    void deleteProfessionalFeesForProfessional(String professionalId);
     void checkAndCreateMonthlyFees();
     ProfessionalsFee setFeeAsPaid(String id) throws DocumentException;
 }

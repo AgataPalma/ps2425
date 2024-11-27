@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Document("ScheduleAppointments")
 public class ScheduleAppointment {
-
     @Id
     private String id;
 

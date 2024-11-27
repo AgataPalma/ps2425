@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const Header = ({ userType, handleLogout }) => {
 
     console.log("UserType in Header:", userType);
-    const logoLink = userType === 'CLIENT' ? '/PrincipalPageClient' : userType === 'PROFESSIONAL' ? '/PrincipalPageProfessional' : '/Home';
+    const logoLink = userType === 'CLIENT' ? '/PrincipalPageClient' : userType === 'PROFESSIONAL' ? '/PrincipalPageProfessional' : userType === 'ADMIN' ? '/Home': '/Home';
     const notificationsLink = userType === 'CLIENT' ? '/NotificationsClient' : '/NotificationsProfessional';
 
     return (
@@ -35,6 +35,20 @@ const Header = ({ userType, handleLogout }) => {
                             <Link to="/ProfessionalCalendar" className="text-gray-600 hover:text-gray-900">Calendário</Link>
                         </>
                     )}
+                    {userType === 'ADMIN' && (
+                        <>
+                            <Link to="/Dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+                            <Link to="/UsersManagement" className="text-gray-600 hover:text-gray-900">Utilizadores</Link>
+                            <Link to="/AdminManagement" className="text-gray-600 hover:text-gray-900">Administração</Link>
+                            <Link to="/Payments" className="text-gray-600 hover:text-gray-900">Pagamentos</Link>
+                            <Link to="/Top10" className="text-gray-600 hover:text-gray-900">Top</Link>
+                            {/*<Link to="/Tickets" className="text-gray-600 hover:text-gray-900">Tickets</Link>
+                            <Link to="/PlatformManagement" className="text-gray-600 hover:text-gray-900">Plataforma</Link>
+                            */}
+
+                        </>
+                    )}
+
                 </div>
 
                 <div className="flex items-center space-x-4">

@@ -24,6 +24,10 @@ import ScheduleAppointments from "./pages/ScheduleAppointments";
 import NotificationsClient from './pages/NotificationsClient';
 import NotificationsProfessional from './pages/NotificationsProfessional';
 import Dashboard from './pages/Admin/Dashboard';
+import UsersManagement from "./pages/Admin/UsersManagement";
+import AdminManagement from "./pages/Admin/AdminManagement";
+import Payments from "./pages/Admin/Payments";
+import Top10 from "./pages/Admin/Top10";
 
 
 function App() {
@@ -220,6 +224,59 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/UsersManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <UsersManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/AdminManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <AdminManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Payments"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Payments id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/Top10"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Top10 id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    {/*<Route
+                        path="/Tickets"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <Tickets id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
+                    <Route
+                        path="/PlatformManagement"
+                        element={
+                            <ProtectedRoute allowedUserType="ADMIN">
+                                <PlatformManagement id={userId} />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    */}
+
                 </Routes>
             </div>
         </Router>

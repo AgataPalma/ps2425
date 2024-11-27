@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Data.Models;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @Document("Services")
 public class Service {
-
     @Id
     private String id;
 
@@ -45,7 +45,7 @@ public class Service {
 
     @Field
     @NotNull(message = "Category cannot be null")
-    private Category category;
+    private SimpleCategoryDTO category;
 
     @Field
     @NotBlank(message = "Description cannot be blank")
@@ -77,10 +77,4 @@ public class Service {
     @Field
     @NotBlank(message = "Location cannot be blank")
     private String location;
-
-    @Data
-    public static class Category {
-        private String id;
-        private String name;
-    }
 }

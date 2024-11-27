@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'ps2425/ps_backend/**'  # Only trigger on changes in this directory
+      - 'ps_backend/**'  # Only trigger on changes in this directory
 
 jobs:
   test:
@@ -19,9 +19,12 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '17'
+        distribution: 'temurin'
 
     - name: Build with Maven
       run: mvn clean install
+      working-directory: ps_backend/Fix4You_API
 
     - name: Run tests
       run: mvn test
+      working-directory: ps_backend/Fix4You_API
