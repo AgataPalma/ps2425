@@ -12,6 +12,7 @@ import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionSe
 import com.example.fix4you_api.Service.Client.ClientService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
+import com.example.fix4you_api.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private final ServiceRepository serviceRepository;
     private final ClientService clientService;
+    private final UserService userService;
     private final ProfessionalService professionalService;
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final CategoryDescriptionService categoryDescriptionService;
@@ -84,6 +86,13 @@ public class ServiceServiceImpl implements ServiceService {
     public List<ClientServiceCount> getTopActivitiesClients() {
         List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ClientsWithMostServices();
 
+        for(var i=0; i< services.size(); i++){
+            if(services.get(i).getClientId() != null) {
+                User user = userService.getUserById(services.get(i).getClientId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = services.stream()
                 .filter(service -> service.getClientId() != null)
@@ -101,6 +110,13 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public List<ProfessionalServiceCount> getTopActivitiesProfessionals() {
         List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ProfessionalsWithMostServices();
+
+        for(var i=0; i< services.size(); i++){
+            if(services.get(i).getProfessionalId() != null) {
+                User user = userService.getUserById(services.get(i).getProfessionalId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
 
         // Group by clientId and count services
         Map<String, Long> professionalServiceCounts = services.stream()
@@ -120,6 +136,13 @@ public class ServiceServiceImpl implements ServiceService {
     public List<ClientTotalSpent> getTopPriceClients() {
         // Fetch the raw results: clientId and totalSpent
         List<com.example.fix4you_api.Data.Models.Service> results = serviceRepository.findTopClientsByTotalSpending();
+
+        for(var i=0; i< results.size(); i++){
+            if(results.get(i).getClientId() != null) {
+                User user = userService.getUserById(results.get(i).getClientId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
 
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = results.stream()

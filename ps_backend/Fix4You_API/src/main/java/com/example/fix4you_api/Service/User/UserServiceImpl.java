@@ -116,6 +116,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void sendEmailTopUsers(User user) {
+        try{
+            String body = "Olá \n\n" +
+                    "Obrigado por nos ajudar a crescer. Juntos somos mais fortes." +
+                    "Valorizamos a sua colaboração como colaborador de topo! \n\n";
+
+            emailSenderService.sendEmail(user.getEmail(),
+                    "Obrigado pelo seu apoio",
+                    body);
+        } catch (Exception e) {
+            System.err.println("[ERROR] - " + e.getMessage());
+        }
+    }
+
+    @Override
     public boolean sendEmailWithVerificationToken(User user) throws MessagingException {
         String resetLink = generateResetToken(user);
         String body = "Hello \n\n" + "Clique neste link para redefinir a sua palavra-passe: " + resetLink + " \n\n";

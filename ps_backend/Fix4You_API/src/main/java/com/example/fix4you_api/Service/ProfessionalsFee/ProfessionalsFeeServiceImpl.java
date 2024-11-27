@@ -4,17 +4,15 @@ import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
-import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
-import com.example.fix4you_api.Data.Models.ProfessionalsFee;
-import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
 import com.example.fix4you_api.Event.ProfessionalFee.FeeCreationEvent;
 import com.example.fix4you_api.Event.ProfessionalFee.FeePaymentCompletionEvent;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
+import com.example.fix4you_api.Service.User.UserService;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -40,6 +38,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     private final ProfessionalFeeRepository professionalFeeRepository;
     private final ProfessionalService professionalService;
+    private final UserService userService;
     private final ServiceService serviceService;
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final ApplicationEventPublisher eventPublisher;
@@ -63,6 +62,13 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     public List<ProfessionalTotalSpent> getTopPriceProfessionals() {
         // Fetch the raw results: clientId and totalSpent
         List<ProfessionalsFee> results = professionalFeeRepository.findTopProfessionalsByTotalSpending();
+
+        for(var i=0; i< results.size(); i++){
+            if(results.get(i).getProfessional().getId() != null) {
+                User user = userService.getUserById(results.get(i).getProfessional().getId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
 
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = results.stream()
