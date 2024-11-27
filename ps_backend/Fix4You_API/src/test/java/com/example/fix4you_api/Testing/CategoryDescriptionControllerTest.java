@@ -49,7 +49,6 @@ class CategoryDescriptionControllerTest {
         mockCategoryDescription.setProfessionalId("prof123");
         mockCategoryDescription.setCategory(mockCategory);
         mockCategoryDescription.setChargesTravels(true);
-        mockCategoryDescription.setProvidesInvoices(false);
         mockCategoryDescription.setMediumPricePerService(100.50f);
     }
 
