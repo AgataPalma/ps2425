@@ -431,9 +431,19 @@ const PrincipalPageProfessional = ({ id }) => {
                                 <div className="flex items-center space-x-4">
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">
-                                            {highlightSearchText(request.title, searchText)}
-                                        </h3>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xl font-semibold">
+                                                {highlightSearchText(request.title, searchText)}
+                                            </h3>
+                                            <span
+                                                className={`px-3 py-1 text-sm font-medium rounded-full ${
+                                                    request.urgent ? 'bg-yellow-600 text-black' : 'bg-gray-300 text-black'
+                                                }`}
+                                            >
+                                                {request.urgent ? 'Pedido Urgente' : 'Pedido Normal'}
+                                            </span>
+                                        </div>
+
                                         <p className="text-sm">{request.category.name}</p>
                                     </div>
                                 </div>

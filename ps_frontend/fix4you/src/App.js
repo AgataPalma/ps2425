@@ -28,6 +28,10 @@ import UsersManagement from "./pages/Admin/UsersManagement";
 import AdminManagement from "./pages/Admin/AdminManagement";
 import Payments from "./pages/Admin/Payments";
 import Top10 from "./pages/Admin/Top10";
+import PlatformManagement from "./pages/Admin/PlatformManagement";
+import LanguageTab from "./pages/Admin/CategoriesTab";
+import CategoriesTab from "./pages/Admin/LanguagesTab";
+import PaymentMethodsTab from "./pages/Admin/PaymentMethodsTab";
 
 
 function App() {
@@ -256,7 +260,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    {/*<Route
+                    {/*
+                    <Route
                         path="/Tickets"
                         element={
                             <ProtectedRoute allowedUserType="ADMIN">
@@ -264,18 +269,36 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    */}
 
 
                     <Route
                         path="/PlatformManagement"
                         element={
-                            <ProtectedRoute allowedUserType="ADMIN">
                                 <PlatformManagement id={userId} />
-                            </ProtectedRoute>
                         }
                     />
 
-                    */}
+                    <Route
+                        path="/LanguageTab"
+                        element={
+                            <LanguageTab />
+                        }
+                    />
+
+                    <Route
+                        path="/CategoriesTab"
+                        element={
+                            <CategoriesTab />
+                        }
+                    />
+
+                    <Route
+                        path="/PaymentMethodsTab"
+                        element={
+                            <PaymentMethodsTab />
+                        }
+                    />
 
                 </Routes>
             </div>

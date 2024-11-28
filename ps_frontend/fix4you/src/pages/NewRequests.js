@@ -141,22 +141,32 @@ const NewRequests = ({ id }) => {
                                 <div className="flex items-center space-x-4">
                                     <img src={user} alt="Profile" className="w-20 h-20"/>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold">{capitalizeFirstLetter(request.title || 'Título não disponível')}
-                                        </h3>
-                                        <p className="text-sm">{capitalizeFirstLetter(request.category|| 'Categoria não disponível')}</p>
-                                    </div>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xl font-semibold">
+                                                {request.title}
+                                            </h3>
+                                            <span
+                                                className={`px-3 py-1 text-sm font-medium rounded-full ${
+                                                    request.urgent ? 'bg-yellow-600 text-black' : 'bg-gray-300 text-black'
+                                                }`}
+                                            >
+                                                {request.urgent ? 'Pedido Urgente' : 'Pedido Normal'}
+                                            </span>
+                                        </div>
+                                    <p className="text-sm">{capitalizeFirstLetter(request.category || 'Categoria não disponível')}</p>
                                 </div>
-                                <div className="mt-4">
-                                    <p className="text-sm font-semibold flex items-center">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4 mr-2"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
+                            </div>
+                        <div className="mt-4">
+                        <p className="text-sm font-semibold flex items-center">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        >
+                        <path
+                        strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
                                                 d="M12 2C8.134 2 5 5.134 5 9c0 4 5 11 7 11s7-7 7-11c0-3.866-3.134-7-7-7zm0 7a2 2 0 11-4 0 2 2 0 014 0z"
