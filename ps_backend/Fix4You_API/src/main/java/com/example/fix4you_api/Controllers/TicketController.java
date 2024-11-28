@@ -1,7 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
-import com.example.fix4you_api.Data.Models.CreateTicketRequest;
+import com.example.fix4you_api.Data.Models.Dtos.CreateTicketRequestDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleUserDTO;
 import com.example.fix4you_api.Data.Models.Ticket;
 import com.example.fix4you_api.Service.Ticket.TicketService;
@@ -30,7 +30,7 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<?> createTicket(
-            @RequestBody CreateTicketRequest createTicketRequest) throws MessagingException {
+            @RequestBody CreateTicketRequestDTO createTicketRequest) throws MessagingException {
         Ticket createdTicket = ticketService.createTicket(createTicketRequest.getTicket(), createTicketRequest.getDescription());
         return new ResponseEntity<>(createdTicket, HttpStatus.CREATED);
     }

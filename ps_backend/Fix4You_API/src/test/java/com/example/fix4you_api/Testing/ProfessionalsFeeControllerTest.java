@@ -2,7 +2,7 @@ package com.example.fix4you_api.Testing;
 
 import com.example.fix4you_api.Controllers.ProfessionalFeeController;
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
-import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
+import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
@@ -35,7 +35,7 @@ class ProfessionalsFeeControllerTest {
 
     private ProfessionalsFee mockProfessionalsFee;
 
-    private ProfessionalsFeeSaveDto mockProfessionalsFeeDto;
+    private ProfessionalsFeeSaveDTO mockProfessionalsFeeDto;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +56,7 @@ class ProfessionalsFeeControllerTest {
         mockProfessionalsFee.setPaymentDate(LocalDateTime.now());
         mockProfessionalsFee.setPaymentStatus(PaymentStatusEnum.PENDING);
 
-        mockProfessionalsFeeDto = new ProfessionalsFeeSaveDto();
+        mockProfessionalsFeeDto = new ProfessionalsFeeSaveDTO();
         mockProfessionalsFeeDto.setId("fee123");
         mockProfessionalsFeeDto.setProfessional(mockProfessional);
         mockProfessionalsFeeDto.setValue(20.0f);

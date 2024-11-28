@@ -1,5 +1,6 @@
-package com.example.fix4you_api.Data.Models;
+package com.example.fix4you_api.Data.Models.Dtos;
 
+import com.example.fix4you_api.Data.Models.Ticket;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTicketRequest {
+public class CreateTicketRequestDTO {
     @NotNull(message = "Ticket cannot be null")
     private Ticket ticket;
 

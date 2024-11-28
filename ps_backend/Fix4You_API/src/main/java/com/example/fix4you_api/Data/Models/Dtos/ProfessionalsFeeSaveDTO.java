@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfessionalsFeeSaveDto {
+public class ProfessionalsFeeSaveDTO {
 
     private static final float FEE_PRICE = 20.0f;
 

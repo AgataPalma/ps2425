@@ -1,8 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
-import com.example.fix4you_api.Data.Models.ClientTotalSpent;
-import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
+import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDTO;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("professionalFees")
@@ -79,7 +77,7 @@ public class ProfessionalFeeController {
     }
 
     @PostMapping
-    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFeeDto) {
+    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDTO professionalsFeeDto) {
         ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFeeDto.toDomain());
 
         // Criar uma notificação com detalhes da taxa
@@ -148,7 +146,7 @@ public class ProfessionalFeeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProfessionalsFee> updateProfessionalFee(@PathVariable String id,
-                                                                  @RequestBody ProfessionalsFeeSaveDto professionalFee
+                                                                  @RequestBody ProfessionalsFeeSaveDTO professionalFee
     ) {
         ProfessionalsFee updatedProfessionalsFee = professionalsFeeService.updateProfessionalsFee(id, professionalFee.toDomain());
         return new ResponseEntity<>(updatedProfessionalsFee, HttpStatus.OK);
