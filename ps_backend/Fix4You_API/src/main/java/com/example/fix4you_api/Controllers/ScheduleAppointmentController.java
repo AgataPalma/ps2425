@@ -454,8 +454,8 @@ public class ScheduleAppointmentController {
         return ResponseEntity.ok(scheduleAppointmentService.refreshToken(token));
     }
 
-    @GetMapping("/user-authenticated-google")
-    public ResponseEntity<?> IsUserAuthenticatedGoogle(@RequestParam String userId) {
+    @GetMapping("/user-authenticated-google/{userId}")
+    public ResponseEntity<?> IsUserAuthenticatedGoogle(@PathVariable String userId) {
 
         return ResponseEntity.ok(scheduleAppointmentService.IsUserAuthenticatedGoogle(userId));
     }
