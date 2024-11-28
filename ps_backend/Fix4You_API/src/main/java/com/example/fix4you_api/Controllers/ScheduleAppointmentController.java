@@ -5,7 +5,6 @@ import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
-import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.DTOs.GoogleCalendarEvent;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -153,6 +152,14 @@ public class ScheduleAppointmentController {
             partialUpdateScheduleAppointment(id, updates);
 
             if (updatedScheduleAppointment.isPresent()) {
+                // check if professional is connected with google
+                if(scheduleAppointmentService.IsUserAuthenticatedGoogle(updatedScheduleAppointment.get().getProfessionalId())){
+                    // create respective google event
+                    scheduleAppointmentService.createGoogleCalendarEvent(
+                            updatedScheduleAppointment.get().getProfessionalId(),
+                            updatedScheduleAppointment.get().getId());
+                }
+
                 return ResponseEntity.ok(updatedScheduleAppointment.get());
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento de serviço não encontrado!");
@@ -353,8 +360,8 @@ public class ScheduleAppointmentController {
         try {
             String clientId = "980766458886-llsr892dnsvifd706dlog2lc4flr2a1d.apps.googleusercontent.com";
             String client_secret = "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";
-            String codeURL = code;
-            String redirect_uri = "http://localhost:8080/professionals";
+                String codeURL = code;
+            String redirect_uri = "http://localhost:3000/ProfessionalCalendar";
             String grant_type = "authorization_code";
 
             String url = String.format("https://oauth2.googleapis.com/token");
@@ -445,5 +452,11 @@ public class ScheduleAppointmentController {
     public ResponseEntity<?> refreshToken(@RequestParam String token) {
 
         return ResponseEntity.ok(scheduleAppointmentService.refreshToken(token));
+    }
+
+    @GetMapping("/user-authenticated-google")
+    public ResponseEntity<?> IsUserAuthenticatedGoogle(@RequestParam String userId) {
+
+        return ResponseEntity.ok(scheduleAppointmentService.IsUserAuthenticatedGoogle(userId));
     }
 }

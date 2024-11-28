@@ -418,4 +418,12 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
             return null;
         }
     }
+
+    public boolean IsUserAuthenticatedGoogle(String userId) {
+        GoogleTokenUser tokenUser = googleTokenUserRepository.findByUserId(userId);
+        if(tokenUser != null) {
+            return true;
+        }
+        return false;
+    }
 }

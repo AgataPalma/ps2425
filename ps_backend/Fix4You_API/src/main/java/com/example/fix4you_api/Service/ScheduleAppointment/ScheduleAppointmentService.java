@@ -18,5 +18,5 @@ public interface ScheduleAppointmentService {
     List<GoogleCalendarEvent> getGoogleCalendarEventsBetween(String userId, LocalDateTime start, LocalDateTime end);
     boolean deleteGoogleCalendarEvent(String userId, String eventId);
     boolean editGoogleCalendarEvent(String userId, String eventId, GoogleCalendarEvent updatedEvent);
-
+    boolean IsUserAuthenticatedGoogle(String userId);
 }
