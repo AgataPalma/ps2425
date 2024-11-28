@@ -63,20 +63,13 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         // Fetch the raw results: clientId and totalSpent
         List<ProfessionalsFee> results = professionalFeeRepository.findTopProfessionalsByTotalSpending();
 
-        for(var i=0; i< results.size(); i++){
-            if(results.get(i).getProfessional().getId() != null) {
-                User user = userService.getUserById(results.get(i).getProfessional().getId());
-                userService.sendEmailTopUsers(user);
-            }
-        }
-
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = results.stream()
                 .filter(professionalFee -> professionalFee.getProfessional().getId() != null)
                 .collect(Collectors.groupingBy(professionalFee -> professionalFee.getProfessional().getId(), Collectors.counting()));
 
         // Process the results
-        return clientServiceCounts.entrySet().stream()
+        List<ProfessionalTotalSpent> professionalTotalSpents = clientServiceCounts.entrySet().stream()
                 .map(result -> new ProfessionalTotalSpent(
                         (String) result.getKey(),
                         ((Number) result.getValue()).doubleValue()     // totalSpent
@@ -84,6 +77,15 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
+
+        for(var i=0; i< professionalTotalSpents.size(); i++){
+            if(professionalTotalSpents.get(i).getProfessionalId() != null) {
+                User user = userService.getUserById(professionalTotalSpents.get(i).getProfessionalId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
+        return professionalTotalSpents;
     }
 
     @Override

@@ -86,37 +86,32 @@ public class ServiceServiceImpl implements ServiceService {
     public List<ClientServiceCount> getTopActivitiesClients() {
         List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ClientsWithMostServices();
 
-        for(var i=0; i< services.size(); i++){
-            if(services.get(i).getClientId() != null) {
-                User user = userService.getUserById(services.get(i).getClientId());
-                userService.sendEmailTopUsers(user);
-            }
-        }
-
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = services.stream()
                 .filter(service -> service.getClientId() != null)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
 
         // Sort and limit to top 10
-        return clientServiceCounts.entrySet().stream()
+        List<ClientServiceCount> listClientServiceCount = clientServiceCounts.entrySet().stream()
                 .filter(service -> service.getKey() != null)
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(10)
                 .map(entry -> new ClientServiceCount(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+
+        for(var i=0; i< listClientServiceCount.size(); i++){
+            if(listClientServiceCount.get(i).getClientId() != null) {
+                User user = userService.getUserById(listClientServiceCount.get(i).getClientId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
+        return listClientServiceCount;
     }
 
     @Override
     public List<ProfessionalServiceCount> getTopActivitiesProfessionals() {
         List<com.example.fix4you_api.Data.Models.Service> services = serviceRepository.findTop10ProfessionalsWithMostServices();
-
-        for(var i=0; i< services.size(); i++){
-            if(services.get(i).getProfessionalId() != null) {
-                User user = userService.getUserById(services.get(i).getProfessionalId());
-                userService.sendEmailTopUsers(user);
-            }
-        }
 
         // Group by clientId and count services
         Map<String, Long> professionalServiceCounts = services.stream()
@@ -124,12 +119,21 @@ public class ServiceServiceImpl implements ServiceService {
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getProfessionalId, Collectors.counting()));
 
         // Sort and limit to top 10
-        return professionalServiceCounts.entrySet().stream()
+        List<ProfessionalServiceCount> listProfessionalServiceCount = professionalServiceCounts.entrySet().stream()
                 .filter(service -> service.getKey() != null)
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(10)
                 .map(entry -> new ProfessionalServiceCount(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+
+        for(var i=0; i< listProfessionalServiceCount.size(); i++){
+            if(listProfessionalServiceCount.get(i).getProfessionalId() != null) {
+                User user = userService.getUserById(listProfessionalServiceCount.get(i).getProfessionalId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
+        return listProfessionalServiceCount;
     }
 
     @Override
@@ -137,20 +141,13 @@ public class ServiceServiceImpl implements ServiceService {
         // Fetch the raw results: clientId and totalSpent
         List<com.example.fix4you_api.Data.Models.Service> results = serviceRepository.findTopClientsByTotalSpending();
 
-        for(var i=0; i< results.size(); i++){
-            if(results.get(i).getClientId() != null) {
-                User user = userService.getUserById(results.get(i).getClientId());
-                userService.sendEmailTopUsers(user);
-            }
-        }
-
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = results.stream()
                 .filter(service -> service.getClientId() != null)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
 
         // Process the results
-        return clientServiceCounts.entrySet().stream()
+        List<ClientTotalSpent> listClientTotalSpent = clientServiceCounts.entrySet().stream()
                 .map(result -> new ClientTotalSpent(
                         (String) result.getKey(),
                         ((Number) result.getValue()).doubleValue()     // totalSpent
@@ -158,6 +155,15 @@ public class ServiceServiceImpl implements ServiceService {
                 .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
+
+        for(var i=0; i< listClientTotalSpent.size(); i++){
+            if(listClientTotalSpent.get(i).getClientId() != null) {
+                User user = userService.getUserById(listClientTotalSpent.get(i).getClientId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
+        return listClientTotalSpent;
     }
 
     @Transactional

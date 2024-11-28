@@ -118,9 +118,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendEmailTopUsers(User user) {
         try{
-            String body = "Olá \n\n" +
-                    "Obrigado por nos ajudar a crescer. Juntos somos mais fortes." +
-                    "Valorizamos a sua colaboração como colaborador de topo! \n\n";
+            String msg = "Olá.<br>" +
+                    "Obrigado por nos ajudar a crescer." +
+                    "Valorizamos a sua colaboração como colaborador de topo!";
+
+            String body = "<p>" + msg + "</p>";
+            body += "<p>Juntos somos mais fortes.</p>";
+            body += "<p>Melhores Cumprimentos.</p>";
+            body += "<p>A equipa Fix4You</p>";
 
             emailSenderService.sendEmail(user.getEmail(),
                     "Obrigado pelo seu apoio",
