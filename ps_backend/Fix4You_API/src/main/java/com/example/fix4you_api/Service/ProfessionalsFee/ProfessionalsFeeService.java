@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.ProfessionalsFee;
 
+import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.itextpdf.text.DocumentException;
 
@@ -10,6 +11,7 @@ public interface ProfessionalsFeeService {
     List<ProfessionalsFee> getAllProfessionalsFee();
     ProfessionalsFee getProfessionalsFeeById(String id);
     List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId);
+    List<ProfessionalTotalSpent> getTopPriceProfessionals();
     ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee);
     ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear);
     ProfessionalsFee updateProfessionalsFee(String id, ProfessionalsFee professionalsFee);

@@ -1,10 +1,8 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
-import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -70,6 +68,24 @@ public class ServiceController {
     public ResponseEntity<?> getService(@PathVariable String id) {
         Service service = serviceService.getById(id);
         return new ResponseEntity<>(service, HttpStatus.OK);
+    }
+
+    @GetMapping("/topActivitiesClients")
+    public ResponseEntity<?> getTopActivitiesClients() {
+        List<ClientServiceCount> clientIds = this.serviceService.getTopActivitiesClients();
+        return ResponseEntity.ok(clientIds);
+    }
+
+    @GetMapping("/topActivitiesProfessionals")
+    public ResponseEntity<?> getTopActivitiesProfessionals() {
+        List<ProfessionalServiceCount> professionalIds = this.serviceService.getTopActivitiesProfessionals();
+        return ResponseEntity.ok(professionalIds);
+    }
+
+    @GetMapping("/topExpensesClients")
+    public ResponseEntity<?> getTopExpensesClients() {
+        List<ClientTotalSpent> clientIds = this.serviceService.getTopPriceClients();
+        return ResponseEntity.ok(clientIds);
     }
 
     @PutMapping("/{id}")

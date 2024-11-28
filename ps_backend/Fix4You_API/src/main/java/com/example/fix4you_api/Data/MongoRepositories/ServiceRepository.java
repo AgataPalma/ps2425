@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.Service;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
@@ -15,6 +16,30 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
     List<Service> findByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
 
     List<Service> findByUrgentTrueAndState(ServiceStateEnum state);
+
+    @Query( "SELECT s.clientId" +
+            "COUNT(s) " +
+            "FROM Service s " +
+            "WHERE s.clientId IS NOT NULL " +
+            "GROUP BY s.clientId " +
+            "ORDER BY COUNT(s) DESC")
+    List<Service> findTop10ClientsWithMostServices();
+
+    @Query( "SELECT s.professionalId" +
+            "COUNT(s) " +
+            "FROM Service s " +
+            "WHERE s.professionalId IS NOT NULL" +
+            "GROUP BY s.professionalId " +
+            "ORDER BY COUNT(s) DESC")
+    List<Service> findTop10ProfessionalsWithMostServices();
+
+    @Query( "SELECT s.clientId " +
+            "SUM(s.price) as totalSpent " +
+            "FROM Service s " +
+            "WHERE s.clientId IS NOT NULL " +
+            "GROUP BY s.clientId " +
+            "ORDER BY totalSpent DESC")
+    List<Service> findTopClientsByTotalSpending();
 
     boolean existsById(String id);
 }

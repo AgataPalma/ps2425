@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/resetPasswordToken/**").permitAll()
                         .requestMatchers("/users/resetPassword").permitAll()
                         .requestMatchers("/categories").permitAll()
+                        .requestMatchers("/categories/*").permitAll()
                         .requestMatchers("/categoryDescriptions").permitAll()
                         .requestMatchers("/categoryDescriptions/*").permitAll()
                         .requestMatchers("/categoryDescriptions/user/*").permitAll()

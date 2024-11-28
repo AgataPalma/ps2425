@@ -4,16 +4,15 @@ import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
+import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
-import com.example.fix4you_api.Data.Models.Professional;
-import com.example.fix4you_api.Data.Models.ProfessionalsFee;
-import com.example.fix4you_api.Data.Models.ScheduleAppointment;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
 import com.example.fix4you_api.Event.ProfessionalFee.FeeCreationEvent;
 import com.example.fix4you_api.Event.ProfessionalFee.FeePaymentCompletionEvent;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
+import com.example.fix4you_api.Service.User.UserService;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -31,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +38,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     private final ProfessionalFeeRepository professionalFeeRepository;
     private final ProfessionalService professionalService;
+    private final UserService userService;
     private final ServiceService serviceService;
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final ApplicationEventPublisher eventPublisher;
@@ -55,6 +56,36 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     public List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId) {
         return professionalFeeRepository.findByProfessionalId(professionalId);
+    }
+
+    @Override
+    public List<ProfessionalTotalSpent> getTopPriceProfessionals() {
+        // Fetch the raw results: clientId and totalSpent
+        List<ProfessionalsFee> results = professionalFeeRepository.findTopProfessionalsByTotalSpending();
+
+        // Group by clientId and count services
+        Map<String, Long> clientServiceCounts = results.stream()
+                .filter(professionalFee -> professionalFee.getProfessional().getId() != null)
+                .collect(Collectors.groupingBy(professionalFee -> professionalFee.getProfessional().getId(), Collectors.counting()));
+
+        // Process the results
+        List<ProfessionalTotalSpent> professionalTotalSpents = clientServiceCounts.entrySet().stream()
+                .map(result -> new ProfessionalTotalSpent(
+                        (String) result.getKey(),
+                        ((Number) result.getValue()).doubleValue()     // totalSpent
+                ))
+                .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
+                .limit(10) // Top 10 clients
+                .collect(Collectors.toList());
+
+        for(var i=0; i< professionalTotalSpents.size(); i++){
+            if(professionalTotalSpents.get(i).getProfessionalId() != null) {
+                User user = userService.getUserById(professionalTotalSpents.get(i).getProfessionalId());
+                userService.sendEmailTopUsers(user);
+            }
+        }
+
+        return professionalTotalSpents;
     }
 
     @Override

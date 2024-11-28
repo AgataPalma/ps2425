@@ -1,10 +1,14 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
+import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.ScheduleAppointment;
+import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.DTOs.GoogleCalendarEvent;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
+import com.example.fix4you_api.Service.Service.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,6 +37,8 @@ public class ScheduleAppointmentController {
 
     private final ScheduleAppointmentService scheduleAppointmentService;
 
+    private final ServiceService serviceService;
+
     @PostMapping
     public ResponseEntity<?> addScheduleAppointment(@RequestBody ScheduleAppointment scheduleAppointment) {
         try {
@@ -47,6 +53,14 @@ public class ScheduleAppointmentController {
 
             if (!scheduleAppointment.getDateFinish().isAfter(scheduleAppointment.getDateStart())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Finish date must be after start date");
+            }
+
+            if(scheduleAppointment.getState() != ScheduleStateEnum.PENDING) {
+                Service service = serviceService.getById(scheduleAppointment.getServiceId());
+
+                if (service.getState() == ServiceStateEnum.PENDING) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                }
             }
 
             var conflicted = false;
@@ -126,12 +140,17 @@ public class ScheduleAppointmentController {
     @PutMapping("/approve/{id}")
     public ResponseEntity<?> approveScheduleAppointment(@PathVariable("id") String id) {
         try {
+            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
+            Service service = serviceService.getById(updatedScheduleAppointment.get().getServiceId());
+
+            if(service.getState() == ServiceStateEnum.PENDING){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+            }
+
             Map<String, Object> updates = new HashMap<>();
             updates.put("state", ScheduleStateEnum.CONFIRMED);
 
             partialUpdateScheduleAppointment(id, updates);
-
-            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
 
             if (updatedScheduleAppointment.isPresent()) {
                 return ResponseEntity.ok(updatedScheduleAppointment.get());
@@ -147,12 +166,17 @@ public class ScheduleAppointmentController {
     @PutMapping("/disapprove/{id}")
     public ResponseEntity<?> disapproveScheduleAppointment(@PathVariable("id") String id) {
         try {
+            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
+            Service service = serviceService.getById(updatedScheduleAppointment.get().getServiceId());
+
+            if(service.getState() == ServiceStateEnum.PENDING){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+            }
+
             Map<String, Object> updates = new HashMap<>();
             updates.put("state", ScheduleStateEnum.CANCELED);
 
             partialUpdateScheduleAppointment(id, updates);
-
-            Optional<ScheduleAppointment> updatedScheduleAppointment = scheduleAppointmentRepository.findById(id);
 
             if (updatedScheduleAppointment.isPresent()) {
                 return ResponseEntity.ok(updatedScheduleAppointment.get());
@@ -172,6 +196,14 @@ public class ScheduleAppointmentController {
                     .orElseThrow(() -> new NoSuchElementException("Agendamento de serviço não encontrado!"));
 
             var conflicted = false;
+            Service service = serviceService.getById(scheduleAppointment.getServiceId());
+
+            if(scheduleAppointment.getState() != ScheduleStateEnum.PENDING) {
+                if (service.getState() == ServiceStateEnum.PENDING) {
+                    throw new RuntimeException("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                }
+            }
+
             List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
 
             for (var i=0; i<scheduleAppointments.size(); i++){
@@ -236,6 +268,12 @@ public class ScheduleAppointmentController {
                     }
                     case "state" -> {
                         try {
+                            Service service = serviceService.getById(existingScheduleAppointment.getServiceId());
+
+                            if(service.getState() == ServiceStateEnum.PENDING){
+                                throw new RuntimeException("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                            }
+
                             existingScheduleAppointment.setState(ScheduleStateEnum.valueOf(value.toString().toUpperCase()));
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Valor inválido para o estado: " + value);

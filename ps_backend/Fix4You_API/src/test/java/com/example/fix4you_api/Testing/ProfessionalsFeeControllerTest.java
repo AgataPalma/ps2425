@@ -2,6 +2,7 @@ package com.example.fix4you_api.Testing;
 
 import com.example.fix4you_api.Controllers.ProfessionalFeeController;
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
+import com.example.fix4you_api.Data.Models.Dtos.ProfessionalsFeeSaveDto;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
@@ -34,6 +35,8 @@ class ProfessionalsFeeControllerTest {
 
     private ProfessionalsFee mockProfessionalsFee;
 
+    private ProfessionalsFeeSaveDto mockProfessionalsFeeDto;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -52,6 +55,15 @@ class ProfessionalsFeeControllerTest {
         mockProfessionalsFee.setRelatedMonthYear("11-2024");
         mockProfessionalsFee.setPaymentDate(LocalDateTime.now());
         mockProfessionalsFee.setPaymentStatus(PaymentStatusEnum.PENDING);
+
+        mockProfessionalsFeeDto = new ProfessionalsFeeSaveDto();
+        mockProfessionalsFeeDto.setId("fee123");
+        mockProfessionalsFeeDto.setProfessional(mockProfessional);
+        mockProfessionalsFeeDto.setValue(20.0f);
+        mockProfessionalsFeeDto.setNumberServices(3);
+        mockProfessionalsFeeDto.setRelatedMonthYear("11-2024");
+        mockProfessionalsFeeDto.setPaymentDate(LocalDateTime.now());
+        mockProfessionalsFeeDto.setPaymentStatus(PaymentStatusEnum.PENDING);
     }
 
     /*
@@ -59,7 +71,7 @@ class ProfessionalsFeeControllerTest {
     void testCreateProfessionalFee() {
         when(professionalsFeeService.createProfessionalsFee(any(ProfessionalsFee.class))).thenReturn(mockProfessionalsFee);
 
-        ResponseEntity<ProfessionalsFee> response = professionalFeeController.createProfessionalFee(mockProfessionalsFee);
+        ResponseEntity<ProfessionalsFee> response = professionalFeeController.createProfessionalFee(mockProfessionalsFeeDto);
 
         verify(professionalsFeeService).createProfessionalsFee(mockProfessionalsFee);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -99,7 +111,7 @@ class ProfessionalsFeeControllerTest {
                 .thenThrow(new IllegalArgumentException("Invalid fee data"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                professionalFeeController.createProfessionalFee(new ProfessionalsFee())
+                professionalFeeController.createProfessionalFee(new ProfessionalsFeeSaveDto())
         );
 
         verify(professionalsFeeService).createProfessionalsFee(any(ProfessionalsFee.class));

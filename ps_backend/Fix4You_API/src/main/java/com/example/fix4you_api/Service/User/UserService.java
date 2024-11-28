@@ -29,5 +29,7 @@ public interface UserService {
 
     void sendValidationEmailUserRegistration(String email);
 
+    void sendEmailTopUsers(User user);
+
     boolean emailExists(String email);
 }
