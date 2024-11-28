@@ -55,10 +55,12 @@ public class ScheduleAppointmentController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Finish date must be after start date");
             }
 
-            Service service = serviceService.getById(scheduleAppointment.getServiceId());
+            if(scheduleAppointment.getState() != ScheduleStateEnum.PENDING) {
+                Service service = serviceService.getById(scheduleAppointment.getServiceId());
 
-            if(service.getState() == ServiceStateEnum.PENDING){
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                if (service.getState() == ServiceStateEnum.PENDING) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                }
             }
 
             var conflicted = false;
@@ -196,8 +198,10 @@ public class ScheduleAppointmentController {
             var conflicted = false;
             Service service = serviceService.getById(scheduleAppointment.getServiceId());
 
-            if(service.getState() == ServiceStateEnum.PENDING){
-                throw new RuntimeException("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+            if(scheduleAppointment.getState() != ScheduleStateEnum.PENDING) {
+                if (service.getState() == ServiceStateEnum.PENDING) {
+                    throw new RuntimeException("Serviço não foi aprovado. O serviço encontra-se no estado pendente!");
+                }
             }
 
             List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
