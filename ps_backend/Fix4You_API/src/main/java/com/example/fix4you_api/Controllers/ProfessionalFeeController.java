@@ -78,43 +78,43 @@ public class ProfessionalFeeController {
         }
     }
 
-@PostMapping
-public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFeeDto) {
-    ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFeeDto.toDomain());
+    @PostMapping
+    public ResponseEntity<ProfessionalsFee> createProfessionalFee(@RequestBody ProfessionalsFeeSaveDto professionalsFeeDto) {
+        ProfessionalsFee createdProfessionalsFee = professionalsFeeService.createProfessionalsFee(professionalsFeeDto.toDomain());
 
-    // Criar uma notificação com detalhes da taxa
-    Notification notification = new Notification();
-    notification.setProfessionalId(createdProfessionalsFee.getProfessional().getId());
-    notification.setMessage("Tem taxas para pagar!");
-    notification.setRead(false);
-    notification.setType("fee");
-    notification.setReferenceId(createdProfessionalsFee.getId());
-    notification.setCreatedAt(new Date());
+        // Criar uma notificação com detalhes da taxa
+        Notification notification = new Notification();
+        notification.setProfessionalId(createdProfessionalsFee.getProfessional().getId());
+        notification.setMessage("Tem taxas para pagar!");
+        notification.setRead(false);
+        notification.setType("fee");
+        notification.setReferenceId(createdProfessionalsFee.getId());
+        notification.setCreatedAt(new Date());
 
-    // Adicionar detalhes da taxa
-    notification.setFeeValue(createdProfessionalsFee.getValue());
-    notification.setNumberServices(createdProfessionalsFee.getNumberServices());
-    notification.setRelatedMonthYear(createdProfessionalsFee.getRelatedMonthYear());
+        // Adicionar detalhes da taxa
+        notification.setFeeValue(createdProfessionalsFee.getValue());
+        notification.setNumberServices(createdProfessionalsFee.getNumberServices());
+        notification.setRelatedMonthYear(createdProfessionalsFee.getRelatedMonthYear());
 
-    // Corrigir paymentStatus
-    notification.setPaymentStatus(createdProfessionalsFee.getPaymentStatus().toString());
+        // Corrigir paymentStatus
+        notification.setPaymentStatus(createdProfessionalsFee.getPaymentStatus().toString());
 
-    // Corrigir paymentDate
-    LocalDateTime localDateTime = createdProfessionalsFee.getPaymentDate();
-    if (localDateTime != null) {
-        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        notification.setPaymentDate(date);
-    } else {
-        notification.setPaymentDate(null);
+        // Corrigir paymentDate
+        LocalDateTime localDateTime = createdProfessionalsFee.getPaymentDate();
+        if (localDateTime != null) {
+            Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            notification.setPaymentDate(date);
+        } else {
+            notification.setPaymentDate(null);
+        }
+
+        notificationService.createNotification(notification);
+
+        // Enviar notificação via SSE
+        sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
+
+        return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
     }
-
-    notificationService.createNotification(notification);
-
-    // Enviar notificação via SSE
-    sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
-
-    return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
-}
 
     @GetMapping
     public ResponseEntity<List<ProfessionalsFee>> getProfessionalFee() {

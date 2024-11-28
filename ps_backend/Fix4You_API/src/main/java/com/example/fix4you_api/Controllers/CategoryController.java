@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,17 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@RequestBody SimpleCategoryDTO category) {
         if(categoryService.nameExists(category.getName())){
             return new ResponseEntity<>("O nome da categoria já existe!", HttpStatus.CONFLICT);
         }
 
-        Category createdCategory = categoryService.createCategory(category);
+        Category newCategory = new Category();
+        newCategory.setName(category.getName());
+        newCategory.setMaxValue(0f);
+        newCategory.setMinValue(0f);
+
+        Category createdCategory = categoryService.createCategory(newCategory);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
