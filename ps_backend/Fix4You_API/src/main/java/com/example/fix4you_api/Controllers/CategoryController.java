@@ -33,6 +33,8 @@ public class CategoryController {
         newCategory.setName(category.getName());
         newCategory.setMaxValue(0f);
         newCategory.setMinValue(0f);
+        newCategory.setMedianValue(0);
+        newCategory.setCompletedServices(0);
 
         Category createdCategory = categoryService.createCategory(newCategory);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);

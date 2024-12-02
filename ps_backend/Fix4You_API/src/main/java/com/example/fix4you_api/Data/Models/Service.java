@@ -64,7 +64,6 @@ public class Service {
     private boolean isUrgent;
 
     @Field
-    @NotNull(message = "Creation date cannot be null")
     private LocalDateTime dateCreation;
 
     @Field

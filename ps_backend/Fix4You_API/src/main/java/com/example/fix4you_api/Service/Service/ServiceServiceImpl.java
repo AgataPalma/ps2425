@@ -89,6 +89,7 @@ public class ServiceServiceImpl implements ServiceService {
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = services.stream()
                 .filter(service -> service.getClientId() != null)
+                .filter(service -> service.getProfessionalId() != null)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
 
         // Sort and limit to top 10
@@ -116,6 +117,7 @@ public class ServiceServiceImpl implements ServiceService {
         // Group by clientId and count services
         Map<String, Long> professionalServiceCounts = services.stream()
                 .filter(service -> service.getProfessionalId() != null)
+                .filter(service -> service.getClientId() != null)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getProfessionalId, Collectors.counting()));
 
         // Sort and limit to top 10
@@ -144,6 +146,7 @@ public class ServiceServiceImpl implements ServiceService {
         // Group by clientId and count services
         Map<String, Long> clientServiceCounts = results.stream()
                 .filter(service -> service.getClientId() != null)
+                .filter(service -> service.getProfessionalId() != null)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
 
         // Process the results
