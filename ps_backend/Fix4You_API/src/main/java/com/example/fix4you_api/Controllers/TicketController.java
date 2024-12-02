@@ -4,7 +4,9 @@ import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
 import com.example.fix4you_api.Data.Models.Dtos.CreateTicketRequestDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleUserDTO;
 import com.example.fix4you_api.Data.Models.Ticket;
+import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Service.Ticket.TicketService;
+import com.example.fix4you_api.Service.User.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TicketController {
     private final TicketService ticketService;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<Ticket>> getAllTickets() {
@@ -31,7 +34,7 @@ public class TicketController {
     @PostMapping
     public ResponseEntity<?> createTicket(
             @RequestBody CreateTicketRequestDTO createTicketRequest) throws MessagingException {
-        Ticket createdTicket = ticketService.createTicket(createTicketRequest.getTicket(), createTicketRequest.getDescription());
+        Ticket createdTicket = ticketService.createTicket(createTicketRequest);
         return new ResponseEntity<>(createdTicket, HttpStatus.CREATED);
     }
 
@@ -48,9 +51,12 @@ public class TicketController {
     }
 
     @PatchMapping("/accept/{id}")
-    public ResponseEntity<?> acceptTicketByAdmin(@PathVariable("id") String id, @RequestBody SimpleUserDTO admin) {
+    public ResponseEntity<?> acceptTicketByAdmin(@PathVariable("id") String id, @RequestParam("adminId") String adminId) {
+        User adminUser = userService.getAdminById(adminId);
+        SimpleUserDTO simpleAdminUserDTO = new SimpleUserDTO(adminUser.getId(), adminUser.getEmail());
+
         Map<String, Object> updates = new HashMap<>();
-        updates.put("admin", admin);
+        updates.put("admin", simpleAdminUserDTO);
         updates.put("status", TicketStatusEnum.IN_REVIEW);
 
         return partialUpdateTicket(id, updates);

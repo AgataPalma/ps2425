@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Service.Ticket;
 
 import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
+import com.example.fix4you_api.Data.Models.Dtos.CreateTicketRequestDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleUserDTO;
 import com.example.fix4you_api.Data.Models.Ticket;
 import com.example.fix4you_api.Data.Models.User;
@@ -37,18 +38,23 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Ticket createTicket(Ticket ticket, String description) throws MessagingException {
-        ticket.setStatus(TicketStatusEnum.NEW);
-        ticket.setTicketStartDate(LocalDateTime.now());
-
-        User user = userService.getUserById(ticket.getUser().getId());
+    public Ticket createTicket(CreateTicketRequestDTO createTicketRequest) throws MessagingException {
+        User user = userService.getUserById(createTicketRequest.getUserId());
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new IllegalArgumentException("O usuário associado ao ticket deve ter um e-mail válido.");
         }
 
-        sendEmailConfirmationToUser(ticket.getTitle(), user.getEmail(), description);
-        sendEmailConfirmationToApp(ticket.getTitle(), user.getEmail(), description);
+        SimpleUserDTO ticketUser = new SimpleUserDTO(user.getId(), user.getEmail());
+
+        Ticket ticket = new Ticket();
+        ticket.setUser(ticketUser);
+        ticket.setTitle(createTicketRequest.getTitle());
+        ticket.setStatus(TicketStatusEnum.NEW);
+        ticket.setTicketStartDate(LocalDateTime.now());
+
+        sendEmailConfirmationToUser(ticket.getTitle(), user.getEmail(), createTicketRequest.getDescription());
+        sendEmailConfirmationToApp(ticket.getTitle(), user.getEmail(), createTicketRequest.getDescription());
 
         return ticketRepository.save(ticket);
     }

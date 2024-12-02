@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getAdminById(String id) {
+        return findOrThrowAdmin(id);
+    }
+
+    @Override
     public User getUserById(String id) {
         return findOrThrow(id);
     }
@@ -99,6 +104,12 @@ public class UserServiceImpl implements UserService {
     private User findOrThrow(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(String.format("Utilizador %s não encontrado!", id)));
+    }
+
+    private User findOrThrowAdmin(String id) {
+        return userRepository.findById(id)
+                .filter(user -> user.getUserType() == EnumUserType.ADMIN)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Utilizador %s não encontrado! Ou o utilizador não é um admin", id)));
     }
 
     @Override
