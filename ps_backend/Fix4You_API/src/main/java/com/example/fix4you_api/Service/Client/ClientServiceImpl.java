@@ -31,6 +31,7 @@ public class ClientServiceImpl implements ClientService {
         client.setIsEmailConfirmed(true);
         client.setRating(0);
         client.setSupended(false);
+        client.setSuspensionReason("");
 
         return clientRepository.save(client);
     }

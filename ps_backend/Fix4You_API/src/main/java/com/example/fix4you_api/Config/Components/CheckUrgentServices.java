@@ -42,6 +42,7 @@ public class CheckUrgentServices {
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
                         professionalOpt.get().setSupended(true);
+                        professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
                         services.get(i).setState(ServiceStateEnum.CANCELED);
                     }
                 }
@@ -57,6 +58,7 @@ public class CheckUrgentServices {
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
                         professionalOpt.get().setSupended(true);
+                        professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
                         scheduleAppointments.get(i).setState(ScheduleStateEnum.CANCELED);
                     }
                 }  else {

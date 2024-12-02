@@ -126,6 +126,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         professional.setIsEmailConfirmed(true);
         professional.setRating(0);
         professional.setSupended(false);
+        professional.setSuspensionReason("");
 
         return professionalRepository.save(professional);
     }
@@ -210,9 +211,13 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
-    public void setProfessionalIsSuspended(String professionalId, boolean isSuspended) {
+    public void setProfessionalIsSuspended(String professionalId, boolean isSuspended, String suspensionReason) {
         Professional existingProfessional = findOrThrow(professionalId);
         existingProfessional.setSupended(isSuspended);
+        if(isSuspended)
+            existingProfessional.setSuspensionReason(suspensionReason);
+        else
+            existingProfessional.setSuspensionReason("");
         professionalRepository.save(existingProfessional);
     }
 

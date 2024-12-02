@@ -43,4 +43,7 @@ public class Client extends User {
 
     @Field
     private boolean isSupended;
+
+    @Field
+    private String SuspensionReason;
 }

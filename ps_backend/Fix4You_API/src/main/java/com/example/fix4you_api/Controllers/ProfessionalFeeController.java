@@ -175,9 +175,9 @@ public class ProfessionalFeeController {
         }
 
         if (!anythingToPay && currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), false);
+            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), false, "");
         } else if (anythingToPay && !currentSuspendedStatus) {
-            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), true);
+            professionalService.setProfessionalIsSuspended(fee.getProfessional().getId(), true, "Tem taxas por pagar!");
         }
 
         //Generate invoice
