@@ -184,7 +184,7 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
                             "}",
                     service.get().getTitle(),
                     service.get().getLocation(),
-                    service.get().getDescription(),
+                    service.get().getId(),
                     formatter.format(appointment.get().getDateStart()) + "+00:00",
                     formatter.format(appointment.get().getDateFinish()) + "+00:00"
             );

@@ -341,7 +341,7 @@ public class ScheduleAppointmentController {
     public ResponseEntity<?> connectGoogle() {
         try {
             String clientId = "980766458886-llsr892dnsvifd706dlog2lc4flr2a1d.apps.googleusercontent.com";
-            String redirect_uri = "http://localhost:8080/professionals";
+            String redirect_uri = "http://localhost:3000/ProfessionalCalendar";
             String scope = "https://www.googleapis.com/auth/calendar";
             String response_type = "code";
             String access_type = "offline";
