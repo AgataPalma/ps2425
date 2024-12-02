@@ -27,7 +27,7 @@ public interface ProfessionalService {
 
     void deleteProfessional(String id);
 
-    void setProfessionalIsSuspended(String professionalId, boolean isSuspended);
+    void setProfessionalIsSuspended(String professionalId, boolean isSuspended, String suspensionReason);
 
     boolean nifExists(String nif);
 
