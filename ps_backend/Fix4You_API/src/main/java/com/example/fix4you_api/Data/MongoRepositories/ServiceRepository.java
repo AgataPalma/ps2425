@@ -17,10 +17,13 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
 
     List<Service> findByUrgentTrueAndState(ServiceStateEnum state);
 
+    List<Service> findByCategoryAndState(String name, ServiceStateEnum state);
+
     @Query( "SELECT s.clientId" +
             "COUNT(s) " +
             "FROM Service s " +
             "WHERE s.clientId IS NOT NULL " +
+            "WHERE s.state IS COMPLETED" +
             "GROUP BY s.clientId " +
             "ORDER BY COUNT(s) DESC")
     List<Service> findTop10ClientsWithMostServices();
@@ -29,6 +32,7 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
             "COUNT(s) " +
             "FROM Service s " +
             "WHERE s.professionalId IS NOT NULL" +
+            "WHERE s.state IS COMPLETED" +
             "GROUP BY s.professionalId " +
             "ORDER BY COUNT(s) DESC")
     List<Service> findTop10ProfessionalsWithMostServices();
@@ -37,6 +41,7 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
             "SUM(s.price) as totalSpent " +
             "FROM Service s " +
             "WHERE s.clientId IS NOT NULL " +
+            "WHERE s.state IS COMPLETED" +
             "GROUP BY s.clientId " +
             "ORDER BY totalSpent DESC")
     List<Service> findTopClientsByTotalSpending();

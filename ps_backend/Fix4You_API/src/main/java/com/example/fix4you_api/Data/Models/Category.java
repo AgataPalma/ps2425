@@ -32,4 +32,10 @@ public class Category {
     @DecimalMin(value = "0.0", message = "MaxValue must be a positive value")
     @Digits(integer = 5, fraction = 2, message = "MaxValue must be a numeric value with up to 3 digits and 2 decimal places")
     private float maxValue;
+
+    @Field
+    private float medianValue;
+
+    @Field
+    private Integer completedServices;
 }

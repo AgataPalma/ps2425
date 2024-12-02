@@ -3,6 +3,8 @@ package com.example.fix4you_api.Controllers;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
+import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
+import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -22,6 +24,8 @@ public class ServiceController {
     private final ProfessionalService professionalService;
     private final CategoryService categoryService;
     private final ServiceService serviceService;
+    private final ServiceRepository serviceRepository;
+    private final CategoryRepository categoryRepository;
 
     @PostMapping
     public ResponseEntity<?> addService(@RequestBody Service service) {
@@ -33,6 +37,7 @@ public class ServiceController {
                 service.setAgreementDate(LocalDateTime.now());
             }
 
+            service.setDateCreation(LocalDateTime.now());
             service.setState(ServiceStateEnum.PENDING);
 
             this.serviceService.createService(service);
@@ -94,6 +99,28 @@ public class ServiceController {
             if(service.getClientId() != null && service.getProfessionalId() != null){
                 service.setAgreementDate(LocalDateTime.now());
             }
+            if(service.getState() == ServiceStateEnum.COMPLETED){
+                Category category = categoryService.getCategoryByName(service.getCategory().getName());
+                category.setCompletedServices(category.getCompletedServices()+1);
+
+                List<Service> services = serviceRepository.findByCategoryAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
+                float[] medianPrices = new float[services.size()];
+                for (var i=0; i<services.size(); i++){
+                    medianPrices[i] = services.get(i).getPrice();
+                }
+
+                Arrays.sort(medianPrices);
+                float median = 0;
+                if(medianPrices.length > 0) {
+                    if (medianPrices.length % 2 == 0)
+                        median = (medianPrices[medianPrices.length / 2] + medianPrices[medianPrices.length / 2 - 1]) / 2;
+                    else
+                        median = medianPrices[medianPrices.length / 2];
+                }
+
+                category.setMedianValue(median);
+                categoryRepository.save(category);
+            }
             return ResponseEntity.ok(serviceService.updateService(id, service));
         } catch (Exception e) {
             System.out.println("[ERROR] - " + e);
@@ -152,6 +179,29 @@ public class ServiceController {
                 case "state" -> {
                     try {
                         service.setState(ServiceStateEnum.valueOf(value.toString().toUpperCase()));
+
+                        if(service.getState() == ServiceStateEnum.COMPLETED){
+                            Category category = categoryService.getCategoryByName(service.getCategory().getName());
+                            category.setCompletedServices(category.getCompletedServices()+1);
+
+                            List<Service> services = serviceRepository.findByCategoryAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
+                            float[] medianPrices = new float[services.size()];
+                            for (var i=0; i<services.size(); i++){
+                                medianPrices[i] = services.get(i).getPrice();
+                            }
+
+                            Arrays.sort(medianPrices);
+                            float median = 0;
+                            if(medianPrices.length > 0) {
+                                if (medianPrices.length % 2 == 0)
+                                    median = (medianPrices[medianPrices.length / 2] + medianPrices[medianPrices.length / 2 - 1]) / 2;
+                                else
+                                    median = medianPrices[medianPrices.length / 2];
+                            }
+
+                            category.setMedianValue(median);
+                            categoryRepository.save(category);
+                        }
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Valor inválido para o estado: " + value);
                     }
