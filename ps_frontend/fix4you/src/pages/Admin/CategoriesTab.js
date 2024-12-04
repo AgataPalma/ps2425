@@ -7,8 +7,6 @@ const CategoriesTab = () => {
     const [modalType, setModalType] = useState('add'); // 'add' ou 'edit'
     const [currentCategory, setCurrentCategory] = useState({
         name: '',
-        minValue: '',
-        maxValue: '',
     });
 
     useEffect(() => {
@@ -27,26 +25,8 @@ const CategoriesTab = () => {
     const handleSaveCategory = async () => {
         const { name, minValue, maxValue } = currentCategory;
 
-        if (!name || minValue === '' || maxValue === '') {
+        if (!name) {
             alert('Preencha todos os campos!');
-            return;
-        }
-
-        const minValueNumber = parseFloat(minValue);
-        const maxValueNumber = parseFloat(maxValue);
-
-        if (isNaN(minValueNumber) || isNaN(maxValueNumber)) {
-            alert('Os valores mínimo e máximo devem ser números válidos!');
-            return;
-        }
-
-        if (minValueNumber < 0 || maxValueNumber < 0) {
-            alert('Os valores mínimo e máximo não podem ser negativos!');
-            return;
-        }
-
-        if (minValueNumber > maxValueNumber) {
-            alert('O valor mínimo não pode ser maior que o valor máximo!');
             return;
         }
 
@@ -55,16 +35,12 @@ const CategoriesTab = () => {
                 // Criar nova categoria
                 const response = await axiosInstance.post('/categories', {
                     name,
-                    minValue: minValueNumber,
-                    maxValue: maxValueNumber,
                 });
                 setCategories([...categories, response.data]);
             } else if (modalType === 'edit') {
                 // Atualizar categoria existente
                 const response = await axiosInstance.put(`/categories/${currentCategory.id}`, {
                     name,
-                    minValue: minValueNumber,
-                    maxValue: maxValueNumber,
                 });
                 fetchCategories(); // Atualiza a lista
             }
@@ -89,14 +65,14 @@ const CategoriesTab = () => {
         setCurrentCategory(
             type === 'edit'
                 ? { ...category }
-                : { name: '', minValue: '', maxValue: '' } // Limpa para adicionar
+                : { name: '' } // Limpa para adicionar
         );
         setModalOpen(true);
     };
 
     const closeModal = () => {
         setModalOpen(false);
-        setCurrentCategory({ name: '', minValue: '', maxValue: '' });
+        setCurrentCategory({ name: '' });
     };
 
     return (
@@ -156,24 +132,6 @@ const CategoriesTab = () => {
                                 value={currentCategory.name}
                                 onChange={(e) =>
                                     setCurrentCategory({ ...currentCategory, name: e.target.value })
-                                }
-                                className="border p-2 rounded-lg w-full"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Valor Mínimo"
-                                value={currentCategory.minValue}
-                                onChange={(e) =>
-                                    setCurrentCategory({ ...currentCategory, minValue: e.target.value })
-                                }
-                                className="border p-2 rounded-lg w-full"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Valor Máximo"
-                                value={currentCategory.maxValue}
-                                onChange={(e) =>
-                                    setCurrentCategory({ ...currentCategory, maxValue: e.target.value })
                                 }
                                 className="border p-2 rounded-lg w-full"
                             />

@@ -160,6 +160,10 @@ const PrincipalPageProfessional = ({ id }) => {
             filterQuery.push(languageFilters);
         }
 
+        if (includeTravelCost) {
+            filterQuery.push(`urgent==true`);
+        }
+
 
         // Gerar a string da query final
         const filterString = filterQuery.join(';');

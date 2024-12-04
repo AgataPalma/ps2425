@@ -23,7 +23,6 @@ const PlatformManagement = () => {
         <div className="p-8 max-w-6xl mx-auto bg-white shadow-lg rounded-lg mt-8">
             <h2 className="text-2xl font-bold mb-4 text-yellow-600">Gestão da Plataforma</h2>
 
-            {/* Navegação por Tabs */}
             <nav className="flex space-x-8 border-b border-gray-300 mt-4">
                 <button
                     className={`px-4 py-2 text-lg ${
@@ -57,7 +56,6 @@ const PlatformManagement = () => {
                 </button>
             </nav>
 
-            {/* Conteúdo Ativo */}
             <main className="p-6">{renderActiveTab()}</main>
         </div>
     );

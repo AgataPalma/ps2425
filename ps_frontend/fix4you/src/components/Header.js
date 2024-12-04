@@ -43,10 +43,7 @@ const Header = ({ userType, handleLogout }) => {
                             <Link to="/Payments" className="text-gray-600 hover:text-gray-900">Pagamentos</Link>
                             <Link to="/Top10" className="text-gray-600 hover:text-gray-900">Top</Link>
                             <Link to="/PlatformManagement" className="text-gray-600 hover:text-gray-900">Plataforma</Link>
-                            {/*<Link to="/Tickets" className="text-gray-600 hover:text-gray-900">Tickets</Link>
-                            <Link to="/PlatformManagement" className="text-gray-600 hover:text-gray-900">Plataforma</Link>
-                            */}
-
+                            <Link to="/Tickets" className="text-gray-600 hover:text-gray-900">Tickets</Link>
                         </>
                     )}
 

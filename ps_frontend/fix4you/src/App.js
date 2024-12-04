@@ -32,6 +32,8 @@ import PlatformManagement from "./pages/Admin/PlatformManagement";
 import LanguageTab from "./pages/Admin/CategoriesTab";
 import CategoriesTab from "./pages/Admin/LanguagesTab";
 import PaymentMethodsTab from "./pages/Admin/PaymentMethodsTab";
+import Tickets from "./pages/Admin/Tickets";
+import Support from "./pages/Support";
 
 
 function App() {
@@ -260,7 +262,7 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    {/*
+
                     <Route
                         path="/Tickets"
                         element={
@@ -269,34 +271,46 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    */}
-
-
                     <Route
                         path="/PlatformManagement"
                         element={
+                            <ProtectedRoute allowedUserType="ADMIN">
                                 <PlatformManagement id={userId} />
+                            </ProtectedRoute>
                         }
                     />
 
                     <Route
                         path="/LanguageTab"
                         element={
+                            <ProtectedRoute allowedUserType="ADMIN">
                             <LanguageTab />
+                            </ProtectedRoute>
                         }
                     />
 
                     <Route
                         path="/CategoriesTab"
                         element={
+                            <ProtectedRoute allowedUserType="ADMIN">
                             <CategoriesTab />
+                            </ProtectedRoute>
                         }
                     />
 
                     <Route
                         path="/PaymentMethodsTab"
                         element={
+                            <ProtectedRoute allowedUserType="ADMIN">
                             <PaymentMethodsTab />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/Support"
+                        element={
+                            <Support id={userId} userType={userType} />
                         }
                     />
 
