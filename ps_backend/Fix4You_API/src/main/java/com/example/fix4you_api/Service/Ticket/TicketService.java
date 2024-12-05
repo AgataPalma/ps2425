@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.Ticket;
 
+import com.example.fix4you_api.Data.Models.Dtos.CreateTicketRequestDTO;
 import com.example.fix4you_api.Data.Models.Ticket;
 import jakarta.mail.MessagingException;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public interface TicketService {
     List<Ticket> getAllTickets();
-    Ticket createTicket(Ticket ticket, String description) throws MessagingException;
+    Ticket createTicket(CreateTicketRequestDTO createTicketRequest) throws MessagingException;
     Ticket updateTicket(String id, Ticket ticket);
     Ticket partialUpdateTicket(String id, Map<String, Object> updates);
     void deleteTicket(String id);
