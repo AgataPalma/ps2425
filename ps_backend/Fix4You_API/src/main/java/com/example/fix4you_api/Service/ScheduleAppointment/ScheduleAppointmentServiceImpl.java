@@ -182,7 +182,7 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
                             "    \"timeZone\": \"UTC\"\n" + // Timezone might be required, adjust if needed
                             "  }\n" +
                             "}",
-                    service.get().getTitle(),
+                    "Fix4You - " + service.get().getTitle(),
                     service.get().getLocation(),
                     service.get().getId(),
                     formatter.format(appointment.get().getDateStart()) + "+00:00",
