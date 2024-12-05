@@ -19,13 +19,9 @@ const Support = ({ id, userType}) => {
         e.preventDefault();
 
         const ticketData = {
-            ticket: {
-                user: {
-                    id: id,
-                },
+                userId: id,
                 title: title,
-            },
-            description: description,
+                description: description,
         };
 
         try {

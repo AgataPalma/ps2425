@@ -54,11 +54,11 @@ const Tickets = ({ id }) => {
     // Função para aceitar o ticket
     const handleAcceptTicket = async (ticketId) => {
         try {
-            const response = await axiosInstance.patch(`/tickets/accept/${ticketId}`, {
-                ticketId,
-                adminId: id
-            });
-
+            const response = await axiosInstance.patch(`http://localhost:8080/tickets/accept/${ticketId}`, null, {
+                params: {
+                    adminId: id
+                }
+            })
             if (response.status === 200) {
                 fetchTickets();
             }

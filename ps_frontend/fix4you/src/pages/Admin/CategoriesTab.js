@@ -90,6 +90,8 @@ const CategoriesTab = () => {
                     <th className="py-3 px-6 text-left font-semibold">Nome</th>
                     <th className="py-3 px-6 text-left font-semibold">Valor Mínimo</th>
                     <th className="py-3 px-6 text-left font-semibold">Valor Máximo</th>
+                    <th className="py-3 px-6 text-left font-semibold">Mediana</th>
+                    <th className="py-3 px-6 text-left font-semibold">Serviços Concluídos</th>
                     <th className="py-3 px-6 text-left font-semibold"></th>
                 </tr>
                 </thead>
@@ -99,13 +101,16 @@ const CategoriesTab = () => {
                         <td className="py-3 px-6">{category.name}</td>
                         <td className="py-3 px-6">{category.minValue}</td>
                         <td className="py-3 px-6">{category.maxValue}</td>
+                        <td className="py-3 px-6">{category.medianValue}</td>
+                        <td className="py-3 px-6">{category.completedServices ?? 0}</td>
                         <td className="py-3 px-6 text-blue-600">
                             <button
                                 onClick={() => openModal('edit', category)}
                                 className="bg-yellow-600 text-white px-4 py-2 rounded-lg mb-6"
                             >
                                 Editar
-                            </button>{' '}
+                            </button>
+                            {' '}
                             {' '}
                             <button
                                 onClick={() => handleDeleteCategory(category.id)}
