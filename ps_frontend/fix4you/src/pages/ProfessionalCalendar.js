@@ -7,6 +7,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import Spinner from "../components/Spinner";
+import { useSearchParams } from 'react-router-dom';
+import { format } from 'date-fns';
+import { isEqual } from "lodash";
+
 
 function ProfessionalCalendar({ id }) {
     const [appointments, setAppointments] = useState([]);
@@ -17,12 +21,35 @@ function ProfessionalCalendar({ id }) {
     const [modalMessage, setModalMessage] = useState(null);
     const [isErrorModal, setIsErrorModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isGoogleCalendarIntegrated, setIsGoogleCalendarIntegrated] = useState(false);
+    const [calendarRange, setCalendarRange] = useState({ start: null, end: null });
+    const [searchParams] = useSearchParams();
+
+    const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=980766458886-llsr892dnsvifd706dlog2lc4flr2a1d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/ProfessionalCalendar&scope=https://www.googleapis.com/auth/calendar&response_type=code&access_type=offline&prompt=consent`;
 
     useEffect(() => {
-        const fetchAppointments = async () => {
+        const initializeCalendar = async () => {
             try {
-                const response = await axiosInstance.get(`/scheduleAppointments/professional/${id}`);
+                const code = searchParams.get('code');
 
+                if (code) {
+                    // Only save the token if there's none saved for the user
+                    const authCheckResponse = await axiosInstance.get(`/scheduleAppointments/user-authenticated-google/${id}`);
+
+                    if (!authCheckResponse.data) {
+                        // Save the token since the user is not authenticated with Google
+                        await saveGoogleAuthToken(code);
+                    } else {
+                        setIsGoogleCalendarIntegrated(true);
+                    }
+                } else {
+                    // Check Google Calendar integration status
+                    const response = await axiosInstance.get(`/scheduleAppointments/user-authenticated-google/${id}`);
+                    setIsGoogleCalendarIntegrated(response.data); // True or false
+                }
+
+                // Fetch Fix4You appointments
+                const response = await axiosInstance.get(`/scheduleAppointments/professional/${id}`);
                 const appointmentsWithDetails = await Promise.all(
                     response.data.map(async (appointment) => {
                         const serviceResponse = await axiosInstance.get(`/services/${appointment.serviceId}`);
@@ -43,20 +70,109 @@ function ProfessionalCalendar({ id }) {
                     })
                 );
 
-                setAppointments(appointmentsWithDetails);
+                const start = new Date();
+                const end = new Date();
+                end.setDate(end.getDate() + 7);
+
+                await synchronizeGoogleCalendar(start, end);
+
+                setAppointments((prevAppointments) => [
+                    ...appointmentsWithDetails,
+                    ...prevAppointments.filter((event) => event.googleEvent),
+                ]);
 
             } catch (error) {
-                console.error('Error fetching appointments:', error);
-                setModalMessage('Ocorreu um erro na recuperação das suas marcações');
+                console.error('Error initializing calendar:', error);
+                setModalMessage('Erro ao inicializar o calendário');
                 setIsErrorModal(true);
             } finally {
                 setLoading(false);
             }
-        };
+        }
+        if (appointments.length > 0) {
+            console.log("Updated Appointments State:", appointments);
+        }
 
-        fetchAppointments();
+        initializeCalendar();
+    }, [id, searchParams]);
 
-    }, [id]);
+
+
+    const saveGoogleAuthToken = async (authCode) => {
+        try {
+            await axiosInstance.post('/scheduleAppointments/save-token', null, {
+                params: {
+                    userId: id,
+                    code: authCode,
+                },
+            });
+            setModalMessage('Google Calendar integrated successfully!');
+            setIsErrorModal(false);
+            setIsGoogleCalendarIntegrated(true);
+        } catch (error) {
+            console.error('Error saving Google Calendar token:', error);
+            setModalMessage('Error saving Google Calendar token');
+            setIsErrorModal(true);
+        }
+    };
+
+
+
+    const handleDatesSet = (datesInfo) => {
+        const { start, end } = datesInfo;
+        console.log("Calendar Visible Range:", { start, end });
+
+        synchronizeGoogleCalendar(start, end);
+    };
+
+
+    const synchronizeGoogleCalendar = async (start, end) => {
+        try {
+            const response = await axiosInstance.get('/scheduleAppointments/google-events-between', {
+                params: {
+                    userId: id,
+                    start: start.toISOString(),
+                    end: end.toISOString(),
+                },
+            });
+            const googleEvents = response.data
+                .filter((event) => !event.title.includes("Fix4You")) // Exclude events with "Fix4You" in the title
+                .map((event) => ({
+                    id: event.eventId,
+                    title: event.title.trim() || "Busy",
+                    start: new Date(event.startTime),
+                    end: new Date(event.endTime),
+                    description: event.description || "Não disponível",
+                    location: event.location || "Não disponível",
+                    color: '#1E90FF',
+                    googleEvent: true,
+                }));
+
+
+            console.log("Processed Google Events:", googleEvents);
+
+            setAppointments((prevAppointments) => {
+                const updatedAppointments = [
+                    ...prevAppointments.filter((app) => !app.googleEvent),
+                    ...googleEvents,
+                ];
+
+                // Update state only if there are changes
+                if (!isEqual(prevAppointments, updatedAppointments)) {
+                    return updatedAppointments;
+                }
+                return prevAppointments;
+            });
+        } catch (error) {
+            console.error("Error synchronizing Google Calendar:", error);
+        }
+    };
+
+
+    const handleIntegrateGoogleCalendar = () => {
+        window.location.href = GOOGLE_AUTH_URL;
+    };
+
 
 
     const handleAccept = async (appointmentId, serviceId) => {
@@ -193,10 +309,8 @@ function ProfessionalCalendar({ id }) {
         saveAs(blob, `${title}.ics`);
     };
 
-    const formatDateForAPI = (date) => {
-        const pad = (n) => (n < 10 ? '0' + n : n);
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-    };
+    const formatDateForAPI = (date) => format(date, "yyyy-MM-dd'T'HH:mm");
+
 
     const handleCloseConfirmationModal = () => {
         setConfirmationModalVisible(false);
@@ -208,6 +322,23 @@ function ProfessionalCalendar({ id }) {
         setRefuseModalVisible(false);
         setSelectedEvent(null);
         setClientDetails(null);
+    };
+
+    const syncEventToGoogleCalendar = async (appointment) => {
+        try {
+            await axiosInstance.post('/addEventToGoogleCalendar', {
+                title: appointment.title,
+                start: appointment.start,
+                end: appointment.end,
+                description: appointment.description,
+            });
+            setModalMessage('Evento sincronizado com sucesso no Google Calendar');
+            setIsErrorModal(false);
+        } catch (error) {
+            console.error('Error syncing event to Google Calendar:', error);
+            setModalMessage('Ocorreu um erro ao sincronizar o evento com o Google Calendar');
+            setIsErrorModal(true);
+        }
     };
 
     const handleEventClick = async (info) => {
@@ -297,6 +428,17 @@ function ProfessionalCalendar({ id }) {
     return (
         <div className="p-8 max-w-6xl mx-auto bg-white shadow-lg rounded-lg mt-8">
             <h1 className="text-3xl font-bold mb-6 text-yellow-600">Calendário</h1>
+            <div className="mb-4">
+                {!isGoogleCalendarIntegrated && (
+                    <button
+                        className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-500 transition mb-4"
+                        onClick={handleIntegrateGoogleCalendar}
+                    >
+                        Integrate your Google Calendar
+                    </button>
+                )}
+            </div>
+
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="timeGridWeek"
@@ -305,7 +447,8 @@ function ProfessionalCalendar({ id }) {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
-                events={appointments}
+                events={appointments} // Ensure this matches the state
+                datesSet={handleDatesSet}
                 eventClick={handleEventClick}
                 allDaySlot={false}
                 slotEventOverlap={false}
@@ -317,14 +460,11 @@ function ProfessionalCalendar({ id }) {
                 eventDrop={handleEventChange} // Handle drag and drop
                 eventResize={handleEventChange} // Handle resizing
                 eventContent={(eventInfo) => (
-                    <div
-                        className="h-full w-full text-center flex flex-col justify-center items-center px-2 overflow-hidden">
-                        <strong className="text-sm font-bold text-gray-800 truncate w-full">
-                            {eventInfo.event.title}
-                        </strong>
-                        <span className="text-xs text-gray-600 truncate w-full">
-                {eventInfo.event.extendedProps.state}
-            </span>
+                    <div>
+                        <strong>{eventInfo.event.title}</strong>
+                        {eventInfo.event.extendedProps.description && (
+                            <p>{eventInfo.event.extendedProps.description}</p>
+                        )}
                     </div>
                 )}
                 eventBackgroundColor={(info) =>

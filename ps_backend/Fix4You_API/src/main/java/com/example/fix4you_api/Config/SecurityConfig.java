@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/scheduleAppointments/disapprove/*").hasAnyRole("ADMIN","PROFESSIONAL")
                         .requestMatchers("/scheduleAppointments/professional/*").permitAll()
                         .requestMatchers("/scheduleAppointments/client/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/scheduleAppointments/*").permitAll()
+                        .requestMatchers("/scheduleAppointments/user-authenticated-google/*").permitAll()
                         .requestMatchers("/tickets").permitAll()
                         .requestMatchers("/tickets/*").permitAll()
                         .requestMatchers("/tickets/accept/*").permitAll()

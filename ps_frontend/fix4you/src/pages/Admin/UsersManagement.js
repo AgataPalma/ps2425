@@ -3,6 +3,7 @@ import axiosInstance from "../../components/axiosInstance";
 import ClientDetails from "./ClientDetails";
 import ProfessionalDetails from "./ProfessionalDetails";
 import SuspiciousActivities from "./SuspiciousActivities";
+import Spinner from "../../components/Spinner";
 
 const UsersManagement = () => {
     const [activeTab, setActiveTab] = useState("clients"); // Active tab state
@@ -33,11 +34,7 @@ const UsersManagement = () => {
     }, []);
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <p className="text-lg text-gray-700">A carregar...</p>
-            </div>
-        );
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
     return (

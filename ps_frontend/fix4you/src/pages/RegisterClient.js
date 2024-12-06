@@ -26,6 +26,8 @@ const RegisterClient = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const DICEBEAR_BASE_URL = "https://api.dicebear.com/9.x/adventurer/svg?seed=avatar3.svg";
+
     useEffect(() => {
         const fetchLocationData = async () => {
             try {
@@ -105,7 +107,7 @@ const RegisterClient = () => {
             password: password,
             phoneNumber: phoneNumber,
             location: selectedLocation,
-            profileImage: profileImage,
+            profileImage: btoa(DICEBEAR_BASE_URL),
             ageValidation: true,
             dateOfBirth: dateOfBirth,
             userType: 'CLIENT',

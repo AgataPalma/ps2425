@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../components/axiosInstance";
+import Spinner from "../../components/Spinner";
 
 function Dashboard() {
     const [suspiciousUsers, setSuspiciousUsers] = useState([]);
@@ -102,7 +103,7 @@ function Dashboard() {
     }, []);
 
     if (loading) {
-        return <div className="text-center py-10">Loading...</div>;
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
     if (error) {
