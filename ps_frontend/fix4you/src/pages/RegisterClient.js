@@ -121,47 +121,39 @@ const RegisterClient = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(requestBody),
+                body: JSON.stringify(requestBody),         
             });
 
-            if (response.ok) {
-                // Sucesso na criação do cliente
+
                 setLoading(false);
                 setModalMessage('Conta criada com sucesso! Verifique o seu email para validar a sua conta.');
                 setIsSuccess(true);
                 setIsModalOpen(true);
-            } else {
-                // Erro na resposta do servidor
-                const errorData = await response.json();
 
-                if (errorData) {
-                    if (typeof errorData === 'object') {
-                        // Manipular erros quando é um objeto com campos específicos
-                        const detailedErrors = Object.entries(errorData)
-                            .map(([field, message]) => `${field}: ${message}`)
-                            .join('\n');
-                        setModalMessage(detailedErrors);
-                    } else if (typeof errorData === 'string') {
-                        // Manipular erros quando é uma string
-                        setModalMessage(errorData);
-                    } else {
-                        // Caso de formatos inesperados
-                        setModalMessage('Erro inesperado. Por favor, tente novamente.');
-                    }
-                } else {
-                    setModalMessage('Erro ao criar o cliente. Por favor, tente novamente.');
-                }
-                setLoading(false);
-                setIsSuccess(false);
-                setIsModalOpen(true);
-            }
         } catch (error) {
-            console.error('Erro:', error);
-            setModalMessage('Ocorreu um erro durante o registo. Por favor, tente novamente.');
+            if (error.response && error.response.data) {
+              const backendError = error.response.data;
+      
+              if (typeof backendError === 'object') {
+                // Handle error when it's an object with fields like `nif` or `profileImage`
+                const detailedErrors = Object.entries(backendError)
+                  .map(([field, message]) => `${field}: ${message}`)
+                  .join('\n');
+                setModalMessage(detailedErrors);
+              } else if (typeof backendError === 'string') {
+                // Handle error when it's a string
+                setModalMessage(backendError);
+              } else {
+                // Fallback for unexpected formats
+                setModalMessage('Erro inesperado. Por favor, tente novamente.');
+              }
+            } else {
+              setModalMessage('Erro ao criar o cliente. Por favor, tente novamente.');
+            }
             setLoading(false);
             setIsSuccess(false);
             setIsModalOpen(true);
-        }
+          }
     };
 
     if (loading) {
@@ -300,27 +292,6 @@ const RegisterClient = () => {
                             />
                         ) : (
                             <p className="text-gray-600">{selectedLocation || 'Sem localização definida'}</p>
-                        )}
-                    </div>
-
-                    <br />
-
-
-                    <div>
-                        <h3 className="block text-sm font-medium leading-6 text-gray-900">Localização</h3>
-                        {editMode ? (
-                            <Select
-                                options={locationOptions}
-                                onChange={handleLocationChange}
-                                placeholder="Seleccione a freguesia"
-                                value={locationOptions
-                                    .flatMap(option => option.options)
-                                    .find(option => option.value === selectedLocation)
-                                }
-                                className="mt-2"
-                            />
-                        ) : (
-                            <p className="text-gray-600">{selectedLocation || "Sem localização definida"}</p>
                         )}
                     </div>
 
