@@ -81,15 +81,33 @@ public class ServiceController {
         return ResponseEntity.ok(clientIds);
     }
 
+    @GetMapping("/sendEmailTopActivitiesClients")
+    public ResponseEntity<?> sendEmailTopActivitiesClients() {
+        List<ClientServiceCount> clientIds = this.serviceService.sendEmailTopActivitiesClients();
+        return ResponseEntity.ok(clientIds);
+    }
+
     @GetMapping("/topActivitiesProfessionals")
     public ResponseEntity<?> getTopActivitiesProfessionals() {
         List<ProfessionalServiceCount> professionalIds = this.serviceService.getTopActivitiesProfessionals();
         return ResponseEntity.ok(professionalIds);
     }
 
+    @GetMapping("/sendEmailActivitiesProfessionals")
+    public ResponseEntity<?> sendEmailTopActivitiesProfessionals() {
+        List<ProfessionalServiceCount> professionalIds = this.serviceService.sendEmailTopActivitiesProfessionals();
+        return ResponseEntity.ok(professionalIds);
+    }
+
     @GetMapping("/topExpensesClients")
     public ResponseEntity<?> getTopExpensesClients() {
         List<ClientTotalSpent> clientIds = this.serviceService.getTopPriceClients();
+        return ResponseEntity.ok(clientIds);
+    }
+
+    @GetMapping("/sendEmailTopExpensesClients")
+    public ResponseEntity<?> sendEmailTopExpensesClients() {
+        List<ClientTotalSpent> clientIds = this.serviceService.sendEmailTopPriceClients();
         return ResponseEntity.ok(clientIds);
     }
 

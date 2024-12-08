@@ -12,6 +12,7 @@ public interface ProfessionalsFeeService {
     ProfessionalsFee getProfessionalsFeeById(String id);
     List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId);
     List<ProfessionalTotalSpent> getTopPriceProfessionals();
+    List<ProfessionalTotalSpent> sendEmailTopPriceProfessionals();
     ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee);
     ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear);
     ProfessionalsFee updateProfessionalsFee(String id, ProfessionalsFee professionalsFee);

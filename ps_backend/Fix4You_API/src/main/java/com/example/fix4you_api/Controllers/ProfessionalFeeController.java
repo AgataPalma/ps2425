@@ -138,6 +138,12 @@ public class ProfessionalFeeController {
         return ResponseEntity.ok(clientIds);
     }
 
+    @GetMapping("/sendEmailTopExpensesProfessionals")
+    public ResponseEntity<?> sendEmailTopExpensesProfessionals() {
+        List<ProfessionalTotalSpent> clientIds = professionalsFeeService.sendEmailTopPriceProfessionals();
+        return ResponseEntity.ok(clientIds);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProfessionalFee(@PathVariable String id) {
         professionalsFeeService.deleteProfessionalFee(id);
