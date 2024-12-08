@@ -6,7 +6,11 @@ on:
       - main
     paths:
       - 'ps_backend/**'  # Only trigger on changes in this directory
-
+      
+permissions:
+  contents: read
+  pull-requests: write
+  
 jobs:
   test:
     runs-on: ubuntu-latest
