@@ -100,10 +100,19 @@ public class ServiceServiceImpl implements ServiceService {
                 .map(entry -> new ClientServiceCount(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
+        return listClientServiceCount;
+    }
+
+    @Override
+    public List<ClientServiceCount> sendEmailTopActivitiesClients() {
+        List<ClientServiceCount> listClientServiceCount = this.getTopActivitiesClients();
+
         for(var i=0; i< listClientServiceCount.size(); i++){
             if(listClientServiceCount.get(i).getClientId() != null) {
-                User user = userService.getUserById(listClientServiceCount.get(i).getClientId());
-                userService.sendEmailTopUsers(user);
+                User user = userService.getUser(listClientServiceCount.get(i).getClientId());
+                if(user != null) {
+                    userService.sendEmailTopUsers(user);
+                }
             }
         }
 
@@ -128,10 +137,19 @@ public class ServiceServiceImpl implements ServiceService {
                 .map(entry -> new ProfessionalServiceCount(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
+        return listProfessionalServiceCount;
+    }
+
+    @Override
+    public List<ProfessionalServiceCount> sendEmailTopActivitiesProfessionals() {
+        List<ProfessionalServiceCount> listProfessionalServiceCount = this.getTopActivitiesProfessionals();
+
         for(var i=0; i< listProfessionalServiceCount.size(); i++){
             if(listProfessionalServiceCount.get(i).getProfessionalId() != null) {
-                User user = userService.getUserById(listProfessionalServiceCount.get(i).getProfessionalId());
-                userService.sendEmailTopUsers(user);
+                User user = userService.getUser(listProfessionalServiceCount.get(i).getProfessionalId());
+                if(user != null) {
+                    userService.sendEmailTopUsers(user);
+                }
             }
         }
 
@@ -159,10 +177,19 @@ public class ServiceServiceImpl implements ServiceService {
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
 
+        return listClientTotalSpent;
+    }
+
+    @Override
+    public List<ClientTotalSpent> sendEmailTopPriceClients() {
+        List<ClientTotalSpent> listClientTotalSpent = this.getTopPriceClients();
+
         for(var i=0; i< listClientTotalSpent.size(); i++){
             if(listClientTotalSpent.get(i).getClientId() != null) {
-                User user = userService.getUserById(listClientTotalSpent.get(i).getClientId());
-                userService.sendEmailTopUsers(user);
+                User user = userService.getUser(listClientTotalSpent.get(i).getClientId());
+                if(user != null) {
+                    userService.sendEmailTopUsers(user);
+                }
             }
         }
 

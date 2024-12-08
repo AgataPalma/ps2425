@@ -1,7 +1,6 @@
 package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
-import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
@@ -15,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +38,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getAdminById(String id) {
         return findOrThrowAdmin(id);
+    }
+
+    public User getUser(String id) {
+        return find(id);
     }
 
     @Override
@@ -99,6 +99,14 @@ public class UserServiceImpl implements UserService {
         //return userRepository.save(existingUser);
 
         userRepository.deleteById(id);
+    }
+
+    private User find(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()) {
+            return user.get();
+        }
+        return null;
     }
 
     private User findOrThrow(String id) {

@@ -10,8 +10,11 @@ public interface ServiceService {
     Service createService(Service service);
     List<Service> getServices(String filter, String sort);
     List<ClientServiceCount> getTopActivitiesClients();
+    List<ClientServiceCount> sendEmailTopActivitiesClients();
     List<ProfessionalServiceCount> getTopActivitiesProfessionals();
+    List<ProfessionalServiceCount> sendEmailTopActivitiesProfessionals();
     List<ClientTotalSpent> getTopPriceClients();
+    List<ClientTotalSpent> sendEmailTopPriceClients();
     Service updateService(String id, Service service);
     List<Service> getServicesByProfessionalId(String professionalId);
     List<Service> getServicesByClientId(String clientId);

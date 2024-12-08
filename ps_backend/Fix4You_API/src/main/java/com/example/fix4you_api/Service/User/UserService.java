@@ -11,6 +11,8 @@ import java.util.Map;
 public interface UserService {
     List<User> getAllUsers();
 
+    User getUser(String id);
+
     User getUserById(String id);
 
     User getAdminById(String id);

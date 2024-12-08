@@ -78,10 +78,19 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
 
+        return professionalTotalSpents;
+    }
+
+    @Override
+    public List<ProfessionalTotalSpent> sendEmailTopPriceProfessionals() {
+        List<ProfessionalTotalSpent> professionalTotalSpents = this.getTopPriceProfessionals();
+
         for(var i=0; i< professionalTotalSpents.size(); i++){
             if(professionalTotalSpents.get(i).getProfessionalId() != null) {
-                User user = userService.getUserById(professionalTotalSpents.get(i).getProfessionalId());
-                userService.sendEmailTopUsers(user);
+                User user = userService.getUser(professionalTotalSpents.get(i).getProfessionalId());
+                if(user != null) {
+                    userService.sendEmailTopUsers(user);
+                }
             }
         }
 
