@@ -10,8 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class Fix4YouApiApplication {
 
-    //changes for test commit
-
     public static void main(String[] args) {
         SpringApplication.run(Fix4YouApiApplication.class, args);
     }
