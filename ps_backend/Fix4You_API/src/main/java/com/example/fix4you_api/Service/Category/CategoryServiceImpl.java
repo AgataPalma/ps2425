@@ -4,8 +4,9 @@ import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
-import lombok.RequiredArgsConstructor;
+import com.example.fix4you_api.Service.Service.ServiceService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +16,19 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryDescriptionService categoryDescriptionService;
+    private final ServiceService serviceService;
+
+    public CategoryServiceImpl(CategoryRepository categoryRepository,
+                               @Lazy CategoryDescriptionService categoryDescriptionService,
+                               @Lazy ServiceService service) {
+        this.categoryRepository = categoryRepository;
+        this.categoryDescriptionService = categoryDescriptionService;
+        this.serviceService = service;
+    }
 
     @Override
     public List<Category> getAllCategories() {
@@ -39,9 +48,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public Category updateCategory(String id, Category category) {
-        Category existingCategory = findOrThrow(id);
-        BeanUtils.copyProperties(category, existingCategory, "id");
-        return categoryRepository.save(existingCategory);
+        List<com.example.fix4you_api.Data.Models.Service> services =  serviceService.getServicesByCategoryId(id);
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByCategoryId(id);
+
+        if (services.isEmpty() && categoryDescriptions.isEmpty()) {
+            // Se não houver serviços e descrições de categoria para os profissionais associadas, exclui a categoria
+            Category existingCategory = findOrThrow(id);
+            BeanUtils.copyProperties(category, existingCategory, "id");
+            return categoryRepository.save(existingCategory);
+        } else {
+            throw new IllegalStateException("Não é possível editar totalmente a categoria, pois ela possui serviços ou profissionais associados.");
+        }
     }
 
     @Override
@@ -51,7 +68,17 @@ public class CategoryServiceImpl implements CategoryService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "name" -> existingCategory.setName((String) value);
+                case "name" -> {
+                    List<com.example.fix4you_api.Data.Models.Service> services =  serviceService.getServicesByCategoryId(id);
+                    List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByCategoryId(id);
+
+                    if (services.isEmpty() && categoryDescriptions.isEmpty()) {
+                        // Se não houver serviços e descrições de categoria para os profissionais associadas, exclui a categoria
+                        existingCategory.setName((String) value);
+                    } else {
+                        throw new IllegalStateException("Não é possível editar o nome da categoria, pois ela possui serviços ou profissionais associados.");
+                    }
+                }
                 case "minValue" -> existingCategory.setMinValue((float) value);
                 case "maxValue" -> existingCategory.setMaxValue((float) value);
                 default -> throw new RuntimeException("Invalid field update request");
@@ -93,7 +120,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(String id) {
-        categoryRepository.deleteById(id);
+        List<com.example.fix4you_api.Data.Models.Service> services =  serviceService.getServicesByCategoryId(id);
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getCategoriesDescriptionByCategoryId(id);
+
+        if (services.isEmpty() && categoryDescriptions.isEmpty()) {
+            // Se não houver serviços e descrições de categoria para os profissionais associadas, exclui a categoria
+            categoryRepository.deleteById(id);
+        } else {
+            throw new IllegalStateException("Não é possível excluir a categoria, pois ela possui serviços ou profissionais associados.");
+        }
     }
 
     private Category findOrThrow(String id) {

@@ -140,7 +140,7 @@ class CategoryDescriptionServiceImplUnitTest {
     @Test
     void testDeleteCategoryDescriptionsById() {
         // Test
-        categoryDescriptionService.deleteCategoryDescriptionsById("1");
+        categoryDescriptionService.deleteCategoryDescriptionById("1");
 
         // Verify
         verify(categoryDescriptionRepository, times(1)).deleteById("1");

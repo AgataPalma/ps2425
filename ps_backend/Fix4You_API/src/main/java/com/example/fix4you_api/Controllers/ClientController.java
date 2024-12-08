@@ -83,12 +83,23 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String id) {
-        reviewService.deleteReviewsForUser(id);
-        ticketService.deleteTicketsForUser(id);
-        serviceService.deleteServicesForClient(id);
-        clientService.deleteClient(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> deleteClient(@PathVariable String id) {
+
+        if (serviceService.checkServicesToDeleteClient(id)) {
+
+            reviewService.deleteReviewsForUser(id);
+            ticketService.deleteTicketsForUser(id);
+            serviceService.deleteServicesForClient(id);
+            clientService.deleteClient(id);
+
+            return new ResponseEntity<>("Cliente removido com sucesso.", HttpStatus.OK);
+
+        } else {
+            return new ResponseEntity<>(
+                    "Não é possível remover o cliente porque existem serviços pendentes.",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
 
         //Client existingClient = clientService.deleteClient(id);
         //return new ResponseEntity<>(existingClient ,HttpStatus.OK);
