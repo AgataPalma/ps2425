@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateTicketRequestDTO {
-    @NotBlank(message = "User ID cannot be blank")
+    @NotBlank(message = "User ID não pode estar em branco")
     private String userId;
 
-    @NotBlank(message = "Title cannot be blank")
+    @NotBlank(message = "Titulo não pode estar em branco")
     private String title;
 
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "Descrição não pode estar em branco")
     private String description;
 }

@@ -23,7 +23,7 @@ public class Ticket {
     private String id;
 
     @Field
-    @NotNull(message = "User cannot be null")
+    @NotNull(message = "O utilizador não pode ser nulo")
     private SimpleUserDTO user;
 
     //@NotNull(message = "Admin ID cannot be null")
@@ -31,7 +31,7 @@ public class Ticket {
     private SimpleUserDTO admin;
 
     @Field
-    @NotBlank(message = "Title cannot be blank")
+    @NotBlank(message = "O título não pode estar em branco")
     private String title;
 
     //@Field
@@ -39,16 +39,16 @@ public class Ticket {
     //private String description;
 
     @Field
-    @NotNull(message = "Status cannot be null")
+    @NotNull(message = "O estado não pode ser nulo")
     private TicketStatusEnum status;
 
     @Field
-    @NotNull(message = "Ticket Start Date cannot be null")
-    @PastOrPresent(message = "Ticket Start Date must be in the past or present")
+    @NotNull(message = "A data de início do ticket não pode ser nula")
+    @PastOrPresent(message = "A data de início do ticket deve ser no passado ou no presente")
     private LocalDateTime ticketStartDate;
 
     @Field
     //@NotNull(message = "Ticket Close Date cannot be null")
-    @PastOrPresent(message = "Ticket Close Date must be in the past or present")
+    @PastOrPresent(message = "A data de término do ticket tem de ser no passado ou no presente")
     private LocalDateTime ticketCloseDate;
 }

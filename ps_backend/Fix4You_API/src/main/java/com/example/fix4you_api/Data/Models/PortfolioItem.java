@@ -20,13 +20,13 @@ public class PortfolioItem {
     private String id;
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
+    @NotNull(message = "Professional ID não pode ser nulo")
     private String professionalId;
 
     @Field
     private byte[][] byteContent;
 
     @Field
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "A descrição não pode estar em branco")
     private String description;
 }

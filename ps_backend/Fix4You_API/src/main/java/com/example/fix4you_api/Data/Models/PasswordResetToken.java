@@ -24,11 +24,11 @@ public class PasswordResetToken {
     private String token;
 
     @Field
-    @NotNull(message = "Token cannot be null")
+    @NotNull(message = "Token não pode ser nulo")
     private String userId;
 
     @Field
-    @NotNull(message = "expiryDateTime cannot be null")
+    @NotNull(message = "expiryDateTime não pode ser nulo")
     private LocalDateTime expiryDateTime;
 
     public PasswordResetToken(String token, LocalDateTime expiryDateTime, String userId) {
@@ -41,15 +41,15 @@ public class PasswordResetToken {
         return id;
     }
 
-    public @NotBlank(message = "Token cannot be blank") String getToken() {
+    public @NotBlank(message = "Token não pode estar em branco") String getToken() {
         return token;
     }
 
-    public @NotNull(message = "Token cannot be null") String getUserId() {
+    public @NotNull(message = "Token não pode ser nulo") String getUserId() {
         return userId;
     }
 
-    public @NotNull(message = "expiryDateTime cannot be null") LocalDateTime getExpiryDateTime() {
+    public @NotNull(message = "expiryDateTime não pode ser nulo") LocalDateTime getExpiryDateTime() {
         return expiryDateTime;
     }
 
@@ -57,11 +57,11 @@ public class PasswordResetToken {
         this.token = token;
     }
 
-    public void setUserId(@NotNull(message = "Token cannot be null") String userId) {
+    public void setUserId(@NotNull(message = "Token não pode ser nulo") String userId) {
         this.userId = userId;
     }
 
-    public void setExpiryDateTime(@NotNull(message = "expiryDateTime cannot be null") LocalDateTime expiryDateTime) {
+    public void setExpiryDateTime(@NotNull(message = "expiryDateTime não pode ser nulo") LocalDateTime expiryDateTime) {
         this.expiryDateTime = expiryDateTime;
     }
 }

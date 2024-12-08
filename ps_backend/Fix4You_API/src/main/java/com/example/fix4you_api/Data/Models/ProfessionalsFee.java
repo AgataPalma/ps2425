@@ -24,29 +24,29 @@ public class ProfessionalsFee {
     private String id;
 
     @Field
-    @NotNull(message = "Professional cannot be null")
+    @NotNull(message = "Profissional não pode ser nulo")
     private SimpleProfessionalDTO professional;
 
     @Field
-    @NotNull(message = "Value cannot be null")
-    @DecimalMin(value = "0.0", message = "Value must be a positive value")
-    @Digits(integer = 3, fraction = 2, message = "Value must be a numeric value with up to 3 digits and 2 decimal places")
+    @NotNull(message = "O valor não pode ser nulo")
+    @DecimalMin(value = "0.0", message = "O valor deve ser um valor positivo")
+    @Digits(integer = 3, fraction = 2, message = "O valor deve ser um valor numérico com um máximo de 3 dígitos e 2 casas decimais")
     private float value;
 
     @Field
-    @NotNull(message = "Number of services cannot be null")
-    @PositiveOrZero(message = "Number of services must be zero or a positive number")
+    @NotNull(message = "O número de serviços não pode ser nulo")
+    @PositiveOrZero(message = "O número de serviços deve ser zero ou um número positivo")
     private int numberServices;
 
     @Field
-    @NotBlank(message = "Related month cannot be blank")
+    @NotBlank(message = "O mês relacionado não pode estar em branco")
     private String relatedMonthYear;
 
     @Field
     private LocalDateTime paymentDate;
 
     @Field
-    @NotNull(message = "Payment status cannot be null")
+    @NotNull(message = "O estado do pagamento não pode ser nulo")
     private PaymentStatusEnum paymentStatus;
 
     @Field

@@ -19,25 +19,25 @@ public class Review {
     private String id;
 
     @Field
-    @NotNull(message = "Classification cannot be null")
-    @DecimalMin(value = "0.0", message = "Classification must be a positive value")
-    @Digits(integer = 1, fraction = 2, message = "Classification must be a numeric value with 1 digit and 2 decimal places")
+    @NotNull(message = "A classificação não pode ser nula")
+    @DecimalMin(value = "0.0", message = "A classificação deve ser um valor positivo")
+    @Digits(integer = 1, fraction = 2, message = "A classificação deve ser um valor numérico com 1 dígito e 2 casas decimais")
     private float classification;
 
     @Field
-    @NotBlank(message = "Review description cannot be blank")
+    @NotBlank(message = "A descrição da revisão não pode estar em branco")
     private String reviewDescription;
 
     @Field
-    @NotNull(message = "Service ID cannot be null")
+    @NotNull(message = "O ID do serviço não pode ser nulo")
     private String serviceId;
 
     @Field
-    @NotNull(message = "Reviewer ID cannot be null")
+    @NotNull(message = "O ID do revisor não pode ser nulo")
     private String reviewerId;              // user that makes a review (professional or a client)
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
+    @NotNull(message = "Professional ID não pode ser nulo")
     private String reviewedId;              // user that receives a review (could be a professional or a client)
 
     @Field
