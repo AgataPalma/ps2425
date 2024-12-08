@@ -23,10 +23,10 @@ public class GoogleTokenUser {
     private String refreshToken;
 
     @Field
-    @NotNull(message = "UserId cannot be null")
+    @NotNull(message = "UserId não pode ser nulo")
     private String userId;
 
     @Field
-    @NotNull(message = "email cannot be null")
+    @NotNull(message = "email não pode ser nulo")
     private String email;
 }

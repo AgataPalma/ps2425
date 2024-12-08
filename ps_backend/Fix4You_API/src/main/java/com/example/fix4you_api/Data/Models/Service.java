@@ -22,45 +22,45 @@ public class Service {
     private String id;
 
     @Field
-    @NotNull(message = "Client ID cannot be null")
+    @NotNull(message = "O ID do cliente não pode ser nulo")
     private String clientId;
 
     @Field
     private String professionalId;
 
     @Field
-    @NotNull(message = "Price cannot be null")
-    @DecimalMin(value = "0.0", message = "Price must be a positive value")
-    @Digits(integer = 5, fraction = 2, message = "Price must be a numeric value with up to 5 digits and 2 decimal places")
+    @NotNull(message = "O preço não pode ser nulo")
+    @DecimalMin(value = "0.0", message = "O preço deve ser um valor positivo")
+    @Digits(integer = 5, fraction = 2, message = "O preço deve ser um valor numérico com um máximo de 5 dígitos e 2 casas decimais")
     private float price;
 
     @Field
-    @NotBlank(message = "Address cannot be blank")
+    @NotBlank(message = "O endereço não pode estar em branco")
     private String address;
 
     @Field
-    @NotBlank(message = "Postal Code cannot be blank")
-    @Pattern(regexp = "^[A-Za-z0-9\\s-]{3,10}$", message = "Postal Code must be alphanumeric and between 3 and 10 characters")
+    @NotBlank(message = "O código postal não pode estar em branco")
+    @Pattern(regexp = "^[A-Za-z0-9\\s-]{3,10}$", message = "O código postal deve ser alfanumérico e ter entre 3 e 10 caracteres")
     private String postalCode;
 
     @Field
-    @NotNull(message = "Category cannot be null")
+    @NotNull(message = "A categoria não pode ser nula")
     private SimpleCategoryDTO category;
 
     @Field
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "A descrição não pode estar em branco")
     private String description;
 
     @Field
-    @NotBlank(message = "Title cannot be blank")
+    @NotBlank(message = "O título não pode estar em branco")
     private String title;
 
     @Field
-    @NotNull(message = "State cannot be null")
+    @NotNull(message = "O Estado não pode ser nulo")
     private ServiceStateEnum state;
 
     @Field
-    @NotNull(message = "isUrgent cannot be null")
+    @NotNull(message = "isUrgent não pode ser nulo")
     private boolean isUrgent;
 
     @Field
@@ -70,10 +70,10 @@ public class Service {
     private LocalDateTime agreementDate;
 
     @Field
-    @NotNull(message = "Languages cannot be null")
+    @NotNull(message = "As línguas não podem ser nulas")
     private List<Language> languages;
 
     @Field
-    @NotBlank(message = "Location cannot be blank")
+    @NotBlank(message = "A localização não pode estar em branco")
     private String location;
 }

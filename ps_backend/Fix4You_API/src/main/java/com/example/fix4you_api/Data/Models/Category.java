@@ -17,20 +17,20 @@ public class Category {
     private String id;
 
     @Field
-    @NotBlank(message = "Name cannot be blank")
-    @Size(max = 50, message = "Name must be less than 50 characters")
+    @NotBlank(message = "O nome não pode ser nulo")
+    @Size(max = 50, message = "O Nome tem de ter menos de 50 caracteres")
     private String name;
 
     @Field
-    @NotNull(message = "MinValue cannot be null")
-    @DecimalMin(value = "0.0", message = "MinValue must be a positive value")
-    @Digits(integer = 5, fraction = 2, message = "MinValue must be a numeric value with up to 3 digits and 2 decimal places")
+    @NotNull(message = "MinValue não pode ser nulo")
+    @DecimalMin(value = "0.0", message = "MinValue tem de ter um valor positivo")
+    @Digits(integer = 5, fraction = 2, message = "MinValue deve ser um valor numérico com um máximo de 3 dígitos e 2 casas decimais")
     private float minValue;
 
     @Field
-    @NotNull(message = "MaxValue cannot be null")
-    @DecimalMin(value = "0.0", message = "MaxValue must be a positive value")
-    @Digits(integer = 5, fraction = 2, message = "MaxValue must be a numeric value with up to 3 digits and 2 decimal places")
+    @NotNull(message = "MaxValue não pode ser nulo")
+    @DecimalMin(value = "0.0", message = "MaxValue tem de ser um valor positivo")
+    @Digits(integer = 5, fraction = 2, message = "MaxValue deve ser um valor numérico com um máximo de 3 dígitos e 2 casas decimais")
     private float maxValue;
 
     @Field

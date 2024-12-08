@@ -25,23 +25,23 @@ public class User {
     private String id;
 
     @Field
-    @Email(message = "Email must be valid")
-    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email tem de ser válido")
+    @NotBlank(message = "Email não pode estar em branco")
     private String email;
 
     @Field
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = "Password não pode estar em branco")
     private String password;
 
     @Field
     private LocalDateTime dateCreation;
 
     @Field
-    @NotNull(message = "User type cannot be null")
+    @NotNull(message = "User type não pode ser nulo")
     private EnumUserType userType;
 
     @Field
-    @NotNull(message = "email confirmation cannot be null")
+    @NotNull(message = "confirmação de email não pode ser nulo")
     private boolean IsEmailConfirmed;
 
     //@Field
