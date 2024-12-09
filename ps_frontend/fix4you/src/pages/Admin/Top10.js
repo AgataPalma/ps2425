@@ -4,67 +4,30 @@ import axios from "axios";
 const TopLists = () => {
     const [topClientsByActivities, setTopClientsByActivities] = useState([]);
     const [topProfessionalsByActivities, setTopProfessionalsByActivities] = useState([]);
-    const [topClientsByExpenses, setTopClientsByExpenses] = useState([]);
-    const [clientDetails, setClientDetails] = useState({});
-    const [professionalDetails, setProfessionalDetails] = useState({});
+    const [topProfessionalsByExpenses, setTopProfessionalsByExpenses] = useState([]);
 
-    // Estados de carregamento para cada botão
     const [loadingStates, setLoadingStates] = useState({
         clientsActivities: false,
         professionalsActivities: false,
-        clientsExpenses: false,
+        professionalsExpenses: false,
     });
     const [loadingTexts, setLoadingTexts] = useState({
         clientsActivities: "",
         professionalsActivities: "",
-        clientsExpenses: "",
+        professionalsExpenses: "",
     });
-
-    const fetchDetails = async (id, type) => {
-        try {
-            const response = await axios.get(`http://localhost:8080/${type}s/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Erro ao buscar detalhes de ${type} com ID ${id}:`, error);
-            return { name: "Não disponível", email: "Não disponível" };
-        }
-    };
 
     const fetchTopLists = async () => {
         try {
-            const [clientsActivities, professionalsActivities, clientsExpenses] = await Promise.all([
+            const [clientsActivities, professionalsActivities, professionalsExpenses] = await Promise.all([
                 axios.get("http://localhost:8080/services/topActivitiesClients"),
                 axios.get("http://localhost:8080/services/topActivitiesProfessionals"),
-                axios.get("http://localhost:8080/services/topExpensesClients"),
+                axios.get("http://localhost:8080/professionalFees/topExpensesProfessionals"),
             ]);
-
-            const clientIds = [
-                ...new Set([
-                    ...clientsActivities.data.map(item => item.clientId),
-                    ...clientsExpenses.data.map(item => item.clientId),
-                ]),
-            ];
-            const professionalIds = [
-                ...new Set(professionalsActivities.data.map(item => item.professionalId)),
-            ];
-
-            const clientDetailsMap = {};
-            const professionalDetailsMap = {};
-
-            for (const id of clientIds) {
-                clientDetailsMap[id] = await fetchDetails(id, "client");
-            }
-
-            for (const id of professionalIds) {
-                professionalDetailsMap[id] = await fetchDetails(id, "professional");
-            }
-
-            setClientDetails(clientDetailsMap);
-            setProfessionalDetails(professionalDetailsMap);
 
             setTopClientsByActivities(clientsActivities.data);
             setTopProfessionalsByActivities(professionalsActivities.data);
-            setTopClientsByExpenses(clientsExpenses.data);
+            setTopProfessionalsByExpenses(professionalsExpenses.data);
         } catch (error) {
             console.error("Erro ao buscar dados dos top lists:", error);
         }
@@ -106,25 +69,46 @@ const TopLists = () => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((item, index) => {
-                    const details =
-                        type === "client"
-                            ? clientDetails[item.clientId]
-                            : professionalDetails[item.professionalId];
-                    return (
-                        <tr key={index} className="hover:bg-gray-100">
-                            <td className="border border-gray-300 px-4 py-2">
-                                {details?.name || "Não disponível"}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {details?.email || "Não disponível"}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {type === "client" ? item.serviceCount || item.totalSpent : item.serviceCount}
-                            </td>
-                        </tr>
-                    );
-                })}
+                {data.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-100">
+                        <td className="border border-gray-300 px-4 py-2">
+                            {type === "client" ? item.clientId : item.professionalId}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                            {type === "client" ? item.clientName : item.professionalName}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                            {item.serviceCount || item.totalSpent}
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+
+    const renderProfessionalsExpensesTable = (data) => (
+        <table className="table-auto w-full text-left border-collapse border border-gray-300 mb-8">
+            <thead>
+                <tr>
+                    <th className="border border-gray-300 px-4 py-2">ID</th>
+                    <th className="border border-gray-300 px-4 py-2">Nome</th>
+                    <th className="border border-gray-300 px-4 py-2">Despesas €</th>
+                </tr>
+            </thead>
+            <tbody>
+                {data.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-100">
+                        <td className="border border-gray-300 px-4 py-2">
+                            {item.professionalId}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                            {item.professionalName || "Não disponível"}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                            {item.totalSpent}
+                        </td>
+                    </tr>
+                ))}
             </tbody>
         </table>
     );
@@ -155,7 +139,7 @@ const TopLists = () => {
                 <br />
                 {renderTable(
                     topClientsByActivities,
-                    ["Nome", "Email", "Serviços"],
+                    ["ID", "Nome", "Nº Serviços"],
                     "client"
                 )}
             </div>
@@ -178,32 +162,28 @@ const TopLists = () => {
                 <br />
                 {renderTable(
                     topProfessionalsByActivities,
-                    ["Nome", "Email", "Serviços"],
+                    ["ID", "Nome", "Nº Serviços"],
                     "professional"
                 )}
             </div>
 
             <div>
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Top 10 Clientes por Despesas</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Top 10 Profissionais por Despesas</h2>
                 <div className="flex items-center">
                     <button
                         onClick={() =>
-                            handleSendEmail("http://localhost:8080/services/sendEmailTopExpensesClients", "clientsExpenses")
+                            handleSendEmail("http://localhost:8080/professionalFees/sendEmailTopExpensesProfessionals", "professionalsExpenses")
                         }
                         className="bg-gray-800 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded mr-2"
                     >
                         Enviar Emails
                     </button>
-                    {loadingStates.clientsExpenses && (
-                        <span className="text-gray-700 text-sm">{loadingTexts.clientsExpenses}</span>
+                    {loadingStates.professionalsExpenses && (
+                        <span className="text-gray-700 text-sm">{loadingTexts.professionalsExpenses}</span>
                     )}
                 </div>
                 <br />
-                {renderTable(
-                    topClientsByExpenses,
-                    ["Nome", "Email", "Despesas"],
-                    "client"
-                )}
+                {renderProfessionalsExpensesTable(topProfessionalsByExpenses)}
             </div>
         </div>
     );
