@@ -75,7 +75,7 @@ public class TicketServiceImpl implements TicketService {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "admin" -> existingTicket.setAdmin((SimpleUserDTO) value);
-                case "title" ->existingTicket.setTitle((String) value);
+                case "title" -> existingTicket.setTitle((String) value);
                 case "status" -> {
                     try {
                         existingTicket.setStatus(TicketStatusEnum.valueOf(value.toString().toUpperCase()));
@@ -88,6 +88,13 @@ public class TicketServiceImpl implements TicketService {
                         existingTicket.setTicketStartDate((LocalDateTime) value);
                     } else if (value instanceof String) {
                         existingTicket.setTicketStartDate(LocalDateTime.parse((CharSequence) value));
+                    }
+                }
+                case "adminAssignmentDate" -> {
+                    if (value instanceof LocalDateTime) {
+                        existingTicket.setAdminAssignmentDate((LocalDateTime) value);
+                    } else if (value instanceof String) {
+                        existingTicket.setAdminAssignmentDate(LocalDateTime.parse((CharSequence) value));
                     }
                 }
                 case "ticketCloseDate" -> {

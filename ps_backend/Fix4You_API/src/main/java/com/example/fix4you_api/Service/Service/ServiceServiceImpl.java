@@ -276,6 +276,11 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    public List<com.example.fix4you_api.Data.Models.Service> getServicesByCategoryId(String categoryId) {
+        return this.serviceRepository.findByCategory_Id(categoryId);
+    }
+
+    @Override
     public List<com.example.fix4you_api.Data.Models.Service> getServicesByUrgency() {
         return this.serviceRepository.findByUrgentTrueAndState(ServiceStateEnum.PENDING);
     }
@@ -291,7 +296,15 @@ public class ServiceServiceImpl implements ServiceService {
         List<com.example.fix4you_api.Data.Models.Service> services = getServicesByClientId(clientId);
 
         for(com.example.fix4you_api.Data.Models.Service service: services) {
-            Professional professional = professionalService.getProfessionalById(service.getProfessionalId());
+            Professional professional = null;
+
+            if (service.getProfessionalId() != null) {
+                try {
+                    professional = professionalService.getProfessionalById(service.getProfessionalId());
+                } catch (NoSuchElementException e) {
+                    // Não encontrou o profissional, mas continua a execução
+                }
+            }
 
             if(professional == null) {
                 scheduleAppointmentService.deleteScheduleAppointment(service.getId());
@@ -306,13 +319,47 @@ public class ServiceServiceImpl implements ServiceService {
         List<com.example.fix4you_api.Data.Models.Service> services = getServicesByProfessionalId(professionalId);
 
         for(com.example.fix4you_api.Data.Models.Service service: services) {
-            Client client = clientService.getClientById(service.getClientId());
+            Client client = null;
+
+            if (service.getClientId() != null) {
+                try {
+                    client = clientService.getClientById(service.getClientId());
+                } catch (NoSuchElementException e) {
+                    // Não encontrou o profissional, mas continua a execução
+                }
+            }
 
             if(client == null) {
                 scheduleAppointmentService.deleteScheduleAppointment(service.getId());
                 serviceRepository.deleteById(service.getId());
             }
         }
+    }
+
+    @Override
+    public boolean checkServicesToDeleteClient(String clientId) {
+        List<com.example.fix4you_api.Data.Models.Service> services = getServicesByClientId(clientId);
+
+        for(com.example.fix4you_api.Data.Models.Service service: services) {
+            if(service.getState() != ServiceStateEnum.COMPLETED && service.getState() != ServiceStateEnum.CANCELED) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean checkServicesToDeleteProfessional(String professionalId) {
+        List<com.example.fix4you_api.Data.Models.Service> services = getServicesByProfessionalId(professionalId);
+
+        for(com.example.fix4you_api.Data.Models.Service service: services) {
+            if(service.getState() != ServiceStateEnum.COMPLETED && service.getState() != ServiceStateEnum.CANCELED) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

@@ -27,6 +27,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     private final ProfessionalRepository professionalRepository;
     private final CategoryDescriptionRepository categoryDescriptionRepository;
     private final PortfolioItemRepository portfolioItemRepository;
+
     private final CategoryService categoryService;
     private final RsqlQueryService rsqlQueryService;
 

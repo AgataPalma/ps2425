@@ -13,6 +13,8 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
 
     List<Service> findByClientId(String id);
 
+    List<Service> findByCategory_Id(String categoryId);
+
     List<Service> findByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
 
     List<Service> findByUrgentTrueAndState(ServiceStateEnum state);

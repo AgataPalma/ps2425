@@ -110,15 +110,26 @@ public class ProfessionalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProfessional(@PathVariable String id) {
-        portfolioItemService.deletePortfolioItemsForProfessional(id);
-        categoryDescriptionService.deleteCategoryDescriptionsForProfessional(id);
-        reviewService.deleteReviewsForUser(id);
-        professionalsFeeService.deleteProfessionalFeesForProfessional(id);
-        ticketService.deleteTicketsForUser(id);
-        serviceService.deleteServicesForProfessional(id);
-        professionalService.deleteProfessional(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> deleteProfessional(@PathVariable String id) {
+
+            if(serviceService.checkServicesToDeleteProfessional(id)) {
+
+                portfolioItemService.deletePortfolioItemsForProfessional(id);
+                categoryDescriptionService.deleteCategoryDescriptionsForProfessional(id);
+                reviewService.deleteReviewsForUser(id);
+                //professionalsFeeService.deleteProfessionalFeesForProfessional(id);
+                ticketService.deleteTicketsForUser(id);
+                serviceService.deleteServicesForProfessional(id);
+                professionalService.deleteProfessional(id);
+
+                return new ResponseEntity<>("Profissional removido com sucesso.", HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(
+                        "Não é possível remover o profissional porque existem serviços pendentes.",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
 
         //Professional existingProfessional = professionalService.deleteProfessional(id);
         //return new ResponseEntity<>(existingProfessional, HttpStatus.OK);

@@ -57,6 +57,7 @@ public class TicketController {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("admin", simpleAdminUserDTO);
+        updates.put("adminAssignmentDate", LocalDateTime.now());
         updates.put("status", TicketStatusEnum.IN_REVIEW);
 
         return partialUpdateTicket(id, updates);

@@ -3,9 +3,11 @@ package com.example.fix4you_api.Service.CategoryDescription;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Event.CategoryDescription.CategoryDescriptionCreationEvent;
+import com.example.fix4you_api.Service.Category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,9 @@ import java.util.NoSuchElementException;
 public class CategoryDescriptionServiceImpl implements CategoryDescriptionService {
 
     private final CategoryDescriptionRepository categoryDescriptionRepository;
+
+    private final CategoryService categoryService;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -48,6 +53,7 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
     @Override
     public CategoryDescription createCategoryDescription(CategoryDescription categoryDescription) {
         CategoryDescription newCategoryDescription = categoryDescriptionRepository.save(categoryDescription);
+        categoryService.updateCategoryMinMaxValue(newCategoryDescription.getCategory().getId());
         eventPublisher.publishEvent(new CategoryDescriptionCreationEvent(this, newCategoryDescription));
         return newCategoryDescription;
     }
@@ -57,36 +63,49 @@ public class CategoryDescriptionServiceImpl implements CategoryDescriptionServic
     public CategoryDescription updatecategoryDescription(String id, CategoryDescription categoryDescription) {
         CategoryDescription existingCategoryDescription = findOrThrow(id);
         BeanUtils.copyProperties(categoryDescription, existingCategoryDescription, "id");
-        return categoryDescriptionRepository.save(existingCategoryDescription);
+
+        CategoryDescription categoryDescriptionUpdated = categoryDescriptionRepository.save(existingCategoryDescription);
+        categoryService.updateCategoryMinMaxValue(existingCategoryDescription.getCategory().getId());
+        return categoryDescriptionUpdated;
     }
 
     @Override
     @Transactional
     public CategoryDescription partialUpdateCategoryDescription(String id, Map<String, Object> updates) {
-        CategoryDescription existingCategory = findOrThrow(id);
+        CategoryDescription existingCategoryDescription = findOrThrow(id);
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "chargesTravels" -> existingCategory.setChargesTravels((Boolean) value);
+                case "chargesTravels" -> existingCategoryDescription.setChargesTravels((Boolean) value);
                 //case "providesInvoices" -> existingCategory.setProvidesInvoices((Boolean) value);
-                case "mediumPricePerService" -> existingCategory.setMediumPricePerService(((Double) value).floatValue());
+                case "mediumPricePerService" -> existingCategoryDescription.setMediumPricePerService(((Double) value).floatValue());
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
 
-        return categoryDescriptionRepository.save(existingCategory);
+        CategoryDescription categoryDescriptionUpdated = categoryDescriptionRepository.save(existingCategoryDescription);
+        categoryService.updateCategoryMinMaxValue(existingCategoryDescription.getCategory().getId());
+        return categoryDescriptionUpdated;
     }
 
     @Override
     @Transactional
-    public void deleteCategoryDescriptionsById(String id) {
+    public void deleteCategoryDescriptionById(String id) {
+        CategoryDescription existingCategory = findOrThrow(id);
+
         categoryDescriptionRepository.deleteById(id);
+
+        categoryService.updateCategoryMinMaxValue(existingCategory.getCategory().getId());
     }
 
     @Override
     @Transactional
     public void deleteCategoryDescriptionsForProfessional(String professionalId) {
-        categoryDescriptionRepository.deleteByProfessionalId(professionalId);
+        List<CategoryDescription> categoryDescriptions = getCategoriesDescriptionByProfessionalId(professionalId);
+
+        for (CategoryDescription categoryDescription: categoryDescriptions) {
+            deleteCategoryDescriptionById(categoryDescription.getId());
+        }
     }
 
     private CategoryDescription findOrThrow(String id) {

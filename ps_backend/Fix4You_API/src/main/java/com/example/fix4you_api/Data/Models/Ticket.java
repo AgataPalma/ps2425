@@ -26,7 +26,6 @@ public class Ticket {
     @NotNull(message = "O utilizador não pode ser nulo")
     private SimpleUserDTO user;
 
-    //@NotNull(message = "Admin ID cannot be null")
     @Field
     private SimpleUserDTO admin;
 
@@ -48,7 +47,10 @@ public class Ticket {
     private LocalDateTime ticketStartDate;
 
     @Field
-    //@NotNull(message = "Ticket Close Date cannot be null")
+    @PastOrPresent(message = "Admin Assignment Date must be in the past or present")
+    private LocalDateTime adminAssignmentDate;
+
+    @Field
     @PastOrPresent(message = "A data de término do ticket tem de ser no passado ou no presente")
     private LocalDateTime ticketCloseDate;
 }

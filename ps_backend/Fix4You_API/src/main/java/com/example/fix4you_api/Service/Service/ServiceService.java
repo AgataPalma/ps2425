@@ -19,10 +19,13 @@ public interface ServiceService {
     Service updateService(String id, Service service);
     List<Service> getServicesByProfessionalId(String professionalId);
     List<Service> getServicesByClientId(String clientId);
+    List<Service> getServicesByCategoryId(String categoryId);
     List<Service> getServicesByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
     List<Service> getServicesByUrgency();
     void deleteService(String id);
     void deleteServicesForClient(String clientId);
     void deleteServicesForProfessional(String professionalId);
+    boolean checkServicesToDeleteClient(String clientId);
+    boolean checkServicesToDeleteProfessional(String professionalId);
     boolean serviceExists(String serviceId);
 }

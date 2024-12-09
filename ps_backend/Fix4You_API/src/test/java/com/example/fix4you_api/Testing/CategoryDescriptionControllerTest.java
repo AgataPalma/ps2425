@@ -215,7 +215,7 @@ class CategoryDescriptionControllerTest {
         ResponseEntity<Void> response = categoryDescriptionController.deleteCategoryDescription(id);
 
         verify(categoryDescriptionService).getCategoryDescriptionById(id);
-        verify(categoryDescriptionService).deleteCategoryDescriptionsById(id);
+        verify(categoryDescriptionService).deleteCategoryDescriptionById(id);
         verify(categoryService).updateCategoryMinMaxValue(mockCategoryDescription.getCategory().getId());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -232,7 +232,7 @@ class CategoryDescriptionControllerTest {
         );
 
         verify(categoryDescriptionService).getCategoryDescriptionById(invalidId);
-        verify(categoryDescriptionService, never()).deleteCategoryDescriptionsById(any());
+        verify(categoryDescriptionService, never()).deleteCategoryDescriptionById(any());
         assertEquals("Category description not found", exception.getMessage());
     }
 }
