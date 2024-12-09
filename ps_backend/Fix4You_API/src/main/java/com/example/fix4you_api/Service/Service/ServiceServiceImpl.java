@@ -90,6 +90,7 @@ public class ServiceServiceImpl implements ServiceService {
         Map<String, Long> clientServiceCounts = services.stream()
                 .filter(service -> service.getClientId() != null)
                 .filter(service -> service.getProfessionalId() != null)
+                .filter(service -> service.getState() == ServiceStateEnum.COMPLETED)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
 
         // Sort and limit to top 10
@@ -140,6 +141,7 @@ public class ServiceServiceImpl implements ServiceService {
         Map<String, Long> professionalServiceCounts = services.stream()
                 .filter(service -> service.getProfessionalId() != null)
                 .filter(service -> service.getClientId() != null)
+                .filter(service -> service.getState() == ServiceStateEnum.COMPLETED)
                 .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getProfessionalId, Collectors.counting()));
 
         // Sort and limit to top 10
@@ -188,10 +190,11 @@ public class ServiceServiceImpl implements ServiceService {
         List<com.example.fix4you_api.Data.Models.Service> results = serviceRepository.findTopClientsByTotalSpending();
 
         // Group by clientId and count services
-        Map<String, Long> clientServiceCounts = results.stream()
+        Map<String, Double> clientServiceCounts = results.stream()
                 .filter(service -> service.getClientId() != null)
                 .filter(service -> service.getProfessionalId() != null)
-                .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.counting()));
+                .filter(service -> service.getState() == ServiceStateEnum.COMPLETED)
+                .collect(Collectors.groupingBy(com.example.fix4you_api.Data.Models.Service::getClientId, Collectors.summingDouble(com.example.fix4you_api.Data.Models.Service::getPrice)));
 
         // Process the results
         List<ClientTotalSpent> listClientTotalSpent = clientServiceCounts.entrySet().stream()
