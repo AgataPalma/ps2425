@@ -64,9 +64,9 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         List<ProfessionalsFee> results = professionalFeeRepository.findTopProfessionalsByTotalSpending();
 
         // Group by clientId and count services
-        Map<String, Long> clientServiceCounts = results.stream()
+        Map<String, Double> clientServiceCounts = results.stream()
                 .filter(professionalFee -> professionalFee.getProfessional().getId() != null)
-                .collect(Collectors.groupingBy(professionalFee -> professionalFee.getProfessional().getId(), Collectors.counting()));
+                .collect(Collectors.groupingBy(professionalFee -> professionalFee.getProfessional().getId(), Collectors.summingDouble(ProfessionalsFee::getValue)));
 
         // Process the results
         List<ProfessionalTotalSpent> professionalTotalSpents = clientServiceCounts.entrySet().stream()
