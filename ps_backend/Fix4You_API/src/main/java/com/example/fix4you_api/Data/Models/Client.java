@@ -16,29 +16,29 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class Client extends User {
     @Field
-    @NotBlank(message = "Name cannot be blank")
-    @Size(max = 50, message = "Name must be less than 500 characters")
+    @NotBlank(message = "O nome não pode estar em branco")
+    @Size(max = 50, message = "O nome deve ter menos de 500 caracteres")
     private String name;
 
     @Field
-    @NotBlank(message = "Phone number cannot be blank")
-    @Pattern(regexp = "^\\+?[0-9\\-\\s()]*$", message = "Phone number must be valid and may contain only numbers, spaces, '-', '(', and ')'")
+    @NotBlank(message = "O número de telefone não pode estar em branco")
+    @Pattern(regexp = "^\\+?[0-9\\-\\s()]*$", message = "O número de telefone deve ser válido e só pode conter números, espaços, '-', '(', and ')'")
     private String phoneNumber;
 
     @Field
-    @NotBlank(message = "Location cannot be blank")
+    @NotBlank(message = "A localização não pode estar em branco")
     private String location;
 
     @Field
     private boolean ageValidation;
 
     @Field
-    @NotNull(message = "Rating cannot be null")
+    @NotNull(message = "A classificação não pode ser nula")
     private float rating;
 
     @Field
-    @NotNull(message = "Profile image cannot be null")
-    @Size(max = 1048576, message = "Profile image must be less than 1 MB")
+    @NotNull(message = "A imagem de perfil não pode ser nula")
+    @Size(max = 1048576, message = "A imagem de perfil deve ter menos de 1 MB")
     private byte[] profileImage;
 
     @Field

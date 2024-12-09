@@ -12,11 +12,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class SimpleUserDTO {
     @Field
-    @NotBlank(message = "ID cannot be blank")
+    @NotBlank(message = "ID não pode estar em branco")
     private String id;
 
     @Field
-    @Email(message = "Email must be valid")
-    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email tem de ser válido")
+    @NotBlank(message = "Email não pode estar em branco")
     private String email;
 }

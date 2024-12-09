@@ -20,27 +20,27 @@ public class ScheduleAppointment {
     private String id;
 
     @Field
-    @NotNull(message = "Service ID cannot be null")
+    @NotNull(message = "Service ID não pode ser nulo")
     private String serviceId;
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
+    @NotNull(message = "Professional ID não pode ser nulo")
     private String professionalId;
 
     @Field
-    @NotNull(message = "Start date cannot be null")
+    @NotNull(message = "Data de começo não pode ser nula")
     private LocalDateTime dateStart;
 
     @Field
-    @NotNull(message = "Finish date cannot be null")
+    @NotNull(message = "Data de término não pode ser nula")
     private LocalDateTime dateFinish;
 
     @Field
-    @NotNull(message = "Client ID cannot be null")
+    @NotNull(message = "Client ID não pode ser nulo")
     private String clientId;
 
     @Field
-    @NotNull(message = "State cannot be null")
+    @NotNull(message = "Estado não pode ser nulo")
     private ScheduleStateEnum state;
 
     @Field

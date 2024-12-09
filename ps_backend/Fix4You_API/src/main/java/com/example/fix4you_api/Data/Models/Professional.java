@@ -19,16 +19,16 @@ import java.util.List;
 public class Professional extends Client {
 
     @Field
-    @NotBlank(message = "Description cannot be blank")
-    @Size(max = 500, message = "Description must be less than 500 characters")
+    @NotBlank(message = "A descrição não pode estar em branco")
+    @Size(max = 500, message = "A descrição deve ter menos de 500 caracteres")
     private String description;
 
     @Field
-    @NotBlank(message = "NIF cannot be blank")
-    @Pattern(regexp = "^[0-46-9]\\d{8}$", message = "NIF must contain exactly 9 digits and cannot start with 5")
+    @NotBlank(message = "O NIF não pode estar em branco")
+    @Pattern(regexp = "^[0-46-9]\\d{8}$", message = "O NIF deve conter exatamente 9 dígitos e não pode começar por 5")
     private String nif;
 
-    @NotNull(message = "Languages cannot be null")
+    @NotNull(message = "As línguas não podem ser nulas")
     private List<Language> languages;
 
     //@Field
@@ -36,7 +36,7 @@ public class Professional extends Client {
     //private int locationsRange;
 
     @Field
-    @NotNull(message = "Accepted payments cannot be null")
+    @NotNull(message = "Os pagamentos aceites não podem ser nulos")
     private List<PaymentMethod> acceptedPayments;
 
     @Field

@@ -21,14 +21,14 @@ public class CategoryDescription {
     private String id;
 
     @Field
-    @NotNull(message = "Professional ID cannot be null")
+    @NotNull(message = "Professional ID não pode ser nulo")
     private String professionalId;
 
     @Field
     private SimpleCategoryDTO category;
 
     @Field
-    @NotNull(message = "Charges travels cannot be null")
+    @NotNull(message = "Cobra por deslocação não pode ser nulo")
     private boolean chargesTravels;
 
     //@Field
@@ -36,9 +36,9 @@ public class CategoryDescription {
     //private boolean providesInvoices;
 
     @Field
-    @NotNull(message = "Medium price per service cannot be null")
-    @DecimalMin(value = "0.0", message = "Medium price must be a positive value")
-    @Digits(integer = 5, fraction = 2, message = "Medium price must be a numeric value with up to 5 digits and 2 decimal places")
+    @NotNull(message = "Preço médio por serviço não pode ser nulo")
+    @DecimalMin(value = "0.0", message = "Preço médio tem de ser um valor positivo")
+    @Digits(integer = 5, fraction = 2, message = "O preço médio deve ser um valor numérico com um máximo de 5 dígitos e 2 casas decimais")
     private float mediumPricePerService;
 
 }

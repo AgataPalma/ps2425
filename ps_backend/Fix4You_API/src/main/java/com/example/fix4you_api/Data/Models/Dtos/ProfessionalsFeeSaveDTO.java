@@ -29,20 +29,20 @@ public class ProfessionalsFeeSaveDTO {
     private SimpleProfessionalDTO professional;
 
     @NotNull(message = "Valor não pode ser nulo")
-    @DecimalMin(value = "0.0", message = "Value must be a positive value")
-    @Digits(integer = 3, fraction = 2, message = "Value must be a numeric value with up to 3 digits and 2 decimal places")
+    @DecimalMin(value = "0.0", message = "O valor deve ser um valor positivo")
+    @Digits(integer = 3, fraction = 2, message = "O valor deve ser um valor numérico com um máximo de 3 dígitos e 2 casas decimais")
     private float value;
 
-    @NotNull(message = "Number of services cannot be null")
-    @PositiveOrZero(message = "Number of services must be zero or a positive number")
+    @NotNull(message = "O número de serviços não pode ser nulo")
+    @PositiveOrZero(message = "O número de serviços deve ser zero ou um número positivo")
     private int numberServices;
 
-    @NotBlank(message = "Related month cannot be blank")
+    @NotBlank(message = "O mês relacionado não pode estar em branco")
     private String relatedMonthYear;
 
     private LocalDateTime paymentDate;
 
-    @NotNull(message = "Payment status cannot be null")
+    @NotNull(message = "O estado do pagamento não pode ser nulo")
     private PaymentStatusEnum paymentStatus;
 
     public ProfessionalsFee toDomain() {
