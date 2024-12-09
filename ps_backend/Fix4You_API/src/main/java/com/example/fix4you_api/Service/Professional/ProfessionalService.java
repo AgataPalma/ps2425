@@ -34,4 +34,6 @@ public interface ProfessionalService {
     void setRating(float rating, Professional professional);
 
     List<String> getProfessionalCategories(String professionalId);
+
+    Professional getProfessionalByIdNotThrow(String id);
 }

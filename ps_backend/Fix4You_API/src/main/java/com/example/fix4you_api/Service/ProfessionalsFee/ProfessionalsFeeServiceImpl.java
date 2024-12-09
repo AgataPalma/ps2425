@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +42,21 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     @Override
     public List<ProfessionalsFee> getAllProfessionalsFee() {
-        return professionalFeeRepository.findAll();
+        List<ProfessionalsFee> professionalsFeeList = professionalFeeRepository.findAll();
+        Iterator<ProfessionalsFee> iterator = professionalsFeeList.iterator();
+
+        while (iterator.hasNext()) {
+            ProfessionalsFee fee = iterator.next();
+            Professional professional = professionalService.getProfessionalByIdNotThrow(fee.getProfessional().getId());
+            if (professional == null) {
+                iterator.remove(); // Safely remove the element
+            } else {
+                fee.getProfessional().setEmail(professional.getEmail());
+                fee.getProfessional().setName(professional.getName());
+                fee.getProfessional().setNif(professional.getNif());
+            }
+        }
+        return professionalsFeeList;
     }
 
     @Override

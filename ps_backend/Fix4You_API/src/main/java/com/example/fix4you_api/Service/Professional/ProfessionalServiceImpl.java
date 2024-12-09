@@ -119,6 +119,11 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
+    public Professional getProfessionalByIdNotThrow(String id) {
+        return professionalRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Professional createProfessional(Professional professional) {
         professional.setUserType(EnumUserType.PROFESSIONAL);
         professional.setDateCreation(LocalDateTime.now());
