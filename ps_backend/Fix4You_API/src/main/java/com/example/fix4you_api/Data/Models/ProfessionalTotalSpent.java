@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfessionalTotalSpent {
     private String professionalId;
+    private String professionalName;
     private Double totalSpent;
 }

@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClientServiceCount {
     private String clientId;
+    private String clientName;
     private Long serviceCount;
 }
