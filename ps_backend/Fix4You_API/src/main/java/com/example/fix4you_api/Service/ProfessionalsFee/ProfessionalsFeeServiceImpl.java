@@ -84,7 +84,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
                 ProfessionalTotalSpent professionalTotalSpent = professionalTotalSpents.get(i);
                 professionalTotalSpent.setProfessionalName(professionalService.getProfessionalById(professionalTotalSpent.getProfessionalId()).getName());
             } catch(Exception e){
-
+                professionalTotalSpents.remove(i);
             }
         }
 

@@ -110,7 +110,7 @@ public class ServiceServiceImpl implements ServiceService {
                 ClientServiceCount clientServiceCount = listClientServiceCount.get(i);
                 clientServiceCount.setClientName(clientService.getClientById(clientServiceCount.getClientId()).getName());
             } catch(Exception e){
-
+                listClientServiceCount.remove(i);
             }
         }
 
@@ -161,7 +161,7 @@ public class ServiceServiceImpl implements ServiceService {
                 ProfessionalServiceCount professionalServiceCount = listProfessionalServiceCount.get(i);
                 professionalServiceCount.setProfessionalName(professionalService.getProfessionalById(professionalServiceCount.getProfessionalId()).getName());
             } catch(Exception e){
-
+                listProfessionalServiceCount.remove(i);
             }
         }
 
@@ -212,7 +212,7 @@ public class ServiceServiceImpl implements ServiceService {
                 ClientTotalSpent clientTotalSpent = listClientTotalSpent.get(i);
                 clientTotalSpent.setClientName(clientService.getClientById(clientTotalSpent.getClientId()).getName());
             } catch(Exception e){
-
+                listClientTotalSpent.remove(i);
             }
         }
 
