@@ -72,11 +72,21 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         List<ProfessionalTotalSpent> professionalTotalSpents = clientServiceCounts.entrySet().stream()
                 .map(result -> new ProfessionalTotalSpent(
                         (String) result.getKey(),
+                        professionalService.getProfessionalById(result.getKey()).getName(),
                         ((Number) result.getValue()).doubleValue()     // totalSpent
                 ))
                 .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
+
+        for (var i=0; i<professionalTotalSpents.size(); i++){
+            try{
+                ProfessionalTotalSpent professionalTotalSpent = professionalTotalSpents.get(i);
+                professionalTotalSpent.setProfessionalName(professionalService.getProfessionalById(professionalTotalSpent.getProfessionalId()).getName());
+            } catch(Exception e){
+
+            }
+        }
 
         return professionalTotalSpents;
     }

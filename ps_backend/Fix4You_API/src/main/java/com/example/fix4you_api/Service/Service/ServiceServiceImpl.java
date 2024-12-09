@@ -97,8 +97,21 @@ public class ServiceServiceImpl implements ServiceService {
                 .filter(service -> service.getKey() != null)
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(10)
-                .map(entry -> new ClientServiceCount(entry.getKey(), entry.getValue()))
+                .map(entry -> new ClientServiceCount(
+                        entry.getKey(),
+                        null,
+                        entry.getValue())
+                )
                 .collect(Collectors.toList());
+
+        for (var i=0; i<listClientServiceCount.size(); i++){
+            try{
+                ClientServiceCount clientServiceCount = listClientServiceCount.get(i);
+                clientServiceCount.setClientName(clientService.getClientById(clientServiceCount.getClientId()).getName());
+            } catch(Exception e){
+
+            }
+        }
 
         return listClientServiceCount;
     }
@@ -134,8 +147,21 @@ public class ServiceServiceImpl implements ServiceService {
                 .filter(service -> service.getKey() != null)
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(10)
-                .map(entry -> new ProfessionalServiceCount(entry.getKey(), entry.getValue()))
+                .map(entry -> new ProfessionalServiceCount(
+                        entry.getKey(),
+                        null,
+                        entry.getValue())
+                )
                 .collect(Collectors.toList());
+
+        for (var i=0; i<listProfessionalServiceCount.size(); i++){
+            try{
+                ProfessionalServiceCount professionalServiceCount = listProfessionalServiceCount.get(i);
+                professionalServiceCount.setProfessionalName(professionalService.getProfessionalById(professionalServiceCount.getProfessionalId()).getName());
+            } catch(Exception e){
+
+            }
+        }
 
         return listProfessionalServiceCount;
     }
@@ -171,11 +197,21 @@ public class ServiceServiceImpl implements ServiceService {
         List<ClientTotalSpent> listClientTotalSpent = clientServiceCounts.entrySet().stream()
                 .map(result -> new ClientTotalSpent(
                         (String) result.getKey(),
+                        null,
                         ((Number) result.getValue()).doubleValue()     // totalSpent
                 ))
                 .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent())) // Sort by totalSpent (descending)
                 .limit(10) // Top 10 clients
                 .collect(Collectors.toList());
+
+        for (var i=0; i<listClientTotalSpent.size(); i++){
+            try{
+                ClientTotalSpent clientTotalSpent = listClientTotalSpent.get(i);
+                clientTotalSpent.setClientName(clientService.getClientById(clientTotalSpent.getClientId()).getName());
+            } catch(Exception e){
+
+            }
+        }
 
         return listClientTotalSpent;
     }

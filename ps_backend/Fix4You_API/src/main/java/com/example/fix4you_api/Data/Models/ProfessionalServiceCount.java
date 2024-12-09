@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfessionalServiceCount {
     private String professionalId;
+    private String professionalName;
     private Long serviceCount;
 }

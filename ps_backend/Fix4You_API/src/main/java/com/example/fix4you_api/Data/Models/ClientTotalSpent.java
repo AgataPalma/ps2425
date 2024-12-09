@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClientTotalSpent {
     private String clientId;
+    private String clientName;
     private Double totalSpent;
 }
