@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,11 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client getClientById(String id) {
         return findOrThrow(id);
+    }
+
+    public Client getClientByIdNotThrow(String id) {
+        Optional<Client> client = clientRepository.findById(id);
+        return client.orElse(null);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.*;
+import com.example.fix4you_api.Data.Models.Dtos.ServiceDashboardDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
@@ -53,7 +54,7 @@ public class ServiceController {
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        List<Service> services = this.serviceService.getServices(filter, sort);
+        List<ServiceDashboardDTO> services = this.serviceService.getServices(filter, sort);
         return ResponseEntity.ok(services);
     }
 
@@ -237,7 +238,7 @@ public class ServiceController {
     @PatchMapping("/search")
     public ResponseEntity<?> searchServices(
             @RequestBody Map<String, Object> updates) {
-        List<Service> filteredServices = new ArrayList<>(this.serviceService.getServices(null, null));
+        List<ServiceDashboardDTO> filteredServices = new ArrayList<>(this.serviceService.getServices(null, null));
 
         // Apply filters based on the updates map
         if (updates.containsKey("title")) {

@@ -433,7 +433,15 @@ const PrincipalPageProfessional = ({ id }) => {
                         .map(request => (
                             <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
                                 <div className="flex items-center space-x-4">
-                                    <img src={user} alt="Profile" className="w-20 h-20"/>
+                                    <img
+                                        src={
+                                            request.clientProfileImage
+                                                ? atob(request.clientProfileImage)
+                                                : user
+                                        }
+                                        alt="Profile"
+                                        className="w-20 h-20"
+                                    />
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-xl font-semibold">

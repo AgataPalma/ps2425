@@ -2,13 +2,14 @@ package com.example.fix4you_api.Service.Service;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.*;
+import com.example.fix4you_api.Data.Models.Dtos.ServiceDashboardDTO;
 
 import java.util.List;
 
 public interface ServiceService {
     Service getById(String id);
     Service createService(Service service);
-    List<Service> getServices(String filter, String sort);
+    List<ServiceDashboardDTO> getServices(String filter, String sort);
     List<ClientServiceCount> getTopActivitiesClients();
     List<ClientServiceCount> sendEmailTopActivitiesClients();
     List<ProfessionalServiceCount> getTopActivitiesProfessionals();

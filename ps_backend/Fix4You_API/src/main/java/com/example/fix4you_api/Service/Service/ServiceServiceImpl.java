@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
 import com.example.fix4you_api.Data.Models.Client;
 import com.example.fix4you_api.Data.Models.ClientTotalSpent;
+import com.example.fix4you_api.Data.Models.Dtos.ServiceDashboardDTO;
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -75,11 +77,24 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public List<com.example.fix4you_api.Data.Models.Service> getServices(String filter, String sort) {
+    public List<ServiceDashboardDTO> getServices(String filter, String sort) {
+        List<com.example.fix4you_api.Data.Models.Service> list = new ArrayList<>();
         if (isEmpty(filter) && isEmpty(sort)) {
-            return serviceRepository.findAll();
+            list =  serviceRepository.findAll();
         }
-        return rsqlQueryService.findAll(com.example.fix4you_api.Data.Models.Service.class, filter, sort);
+        list = rsqlQueryService.findAll(com.example.fix4you_api.Data.Models.Service.class, filter, sort);
+
+        List<ServiceDashboardDTO> listDashboard = new ArrayList<>();
+        for (com.example.fix4you_api.Data.Models.Service service : list) {
+            ServiceDashboardDTO dto = new ServiceDashboardDTO(service);
+            Client client = clientService.getClientByIdNotThrow(service.getClientId());
+            if(client == null) continue;
+            dto.setClientProfileImage(client.getProfileImage());
+
+            listDashboard.add(dto);
+        }
+
+        return listDashboard;
     }
 
     @Override
