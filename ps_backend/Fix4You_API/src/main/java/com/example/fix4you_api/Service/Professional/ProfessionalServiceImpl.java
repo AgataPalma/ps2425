@@ -131,7 +131,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         professional.setStrikes(0);
         professional.setIsEmailConfirmed(true);
         professional.setRating(0);
-        professional.setSupended(false);
+        professional.setSuspended(false);
         professional.setSuspensionReason("");
 
         return professionalRepository.save(professional);
@@ -179,7 +179,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 //case "locationsRange" -> professional.setLocationsRange((Integer) value);
                 case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentMethod>) value);
                 case "strikes" -> professional.setStrikes((Integer) value);
-                case "isSupended" -> professional.setSupended((boolean) value);
+                case "isSuspended" -> professional.setSuspended((boolean) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
@@ -219,7 +219,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     @Override
     public void setProfessionalIsSuspended(String professionalId, boolean isSuspended, String suspensionReason) {
         Professional existingProfessional = findOrThrow(professionalId);
-        existingProfessional.setSupended(isSuspended);
+        existingProfessional.setSuspended(isSuspended);
         if(isSuspended)
             existingProfessional.setSuspensionReason(suspensionReason);
         else

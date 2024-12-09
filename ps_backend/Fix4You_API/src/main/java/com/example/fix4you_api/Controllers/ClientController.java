@@ -47,7 +47,7 @@ public class ClientController {
 
         // remove suspended clients
         for (var i=0; i < clients.size(); i++){
-            if(clients.get(i).isSupended()) {
+            if(clients.get(i).isSuspended()) {
                 clients.remove(clients.get(i));
             }
         }

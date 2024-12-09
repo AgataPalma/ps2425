@@ -42,7 +42,7 @@ public class Client extends User {
     private byte[] profileImage;
 
     @Field
-    private boolean isSupended;
+    private boolean isSuspended;
 
     @Field
     private String SuspensionReason;

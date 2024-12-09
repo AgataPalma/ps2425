@@ -8,7 +8,6 @@ import com.example.fix4you_api.Data.Models.Service;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
-import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +39,7 @@ public class CheckUrgentServices {
                     Optional<Professional> professionalOpt = professionalRepository.findById(services.get(i).getProfessionalId());
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
-                        professionalOpt.get().setSupended(true);
+                        professionalOpt.get().setSuspended(true);
                         professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
                         services.get(i).setState(ServiceStateEnum.CANCELED);
                     }
@@ -57,7 +55,7 @@ public class CheckUrgentServices {
                     Optional<Professional> professionalOpt = professionalRepository.findById(scheduleAppointments.get(i).getProfessionalId());
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
-                        professionalOpt.get().setSupended(true);
+                        professionalOpt.get().setSuspended(true);
                         professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
                         scheduleAppointments.get(i).setState(ScheduleStateEnum.CANCELED);
                     }

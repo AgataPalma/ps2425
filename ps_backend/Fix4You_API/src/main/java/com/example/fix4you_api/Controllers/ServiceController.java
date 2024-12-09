@@ -167,7 +167,7 @@ public class ServiceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Profissional não encontrado!");
         }
 
-        if (professional.isSupended()) {
+        if (professional.isSuspended()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O Profissional está suspenso!");
         }
         if(service.getClientId() != null && service.getProfessionalId() != null){

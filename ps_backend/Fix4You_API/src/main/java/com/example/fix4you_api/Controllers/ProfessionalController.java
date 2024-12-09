@@ -60,7 +60,7 @@ public class ProfessionalController {
 
         // remove suspended professionals
         for (var i=0; i < professionals.size(); i++){
-            if(professionals.get(i).isSupended()) {
+            if(professionals.get(i).isSuspended()) {
                 professionals.remove(professionals.get(i));
             }
         }

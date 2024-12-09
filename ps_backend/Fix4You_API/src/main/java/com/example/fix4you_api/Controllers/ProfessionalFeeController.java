@@ -171,7 +171,7 @@ public class ProfessionalFeeController {
         // check if he has more fees to pay -> if not (suspended = false)
         boolean anythingToPay = false;
         Professional professional = professionalService.getProfessionalById(fee.getProfessional().getId());
-        boolean currentSuspendedStatus = professional.isSupended();
+        boolean currentSuspendedStatus = professional.isSuspended();
         List<ProfessionalsFee> feesList = professionalsFeeService.getProfessionalsFeeForProfessionalId(fee.getProfessional().getId());
 
         for (ProfessionalsFee currentFee : feesList) {

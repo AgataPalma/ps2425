@@ -130,7 +130,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         Professional professional = professionalService.getProfessionalById(professionalId);
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("isSupended", true);
+        updates.put("isSuspended", true);
         professionalService.partialUpdateProfessional(professionalId, updates);
 
         SimpleProfessionalDTO feeProfessional = new SimpleProfessionalDTO();

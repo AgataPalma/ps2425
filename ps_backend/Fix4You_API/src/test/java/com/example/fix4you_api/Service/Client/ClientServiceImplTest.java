@@ -37,7 +37,7 @@ public class ClientServiceImplTest {
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         client.setRating(0);
-        client.setSupended(false);
+        client.setSuspended(false);
     }
 
     @Test

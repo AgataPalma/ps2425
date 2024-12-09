@@ -2,17 +2,12 @@ package com.example.fix4you_api.Service.Client;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.Client;
-import com.example.fix4you_api.Data.Models.Image;
 import com.example.fix4you_api.Data.MongoRepositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +26,7 @@ public class ClientServiceImpl implements ClientService {
         client.setDateCreation(LocalDateTime.now());
         client.setIsEmailConfirmed(true);
         client.setRating(0);
-        client.setSupended(false);
+        client.setSuspended(false);
         client.setSuspensionReason("");
 
         return clientRepository.save(client);
@@ -85,7 +80,7 @@ public class ClientServiceImpl implements ClientService {
                 case "rating" -> client.setRating((float) value);
                 //case "IsDeleted" -> client.setIsDeleted((Boolean) value);
                 case "IsEmailConfirmed" -> client.setIsEmailConfirmed((Boolean) value);
-                case "isSupended" -> client.setSupended((boolean) value);
+                case "isSuspended" -> client.setSuspended((boolean) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
