@@ -6,6 +6,7 @@ import axiosInstance from "../components/axiosInstance";
 import {FaStar} from "react-icons/fa";
 import axios from "axios";
 import Select from "react-select";
+import Spinner from "../components/Spinner";
 
 const PrincipalPageProfessional = ({ id }) => {
 
@@ -26,13 +27,15 @@ const PrincipalPageProfessional = ({ id }) => {
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [professionalCategories, setprofessionalCategories] = useState([]);
+    const [includeIsUrgent, setIncludeIsUrgent] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [filters, setFilters] = useState({
         location: '',
         category: '',
         languages: [],
         classification: 0,
-        urgent: false
+        isUrgent: null
     });
 
     const handleSearch = async () => {
@@ -67,12 +70,17 @@ const PrincipalPageProfessional = ({ id }) => {
     };
 
 
+    const handleIncludeUrgent = (value) => {
+        setIncludeIsUrgent((prevValue) => (prevValue === value ? null : value));
+    };
+
     const handleShowDescription = (request) => {
         setSelectedRequest(request);
     };
     const fetchData = async () => {
         try {
             // Fetch location data
+            setIsLoading(true);
             const locationResponse = await axios.get('https://json.geoapi.pt/municipios/freguesias');
             const organizedData = locationResponse.data.map((municipio) => ({
                 label: municipio.nome,
@@ -113,7 +121,7 @@ const PrincipalPageProfessional = ({ id }) => {
                     .join(',');
 
 
-                axiosInstance
+               await axiosInstance
                     .get(`/services?filter=${filterQuery}`)
                     .then((response) => {
                         SetRequests(response.data); // Definir os dados dos serviços
@@ -123,7 +131,7 @@ const PrincipalPageProfessional = ({ id }) => {
                     });
             } else {
 
-                axiosInstance
+                await axiosInstance
                     .get('/services')
                     .then((response) => {
                         SetRequests(response.data);
@@ -136,6 +144,9 @@ const PrincipalPageProfessional = ({ id }) => {
 
         } catch (error) {
             console.error('Error fetching data:', error);
+        }
+        finally {
+            setIsLoading(false);
         }
     };
 
@@ -160,10 +171,11 @@ const PrincipalPageProfessional = ({ id }) => {
             filterQuery.push(languageFilters);
         }
 
-        if (includeTravelCost) {
-            filterQuery.push(`urgent==true`);
-        }
 
+        // IsUrgent
+        if (includeIsUrgent !== null) {
+            filterQuery.push(`isUrgent==${includeIsUrgent}`);
+        }
 
         // Gerar a string da query final
         const filterString = filterQuery.join(';');
@@ -238,6 +250,7 @@ const PrincipalPageProfessional = ({ id }) => {
         setLocation(null);
         setSelectedCategory(null);
         setLanguages([]);
+        setIncludeIsUrgent(null);
         fetchData();
     };
 
@@ -246,12 +259,14 @@ const PrincipalPageProfessional = ({ id }) => {
         setConfirmationModal({ isVisible: false, request: null });
     };
 
+    if (isLoading) {
+        return <Spinner />;
+    }
 
     return (
         <div className="flex flex-col min-h-screen text-black font-sans">
             <div className="bg-gray-800 bg-opacity-15 shadow-lg flex-grow">
                 <br/>
-
                 {/* Modal de Confirmação */}
                 {confirmationModal.isVisible && (
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -350,28 +365,26 @@ const PrincipalPageProfessional = ({ id }) => {
                                 </div>
                             </div>
 
-                            <div className="mb-4 flex items-center justify-between mt-4">
-                                <label className="text-sm font-medium">Urgente</label>
-                                <label className="inline-flex items-center cursor-pointer">
-                                    <span className="mr-2">Não</span>
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            checked={includeTravelCost}
-                                            onChange={() => setIncludeTravelCost(!includeTravelCost)}
-                                            className="hidden"
-                                        />
-                                        <div
-                                            className={`toggle-path w-10 h-5 rounded-full transition-all ${includeTravelCost ? 'bg-yellow-600' : 'bg-gray-300'}`}
-                                        ></div>
-                                        <div
-                                            className={`toggle-circle absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-all ${includeTravelCost ? 'translate-x-5' : ''}`}
-                                        ></div>
-                                    </div>
-                                    <span className="ml-2">Sim</span>
-                                </label>
-                            </div>
+                            <div className="mt-4">
+                                <h4 className="font-medium">Urgente</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {/* Botão "Sim" */}
+                                    <button
+                                        onClick={() => handleIncludeUrgent(true)}
+                                        className={`px-4 py-2 rounded-full ${includeIsUrgent === true ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                    >
+                                        Sim
+                                    </button>
 
+                                    {/* Botão "Não" */}
+                                    <button
+                                        onClick={() => handleIncludeUrgent(false)}
+                                        className={`px-4 py-2 rounded-full ${includeIsUrgent === false ? 'bg-yellow-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                                    >
+                                        Não
+                                    </button>
+                                </div>
+                            </div>
 
                             <div className="flex justify-between mt-4">
                                 <button
@@ -502,7 +515,7 @@ const PrincipalPageProfessional = ({ id }) => {
                         ))
                         ) : (
                         <p className="text-center text-gray-700 font-medium col-span-full">
-                        Não foram encontrados serviços.
+                        Não foram encontrados serviços. {isLoading.toString()}
                         </p>
                         )}
                 </section>

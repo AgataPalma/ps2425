@@ -7,6 +7,7 @@ import axiosInstance from "../components/axiosInstance";
 import { useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import axios from 'axios';
+import Spinner from "../components/Spinner";
 
 const PrincipalPageClient = ({ id }) => {
     const [professionals, setProfessionals] = useState([]);
@@ -26,6 +27,7 @@ const PrincipalPageClient = ({ id }) => {
     const [reviews, setReviews] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState("information");
+    const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState({
         priceRange: '',
         location: '',
@@ -196,6 +198,7 @@ const PrincipalPageClient = ({ id }) => {
     const fetchData = async () => {
         try {
             // Fetch location data
+            setIsLoading(true);
             const locationResponse = await axios.get('https://json.geoapi.pt/municipios/freguesias');
             const organizedData = locationResponse.data.map((municipio) => ({
                 label: municipio.nome,
@@ -236,6 +239,8 @@ const PrincipalPageClient = ({ id }) => {
             setProfessionals(professionalsResponse.data);
         } catch (error) {
             console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -282,6 +287,12 @@ const PrincipalPageClient = ({ id }) => {
     const handleShowDescription = (description) => {
         setActiveModalDescription(description);
     };
+
+    if (isLoading) {
+        return <Spinner />;
+    }
+
+
 
     return (
         <div className="flex flex-col min-h-screen text-black font-sans">

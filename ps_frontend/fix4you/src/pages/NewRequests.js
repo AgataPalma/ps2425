@@ -3,6 +3,7 @@ import '../index.css';
 import user from '../images/user.png';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
+import Spinner from "../components/Spinner";
 
 const NewRequests = ({ id }) => {
 
@@ -13,7 +14,7 @@ const NewRequests = ({ id }) => {
     const [includeInvoice, setIncludeInvoice] = useState(false);
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null); // To manage which request's description to show in the modal
-
+    const [isLoading, setIsLoading] = useState(true);
     const toggleFilterModal = () => {
         setFilterModalOpen(!isFilterModalOpen);
     };
@@ -36,12 +37,15 @@ const NewRequests = ({ id }) => {
     };
 
     useEffect(() => {
+        setIsLoading(true);
         axiosInstance.get('/services')
             .then(response => {
-                SetRequests(response.data); // Set data with axios response
+                SetRequests(response.data);
+                setIsLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching professionals:', error);
+                setIsLoading(false);
             });
     }, [id]);
 
@@ -52,6 +56,9 @@ const NewRequests = ({ id }) => {
 
     const filteredRequests = requests.filter(request => request.professionalId === id && request.state === "PENDING");
 
+    if (isLoading) {
+        return <Spinner />;
+    }
 
     return (
         <div className="h-screen flex flex-col text-black font-sans">

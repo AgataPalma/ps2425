@@ -92,7 +92,7 @@ function RequestServiceToProfessional({ id }) {
                     <div className="absolute inset-0"></div>
                     <div className="relative z-10 flex justify-center items-center h-full m-8">
                         <div className="bg-white bg-opacity-80 p-8 rounded-lg max-w-lg w-full">
-                            <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir Um Serviço a {professional.name}</h2>
+                            <h2 className="text-2xl text-yellow-600 font-bold text-center mb-6 underline">Pedir um Serviço a {professional.name}</h2>
                             {error && (
                                 <div className="mb-4 p-2 bg-red-200 text-red-800 text-center rounded">
                                     {error}
