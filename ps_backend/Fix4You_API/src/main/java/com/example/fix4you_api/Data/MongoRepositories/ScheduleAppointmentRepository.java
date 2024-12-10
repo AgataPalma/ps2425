@@ -12,6 +12,7 @@ public interface ScheduleAppointmentRepository extends MongoRepository<ScheduleA
     List<ScheduleAppointment> findByProfessionalId(String id);
     List<ScheduleAppointment> findByClientId(String id);
     List<ScheduleAppointment> findByServiceId(String serviceId);
+    List<ScheduleAppointment> findByProfessionalIdAndState(String id, ScheduleStateEnum state);
     List<ScheduleAppointment> findByStateMatchesAndDateFinishAfter(ScheduleStateEnum state, LocalDateTime localDateTime);
     List<ScheduleAppointment> findByServiceIdAndStateAndDateFinishBetween(String serviceId, ScheduleStateEnum state, LocalDateTime startDate, LocalDateTime endDate);
     void deleteByServiceId(String serviceId);
