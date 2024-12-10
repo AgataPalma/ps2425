@@ -92,7 +92,7 @@ const TopLists = () => {
                 <tr>
                     <th className="border border-gray-300 px-4 py-2">ID</th>
                     <th className="border border-gray-300 px-4 py-2">Nome</th>
-                    <th className="border border-gray-300 px-4 py-2">Despesas €</th>
+                    <th className="border border-gray-300 px-4 py-2">Total Faturado €</th>
                 </tr>
             </thead>
             <tbody>
@@ -168,7 +168,7 @@ const TopLists = () => {
             </div>
 
             <div>
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Top 10 Profissionais por Despesas</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Top 10 Profissionais por Faturação</h2>
                 <div className="flex items-center">
                     <button
                         onClick={() =>

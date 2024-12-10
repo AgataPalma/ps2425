@@ -82,7 +82,7 @@ const Login = ({ onLogin }) => {
                 <div className="mt-4 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500"
+                        className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-yellow-600"
                     >
                         Fechar
                     </button>
