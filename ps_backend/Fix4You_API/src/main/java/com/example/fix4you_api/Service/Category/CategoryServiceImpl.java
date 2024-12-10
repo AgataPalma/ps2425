@@ -2,6 +2,7 @@ package com.example.fix4you_api.Service.Category;
 
 import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.Models.CategoryDescription;
+import com.example.fix4you_api.Data.Models.Dtos.LowestPriceEntryDTO;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -10,10 +11,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -129,6 +128,80 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             throw new IllegalStateException("Não é possível excluir a categoria, pois ela possui serviços ou profissionais associados.");
         }
+    }
+
+    static class SuspiciousEntry {
+        private String userId;
+        private String categoryName;
+        private String price;
+        private String lowerBound;
+
+        public SuspiciousEntry(String userId, String categoryName, String price, String lowerBound) {
+            this.userId = userId;
+            this.categoryName = categoryName;
+            this.price = price;
+            this.lowerBound = lowerBound;
+        }
+    }
+
+    @Override
+    public List<LowestPriceEntryDTO> getSuspiciousPrices() {
+
+        List<CategoryDescription> categoryDescriptions = categoryDescriptionService.getAllCategoriesDescription();
+        List<Category> categories = categoryRepository.findAll();
+        List<SuspiciousEntry> suspicious = new ArrayList<>();
+        List<LowestPriceEntryDTO> lowestPrices = new ArrayList<>();
+
+        for (Category category : categories) {
+            // Filter descriptions for the current category
+            List<Float> pricesInCategory = categoryDescriptions.stream()
+                    .filter(desc -> desc.getCategory().getId().equals(category.getId()))
+                    .map(CategoryDescription::getMediumPricePerService)
+                    .collect(Collectors.toList());
+
+            if (pricesInCategory.isEmpty()) continue;
+
+            // Sort prices and calculate Q1, Q3, IQR, and lowerBound
+            List<Float> sortedPrices = new ArrayList<>(pricesInCategory);
+            Collections.sort(sortedPrices);
+
+            double Q1 = sortedPrices.get(sortedPrices.size() / 4);
+            double Q3 = sortedPrices.get((3 * sortedPrices.size()) / 4);
+            double IQR = Q3 - Q1;
+            double lowerBound = Q1 - 1.5 * IQR;
+
+            // Identify suspicious entries
+            categoryDescriptions.stream()
+                    .filter(desc -> desc.getCategory().getId().equals(category.getId()))
+                    .forEach(desc -> {
+                        if (desc.getMediumPricePerService() < lowerBound) {
+                            suspicious.add(new SuspiciousEntry(
+                                    desc.getProfessionalId(),
+                                    category.getName(),
+                                    String.format("%.2f", desc.getMediumPricePerService()),
+                                    String.format("%.2f", lowerBound)
+                            ));
+                        }
+                    });
+
+            // Find the lowest price and corresponding professional
+            double lowestPrice = pricesInCategory.stream()
+                    .min(Double::compare)
+                    .orElse(Float.MAX_VALUE);
+
+            Optional<CategoryDescription> lowestProfessional = categoryDescriptions.stream()
+                    .filter(desc -> desc.getCategory().getId().equals(category.getId())
+                            && desc.getMediumPricePerService() == lowestPrice)
+                    .findFirst();
+
+            lowestProfessional.ifPresent(desc -> lowestPrices.add(new LowestPriceEntryDTO(
+                    desc.getProfessionalId(),
+                    category.getName(),
+                    String.format("%.2f", desc.getMediumPricePerService())
+            )));
+        }
+
+        return lowestPrices;
     }
 
     private Category findOrThrow(String id) {
