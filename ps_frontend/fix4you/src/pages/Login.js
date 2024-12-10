@@ -49,15 +49,10 @@ const Login = ({ onLogin }) => {
                 setUserType(data.userType); // Armazena o tipo de usuário para uso posterior
 
                 setLoading(false);
-                setModalMessage('Login realizado com sucesso!');
                 setIsSuccess(true);
                 setIsModalOpen(true);
             } else {
-                const errorData = await response.json();
-                let errorMessage = 'Email ou password inválidos.';
-                if (errorData && errorData.message) {
-                    errorMessage = errorData.message;
-                }
+                const errorMessage = await response.text(); // lê a resposta como texto
                 setLoading(false);
                 setModalMessage(errorMessage);
                 setIsSuccess(false);

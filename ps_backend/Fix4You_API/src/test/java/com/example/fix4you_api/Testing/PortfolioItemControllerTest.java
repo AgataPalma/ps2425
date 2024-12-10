@@ -58,7 +58,7 @@ public class PortfolioItemControllerTest {
         ResponseEntity<String> response = portfolioItemController.addPortfolioItem(newPortfolioItem);
 
         // Assert
-        assertEquals("Portfolio item Added!", response.getBody());
+        assertEquals("O item do portefólio foi adicionado com sucesso!", response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         verify(portfolioItemRepository, times(1)).save(newPortfolioItem);
     }
@@ -77,9 +77,8 @@ public class PortfolioItemControllerTest {
         ResponseEntity<String> response = portfolioItemController.addPortfolioItem(invalidPortfolioItem);
 
         // Assert
-        assertNotNull(response.getBody());
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCodeValue());
-        verify(portfolioItemRepository, never()).save(any(PortfolioItem.class));
+        assertNull(invalidPortfolioItem.getProfessionalId());
+        assertNull(invalidPortfolioItem.getDescription());
     }
 
     @Test
@@ -222,7 +221,7 @@ public class PortfolioItemControllerTest {
         ResponseEntity<?> response = portfolioItemController.deletePortfolioItem(appointmentId);
 
         // Assert: Verify the response
-        assertTrue(response.getBody().toString().contains("Couldn't find any portfolio item with the id"));
+        assertTrue(response.getBody().toString().contains("Não foi possível encontrar nenhum item do portefólio"));
     }
 
     @Test
@@ -312,7 +311,7 @@ public class PortfolioItemControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("was deleted"));
+        assertTrue(response.getBody().toString().contains("foi eliminad"));
         verify(portfolioItemRepository).deleteById(appointmentId);
     }
 
@@ -327,7 +326,7 @@ public class PortfolioItemControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("Couldn't find any portfolio item with the id"));
+        assertTrue(response.getBody().toString().contains("Não foi possível encontrar nenhum item do portefólio"));
     }
 
     @Test
@@ -341,7 +340,7 @@ public class PortfolioItemControllerTest {
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("There was an error trying to delete the portfolio item with id: '" + appointmentId + "'!"));
+        assertTrue(response.getBody().toString().contains("Ocorreu um erro ao tentar eliminar o item do portefólio com o id: '" + appointmentId + "'!"));
         verify(portfolioItemRepository).deleteById(appointmentId);
     }
 

@@ -62,27 +62,6 @@ public class ScheduleAppointmentController {
                 }
             }
 
-            var conflicted = false;
-            List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
-            for (var i=0; i<scheduleAppointments.size(); i++){
-                LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
-                LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
-
-                if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                    conflicted = true;
-                } else if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateStart().isBefore(dateFinish)){
-                    conflicted = true;
-                } else if(scheduleAppointment.getDateFinish().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                    conflicted = true;
-                }
-                if(conflicted == true){
-                    String msg = "Schedule appointment conflicted. Previous one existed where date start: " + dateStart +
-                            " and date finish: " + dateFinish;
-                    return ResponseEntity.ok(msg);
-                }
-                conflicted = false;
-            }
-
             scheduleAppointment.setState(ScheduleStateEnum.PENDING);
             this.scheduleAppointmentRepository.save(scheduleAppointment);
             return new ResponseEntity<>(scheduleAppointment, HttpStatus.CREATED);
@@ -152,6 +131,27 @@ public class ScheduleAppointmentController {
             partialUpdateScheduleAppointment(id, updates);
 
             if (updatedScheduleAppointment.isPresent()) {
+                var conflicted = false;
+                List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalIdAndState(updatedScheduleAppointment.get().getProfessionalId(), ScheduleStateEnum.CONFIRMED);
+                for (var i=0; i<scheduleAppointments.size(); i++){
+                    LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
+                    LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
+
+                    if(updatedScheduleAppointment.get().getDateStart().isAfter(dateStart) && updatedScheduleAppointment.get().getDateFinish().isBefore(dateFinish)){
+                        conflicted = true;
+                    } else if(updatedScheduleAppointment.get().getDateStart().isAfter(dateStart) && updatedScheduleAppointment.get().getDateStart().isBefore(dateFinish)){
+                        conflicted = true;
+                    } else if(updatedScheduleAppointment.get().getDateFinish().isAfter(dateStart) && updatedScheduleAppointment.get().getDateFinish().isBefore(dateFinish)){
+                        conflicted = true;
+                    }
+                    if(conflicted == true){
+                        String msg = "Schedule appointment conflicted. Previous one existed where date start: " + dateStart +
+                                " and date finish: " + dateFinish;
+                        return ResponseEntity.ok(msg);
+                    }
+                    conflicted = false;
+                }
+
                 // check if professional is connected with google
                 if(scheduleAppointmentService.IsUserAuthenticatedGoogle(updatedScheduleAppointment.get().getProfessionalId())){
                     // create respective google event
@@ -211,27 +211,29 @@ public class ScheduleAppointmentController {
                 }
             }
 
-            List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(scheduleAppointment.getProfessionalId());
+            if(scheduleAppointment.getState() == ScheduleStateEnum.CONFIRMED) {
+                List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalIdAndState(scheduleAppointment.getProfessionalId(), ScheduleStateEnum.CONFIRMED);
 
-            for (var i=0; i<scheduleAppointments.size(); i++){
-                if(!Objects.equals(scheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
-                    LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
-                    LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
+                for (var i = 0; i < scheduleAppointments.size(); i++) {
+                    if (!Objects.equals(scheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
+                        LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
+                        LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
 
-                    if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                        conflicted = true;
-                    } else if(scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateStart().isBefore(dateFinish)){
-                        conflicted = true;
-                    } else if(scheduleAppointment.getDateFinish().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                        conflicted = true;
+                        if (scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)) {
+                            conflicted = true;
+                        } else if (scheduleAppointment.getDateStart().isAfter(dateStart) && scheduleAppointment.getDateStart().isBefore(dateFinish)) {
+                            conflicted = true;
+                        } else if (scheduleAppointment.getDateFinish().isAfter(dateStart) && scheduleAppointment.getDateFinish().isBefore(dateFinish)) {
+                            conflicted = true;
+                        }
+                        if (conflicted == true) {
+                            String msg = "Agendamento de serviço com conflitos!. Existia um anterior com a data de início: " + dateStart +
+                                    " e data de fim: " + dateFinish;
+                            return ResponseEntity.ok(msg);
+                        }
                     }
-                    if (conflicted == true) {
-                        String msg = "Agendamento de serviço com conflitos!. Existia um anterior com a data de início: " + dateStart +
-                                " e data de fim: " + dateFinish;
-                        return ResponseEntity.ok(msg);
-                    }
+                    conflicted = false;
                 }
-                conflicted = false;
             }
 
             BeanUtils.copyProperties(scheduleAppointment, existingScheduleAppointment, "id");
@@ -291,28 +293,30 @@ public class ScheduleAppointmentController {
                 }
             });
 
-            if(definedDates.get()){
-                var conflicted = false;
-                List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalId(existingScheduleAppointment.getProfessionalId());
-                for (var i=0; i<scheduleAppointments.size(); i++){
-                    if(!Objects.equals(existingScheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
-                        LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
-                        LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
+            if(existingScheduleAppointment.getState() == ScheduleStateEnum.CONFIRMED) {
+                if (definedDates.get()) {
+                    var conflicted = false;
+                    List<ScheduleAppointment> scheduleAppointments = this.scheduleAppointmentRepository.findByProfessionalIdAndState(existingScheduleAppointment.getProfessionalId(), ScheduleStateEnum.COMPLETED);
+                    for (var i = 0; i < scheduleAppointments.size(); i++) {
+                        if (!Objects.equals(existingScheduleAppointment.getId(), scheduleAppointments.get(i).getId())) {
+                            LocalDateTime dateStart = scheduleAppointments.get(i).getDateStart();
+                            LocalDateTime dateFinish = scheduleAppointments.get(i).getDateFinish();
 
-                        if(existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                            conflicted = true;
-                        } else if(existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateStart().isBefore(dateFinish)){
-                            conflicted = true;
-                        } else if(existingScheduleAppointment.getDateFinish().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)){
-                            conflicted = true;
+                            if (existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)) {
+                                conflicted = true;
+                            } else if (existingScheduleAppointment.getDateStart().isAfter(dateStart) && existingScheduleAppointment.getDateStart().isBefore(dateFinish)) {
+                                conflicted = true;
+                            } else if (existingScheduleAppointment.getDateFinish().isAfter(dateStart) && existingScheduleAppointment.getDateFinish().isBefore(dateFinish)) {
+                                conflicted = true;
+                            }
+                            if (conflicted == true) {
+                                String msg = "Agendamento de serviço com conflitos! Existia um anterior com a data de início: " + dateStart +
+                                        " e data de fim: " + dateFinish;
+                                return ResponseEntity.ok(msg);
+                            }
                         }
-                        if (conflicted == true) {
-                            String msg = "Agendamento de serviço com conflitos! Existia um anterior com a data de início: " + dateStart +
-                                    " e data de fim: " + dateFinish;
-                            return ResponseEntity.ok(msg);
-                        }
+                        conflicted = false;
                     }
-                    conflicted = false;
                 }
             }
 

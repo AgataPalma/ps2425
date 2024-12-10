@@ -100,7 +100,15 @@ function App() {
                     <Route
                         path="/Login"
                         element={
-                            !userType ? <Login onLogin={handleLogin} /> : <Navigate to="/Home" />
+                            !userType
+                                ? <Login onLogin={handleLogin} />
+                                : userType === 'PROFESSIONAL'
+                                    ? <Navigate to="/PrincipalPageProfessional" />
+                                    : userType === 'CLIENT'
+                                        ? <Navigate to="/PrincipalPageClient" />
+                                        : userType === 'ADMIN'
+                                            ? <Navigate to="/Dashboard" />
+                                            : <Navigate to="/Home" />
                         }
                     />
                     <Route
@@ -284,7 +292,7 @@ function App() {
                         path="/LanguageTab"
                         element={
                             <ProtectedRoute allowedUserType="ADMIN">
-                            <LanguageTab />
+                                <LanguageTab />
                             </ProtectedRoute>
                         }
                     />
@@ -293,7 +301,7 @@ function App() {
                         path="/CategoriesTab"
                         element={
                             <ProtectedRoute allowedUserType="ADMIN">
-                            <CategoriesTab />
+                                <CategoriesTab />
                             </ProtectedRoute>
                         }
                     />
@@ -302,7 +310,7 @@ function App() {
                         path="/PaymentMethodsTab"
                         element={
                             <ProtectedRoute allowedUserType="ADMIN">
-                            <PaymentMethodsTab />
+                                <PaymentMethodsTab />
                             </ProtectedRoute>
                         }
                     />

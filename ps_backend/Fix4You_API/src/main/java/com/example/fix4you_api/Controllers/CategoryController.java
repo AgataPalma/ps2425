@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Controllers;
 
 import com.example.fix4you_api.Data.Models.Category;
+import com.example.fix4you_api.Data.Models.Dtos.LowestPriceEntryDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +57,10 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/suspicious-prices")
+    public ResponseEntity<List<LowestPriceEntryDTO>> getSuspiciousPrices() {
+        return ResponseEntity.ok(categoryService.getSuspiciousPrices());
     }
 }
