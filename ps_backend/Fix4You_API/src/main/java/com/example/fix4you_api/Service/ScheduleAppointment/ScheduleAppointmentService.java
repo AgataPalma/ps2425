@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ScheduleAppointmentService {
+    List<ScheduleAppointment> getScheduleAppointmentsByServiceId(String serviceId);
     List<ScheduleAppointment> getScheduleAppointmentsByServiceIdAndStateAndDateFinishBetween(String serviceId, ScheduleStateEnum state, LocalDateTime startDate, LocalDateTime endDate);
     void deleteScheduleAppointment(String serviceId);
     void connectUserToGoogleToken(String userId, String token, String refreshToken);

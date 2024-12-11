@@ -1,13 +1,16 @@
 package com.example.fix4you_api.Controllers;
 
+import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.ServiceDashboardDTO;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
+import com.example.fix4you_api.Data.MongoRepositories.ScheduleAppointmentRepository;
 import com.example.fix4you_api.Data.MongoRepositories.ServiceRepository;
 import com.example.fix4you_api.Service.Category.CategoryService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
+import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,8 +28,10 @@ public class ServiceController {
     private final ProfessionalService professionalService;
     private final CategoryService categoryService;
     private final ServiceService serviceService;
+    private final ScheduleAppointmentService scheduleAppointmentService;
     private final ServiceRepository serviceRepository;
     private final CategoryRepository categoryRepository;
+    private final ScheduleAppointmentRepository scheduleAppointmentRepository;
 
     @PostMapping
     public ResponseEntity<?> addService(@RequestBody Service service) {
@@ -139,6 +144,15 @@ public class ServiceController {
 
                 category.setMedianValue(median);
                 categoryRepository.save(category);
+            } else if(service.getState() == ServiceStateEnum.ACCEPTED){
+                service.setAcceptedDate(LocalDateTime.now());
+            } else if(service.getState() == ServiceStateEnum.CANCELED){
+                List<ScheduleAppointment> scheduleAppointments = scheduleAppointmentService.getScheduleAppointmentsByServiceId(service.getId());
+                for(var i=0; i<scheduleAppointments.size(); i++){
+                    ScheduleAppointment scheduleAppointment = scheduleAppointments.get(i);
+                    scheduleAppointment.setState(ScheduleStateEnum.CANCELED);
+                    scheduleAppointmentRepository.save(scheduleAppointment);
+                }
             }
             return ResponseEntity.ok(serviceService.updateService(id, service));
         } catch (Exception e) {
@@ -175,6 +189,7 @@ public class ServiceController {
         }
         service.setProfessionalId(professionalId);
         service.setState(ServiceStateEnum.ACCEPTED);
+        service.setAcceptedDate(LocalDateTime.now());
         serviceService.createService(service);
 
         return ResponseEntity.ok(service);
@@ -220,6 +235,15 @@ public class ServiceController {
 
                             category.setMedianValue(median);
                             categoryRepository.save(category);
+                        } else if(service.getState() == ServiceStateEnum.ACCEPTED){
+                            service.setAcceptedDate(LocalDateTime.now());
+                        } else if(service.getState() == ServiceStateEnum.CANCELED){
+                            List<ScheduleAppointment> scheduleAppointments = scheduleAppointmentService.getScheduleAppointmentsByServiceId(service.getId());
+                            for(var i=0; i<scheduleAppointments.size(); i++){
+                                ScheduleAppointment scheduleAppointment = scheduleAppointments.get(i);
+                                scheduleAppointment.setState(ScheduleStateEnum.CANCELED);
+                                scheduleAppointmentRepository.save(scheduleAppointment);
+                            }
                         }
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Valor inválido para o estado: " + value);
