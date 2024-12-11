@@ -138,7 +138,8 @@ const UsersManagement = () => {
                             <th className="border border-gray-300 px-4 py-2">Nome</th>
                             <th className="border border-gray-300 px-4 py-2">Email</th>
                             <th className="border border-gray-300 px-4 py-2">Telefone</th>
-                            <th className="border border-gray-300 px-4 py-2">Categorias</th>
+                            <th className="border border-gray-300 px-4 py-2">Localização</th>
+                            <th className="border border-gray-300 px-4 py-2">Estado Email</th>
                             <th className="border border-gray-300 px-4 py-2">Rating</th>
                             <th className="border border-gray-300 px-4 py-2">Ações</th>
                         </tr>
@@ -149,14 +150,13 @@ const UsersManagement = () => {
                                 <td className="border border-gray-300 px-4 py-2">{professional.name}</td>
                                 <td className="border border-gray-300 px-4 py-2">{professional.email}</td>
                                 <td className="border border-gray-300 px-4 py-2">{professional.phoneNumber}</td>
+                                <td className="border border-gray-300 px-4 py-2">{professional.location}</td>
                                 <td className="border border-gray-300 px-4 py-2">
-                                    {professional.categories
-                                        ? professional.categories.join(", ")
-                                        : "Sem categorias"}
+                                    {professional.isEmailConfirmed ? "Confirmado" : "Não Confirmado"}
                                 </td>
                                 <td className="border border-gray-300 px-4 py-2">{professional.rating.toFixed(1)}</td>
                                 <td className="border border-gray-300 px-4 py-2">
-                                <button
+                                    <button
                                         className="text-blue-500 hover:underline"
                                         onClick={() => setSelectedProfessional(professional)}
                                     >
