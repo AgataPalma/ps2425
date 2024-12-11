@@ -235,13 +235,22 @@ const PrincipalPageProfessional = ({ id }) => {
                     setConfirmationModal({ isVisible: false, request: null });
                 })
                 .catch(error => {
-                    console.error('Erro ao aceitar o serviço:', error);
-                    setError(
-                        <>
-                            Erro ao aceitar o serviço<br />
-                            Por favor, tente mais tarde.
-                        </>
-                    );
+                    console.error('Erro ao aceitar o serviço:', error.response?.data);
+
+                    if (error.response?.data === "O Profissional está suspenso!") {  setError(
+                            <>
+                                CONTA SUSPENSA<br />
+                                Por favor, entre em contato com o suporte.
+                            </>
+                        );
+                    } else {
+                        setError(
+                            <>
+                                Erro ao aceitar o serviço<br />
+                                Por favor, tente mais tarde.
+                            </>
+                        );
+                    }
                 });
         }
     };
@@ -275,10 +284,10 @@ const PrincipalPageProfessional = ({ id }) => {
                             {error && (
                                 <div className="mb-4 p-2 bg-red-200 text-red-800 text-center rounded">
                                     {error}
-                                </div>
+                                </div>                    
                             )}
                             <p className="text-sm text-center mb-6">
-                                Ao clicar em aceitar, este serviço ficará associado a você e o cliente será notificado.
+                                Ao clicar em aceitar, este serviço ficará associado e o cliente será notificado.
                             </p>
                             <div className="flex justify-between">
                                 <button

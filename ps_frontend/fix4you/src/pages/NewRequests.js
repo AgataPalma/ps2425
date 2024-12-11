@@ -146,7 +146,15 @@ const NewRequests = ({ id }) => {
                         filteredRequests.map(request => (
                             <div key={request.id} className="rounded-xl shadow-lg bg-gray-50 p-4">
                                 <div className="flex items-center space-x-4">
-                                    <img src={user} alt="Profile" className="w-20 h-20"/>
+                                    <img
+                                        src={
+                                            request.clientProfileImage
+                                                ? atob(request.clientProfileImage)
+                                                : user
+                                        }
+                                        alt="Profile"
+                                        className="w-20 h-20"
+                                    />
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-xl font-semibold">
@@ -160,20 +168,20 @@ const NewRequests = ({ id }) => {
                                                 {request.urgent ? 'Pedido Urgente' : 'Pedido Normal'}
                                             </span>
                                         </div>
-                                    <p className="text-sm">{capitalizeFirstLetter(request.category || 'Categoria não disponível')}</p>
+                                        <p className="text-sm">{capitalizeFirstLetter(request.category || 'Categoria não disponível')}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        <div className="mt-4">
-                        <p className="text-sm font-semibold flex items-center">
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        >
-                        <path
-                        strokeLinecap="round"
+                                <div className="mt-4">
+                                    <p className="text-sm font-semibold flex items-center">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 mr-2"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
                                                 d="M12 2C8.134 2 5 5.134 5 9c0 4 5 11 7 11s7-7 7-11c0-3.866-3.134-7-7-7zm0 7a2 2 0 11-4 0 2 2 0 014 0z"
