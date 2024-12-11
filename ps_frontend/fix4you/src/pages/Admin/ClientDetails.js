@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import axiosInstance from "../../components/axiosInstance";
+import MessageModal from "../../components/MessageModal";
+import Spinner from "../../components/Spinner";
 
-const ClientDetails = ({ client, onClose }) => {
+const ClientDetails = ({ client,updateClient, onClose }) => {
     const [suspensionReason, setSuspensionReason] = useState("");
     const [loading, setLoading] = useState(false);
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        title: "",
+        message: "",
+        type: "success",
+    });
+
+    useEffect(() => {
+        console.log("Updated client details:", client);
+    }, [client]);
+
+    const showMessage = (title, message, type) => {
+        setModalState({ isOpen: true, title, message, type });
+    };
 
     const handleSuspendAccount = async () => {
         if (!suspensionReason.trim()) {
-            alert("Por favor, insira o motivo da suspensão.");
+            showMessage("Error", "Por favor, insira o motivo da suspensão.", "error");
             return;
         }
 
         setLoading(true);
         try {
-            await axiosInstance.post(`/clients/${client.id}/suspend`, { reason: suspensionReason });
-            alert("Conta suspensa com sucesso.");
-            onClose();
+            const response = await axiosInstance.patch(`/clients/${client.id}`, { supended: true, suspensionReason });
+            if (updateClient) {
+                updateClient(response.data);
+            }
+            showMessage("Success", "Conta suspensa com sucesso.", "success");
         } catch (error) {
-            console.error("Erro ao suspender conta:", error);
-            alert("Erro ao suspender a conta. Por favor, tente novamente.");
+            showMessage("Erro", error.message, "error");
         } finally {
             setLoading(false);
         }
@@ -27,16 +44,38 @@ const ClientDetails = ({ client, onClose }) => {
     const handleActivateAccount = async () => {
         setLoading(true);
         try {
-            await axiosInstance.post(`/clients/${client.id}/activate`);
-            alert("Conta ativada com sucesso.");
-            onClose();
+            const response = await axiosInstance.patch(`/clients/${client.id}`, { IsEmailConfirmed: true });
+            if (updateClient) {
+                updateClient(response.data);
+            }
+            showMessage("Success", "Conta ativada com sucesso.", "success");
+
         } catch (error) {
-            console.error("Erro ao ativar conta:", error);
-            alert("Erro ao ativar a conta. Por favor, tente novamente.");
+            showMessage("Erro", error.message, "error");
         } finally {
             setLoading(false);
         }
     };
+
+    const handleRemoveSuspension = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosInstance.patch(`/clients/${client.id}`, { supended: false, suspensionReason: " " });
+            if (updateClient) {
+                updateClient(response.data);
+            }
+            showMessage("Success", "Suspensão removida com sucesso.", "success");
+
+        } catch (error) {
+            showMessage("Erro", error.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
+    }
 
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
@@ -56,30 +95,49 @@ const ClientDetails = ({ client, onClose }) => {
                 <p><strong>Estado Email:</strong> {client.isEmailConfirmed ? "Confirmado" : "Não Confirmado"}</p>
                 <p><strong>Rating:</strong> {client.rating.toFixed(1)}</p>
 
-                {client.status === "active" ? (
-                    <div className="mt-4">
-                        <textarea
-                            placeholder="Motivo para suspensão"
-                            value={suspensionReason}
-                            onChange={(e) => setSuspensionReason(e.target.value)}
-                            className="border p-2 w-full rounded"
-                        ></textarea>
+                <div className="mt-4">
+
+                    {client.supended ? (
                         <button
-                            onClick={handleSuspendAccount}
-                            className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600"
+                            onClick={handleRemoveSuspension}
+                            className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"
                         >
-                            Suspender Conta
+                            Remover Suspensão
                         </button>
-                    </div>
-                ) : (
-                    <button
-                        onClick={handleActivateAccount}
-                        className="bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600"
-                    >
-                        Ativar Conta
-                    </button>
-                )}
+                    ) : (
+                        <div>
+                            <textarea
+                                placeholder="Motivo para suspensão"
+                                value={suspensionReason}
+                                onChange={(e) => setSuspensionReason(e.target.value)}
+                                className="border p-2 w-full rounded"
+                            ></textarea>
+                            <button
+                                onClick={handleSuspendAccount}
+                                className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600"
+                            >
+                                Suspender Conta
+                            </button>
+                        </div>
+                    )}
+                    {!client.isEmailConfirmed && (
+                        <button
+                            onClick={handleActivateAccount}
+                            className="bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600"
+                        >
+                            Ativar Conta
+                        </button>
+                    )}
+                </div>
             </div>
+
+            <MessageModal
+                isOpen={modalState.isOpen}
+                onClose={() => setModalState({ ...modalState, isOpen: false })}
+                title={modalState.title}
+                message={modalState.message}
+                type={modalState.type}
+            />
         </div>
     );
 };
