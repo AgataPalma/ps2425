@@ -13,28 +13,46 @@ const UsersManagement = () => {
     const [selectedProfessional, setSelectedProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setLoading(true);
-                const [clientsResponse, professionalsResponse] = await Promise.all([
-                    axiosInstance.get("/clients"),
-                    axiosInstance.get("/professionals"),
-                ]);
-                setClients(clientsResponse.data);
-                setProfessionals(professionalsResponse.data);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchUsers = async (includeSuspended = true) => {
+        try {
+            setLoading(true);
+            const [clientsResponse, professionalsResponse] = await Promise.all([
+                axiosInstance.get(`/clients?includeSuspended=${includeSuspended}`),
+                axiosInstance.get(`/professionals?includeSuspended=${includeSuspended}`),
+            ]);
+            setClients(clientsResponse.data);
+            setProfessionals(professionalsResponse.data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
 
     if (loading) {
         return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
+    }
+
+    const updateClient = (updatedClient) => {
+        setClients((prevClients) =>
+            prevClients.map((client) => (client.id === updatedClient.id ? updatedClient : client))
+        );
+        setSelectedClient((prevSelected) =>
+            prevSelected && prevSelected.id === updatedClient.id ? updatedClient : prevSelected
+        );
+    };
+
+    const updateProfessional = (updatedProfessional) => {
+        setProfessionals((prevProfessionals) =>
+            prevProfessionals.map((professional) => (professional.id === updatedProfessional.id ? updatedProfessional : professional))
+        );
+        setSelectedProfessional((prevSelected)=>
+            prevSelected && prevSelected.id === updatedProfessional.id ? updatedProfessional : prevSelected
+        );
     }
 
     return (
@@ -58,14 +76,6 @@ const UsersManagement = () => {
                     }`}
                 >
                     Profissionais
-                </button>
-                <button
-                    onClick={() => setActiveTab("suspicious")}
-                    className={`px-4 py-2 text-lg ${
-                        activeTab === "suspicious" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
-                    }`}
-                >
-                    Atividades Suspeitas
                 </button>
             </div>
 
@@ -109,7 +119,12 @@ const UsersManagement = () => {
                         </tbody>
                     </table>
                     {selectedClient && (
-                        <ClientDetails client={selectedClient} onClose={() => setSelectedClient(null)} />
+                        <ClientDetails
+                            client={selectedClient}
+                            updateClient={updateClient}
+                            onClose={() => setSelectedClient(null)
+                            }// Pass refresh function
+                        />
                     )}
                 </div>
             )}
@@ -155,13 +170,13 @@ const UsersManagement = () => {
                     {selectedProfessional && (
                         <ProfessionalDetails
                             professional={selectedProfessional}
+                            updateProfessional={updateProfessional}
                             onClose={() => setSelectedProfessional(null)}
                         />
                     )}
                 </div>
             )}
 
-            {activeTab === "suspicious" && <SuspiciousActivities />}
         </div>
     );
 };
