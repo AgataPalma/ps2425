@@ -515,7 +515,7 @@ const PrincipalPageProfessional = ({ id }) => {
                         ))
                         ) : (
                         <p className="text-center text-gray-700 font-medium col-span-full">
-                        Não foram encontrados serviços. {isLoading.toString()}
+                        Não foram encontrados serviços.
                         </p>
                         )}
                 </section>
