@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean sendEmailWithVerificationToken(User user) throws MessagingException {
         String resetLink = generateResetToken(user);
-        String body = "Hello \n\n" + "Clique neste link para redefinir a sua palavra-passe: " + resetLink + " \n\n";
+        String body = "Olá \n\n" + "Clique neste link para redefinir a sua palavra-passe: " + resetLink + " \n\n";
 
         emailSenderService.sendEmail(user.getEmail(),
                 "Verificar OTP Fix4You",
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
     public void sendValidationEmailUserRegistration(String email) {
         try {
             String endpointURL = "http://localhost:8080/users/email-confirmation/" + email;
-            String body = "Hello \n\n" + "Clique neste link para confirmar o seu endereço de email e completar o seu registo na Fix4You: " + endpointURL + " \n\n";
+            String body = "Olá \n\n" + "Clique neste link para confirmar o seu endereço de email e completar o seu registo na Fix4You: " + endpointURL + " \n\n";
 
             emailSenderService.sendEmail(email,
                     "Confirmação de email Fix4You",

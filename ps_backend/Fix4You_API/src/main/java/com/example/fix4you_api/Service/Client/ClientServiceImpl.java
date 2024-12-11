@@ -24,7 +24,7 @@ public class ClientServiceImpl implements ClientService {
     public Client createClient(Client client) {
         client.setUserType(EnumUserType.CLIENT);
         client.setDateCreation(LocalDateTime.now());
-        client.setIsEmailConfirmed(true);
+        client.setIsEmailConfirmed(false);
         client.setRating(0);
         client.setSuspended(false);
         client.setSuspensionReason("");

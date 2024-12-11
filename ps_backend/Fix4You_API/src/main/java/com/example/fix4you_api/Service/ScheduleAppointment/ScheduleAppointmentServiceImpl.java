@@ -87,7 +87,7 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
             String formattedEnd = end.format(formatter);
 
             String url = String.format("https://www.googleapis.com/calendar/v3/calendars/primary/events?" +
-                    "timeMin=%s&timeMax=%s",formattedStart, formattedEnd);
+                    "timeMin=%s&timeMax=%s&singleEvents=true&eventType=default",formattedStart, formattedEnd);
 
             HttpURLConnection connection = null;
             URL obj = new URL(url);

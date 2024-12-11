@@ -48,7 +48,7 @@ public class ProfessionalController {
         Professional createdProfessional = professionalService.createProfessional(professional);
 
         // send verification email
-        //userService.sendValidationEmailUserRegistration(createdProfessioanl.getEmail());
+        userService.sendValidationEmailUserRegistration(createdProfessional.getEmail());
         return new ResponseEntity<>(createdProfessional, HttpStatus.CREATED);
     }
 

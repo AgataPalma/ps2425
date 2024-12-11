@@ -129,7 +129,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
         professional.setUserType(EnumUserType.PROFESSIONAL);
         professional.setDateCreation(LocalDateTime.now());
         professional.setStrikes(0);
-        professional.setIsEmailConfirmed(true);
+        professional.setIsEmailConfirmed(false);
         professional.setRating(0);
         professional.setSuspended(false);
         professional.setSuspensionReason("");

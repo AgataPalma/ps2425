@@ -37,7 +37,7 @@ public class ClientController {
 
         Client createdClient = clientService.createClient(client);
         // send verification email
-        //userService.sendValidationEmailUserRegistration(createdClient.getEmail());
+        userService.sendValidationEmailUserRegistration(createdClient.getEmail());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 

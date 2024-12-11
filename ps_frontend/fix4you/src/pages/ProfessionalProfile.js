@@ -186,7 +186,7 @@ function ProfessionalProfile({ id }) {
             axiosInstance.post(`/categoryDescriptions`, categoryPayload)
                 .then(response => {
                     setCategories([...categories, response.data]);
-                    setSuccessMessage("New category added successfully!");
+                    setSuccessMessage("Nova categoria adicionada com sucesso!");
                     setTimeout(() => setSuccessMessage(''), 3000);
 
                     setNewCategoryData({
@@ -199,11 +199,11 @@ function ProfessionalProfile({ id }) {
                 })
                 .catch(error => {
                     console.error('Error adding new category:', error);
-                    setErrorMessage("Failed to add new category. Please try again.");
+                    setErrorMessage("Falha ao adicionar nova categoria. Tente novamente.");
                     setTimeout(() => setErrorMessage(''), 3000);
                 });
         } else {
-            setErrorMessage("Please fill in all required fields.");
+            setErrorMessage("Preencher todos os campos obrigatórios.");
             setTimeout(() => setErrorMessage(''), 3000);
         }
     };
@@ -223,7 +223,7 @@ function ProfessionalProfile({ id }) {
             })
             .catch(error => {
                 console.error('Error deleting category:', error);
-                setErrorMessage("Failed to delete category. Please try again. If the error persists, please contact support.");
+                setErrorMessage("Falha a eliminar a categoria. Tente de novo, por favor. Se o erro persistir, contacte o suporte.");
                 setTimeout(() => {
                     setErrorMessage('');
                 }, 3000);
@@ -269,11 +269,11 @@ function ProfessionalProfile({ id }) {
             });
 
             setEditMode(false);
-            setSuccessMessage("Information updated successfully!");
+            setSuccessMessage("Informações actualizadas com sucesso!");
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (error) {
             console.error('Error updating category information:', error);
-            setErrorMessage("Failed to update category information. Please try again.");
+            setErrorMessage("Falha a atualizar a informação da categoria. Tente de novo, por favor.");
             setTimeout(() => setErrorMessage(''), 3000);
         }
     };
@@ -286,7 +286,7 @@ function ProfessionalProfile({ id }) {
             delete newData[categoryId];
             return newData;
         });
-        setErrorMessage("Changes canceled.");
+        setErrorMessage("Alterações canceladas.");
         setTimeout(() => setErrorMessage(''), 3000);
     };
 
@@ -342,7 +342,7 @@ function ProfessionalProfile({ id }) {
                 })
                 .catch((error) => {
                     console.error('Error uploading image:', error);
-                    setErrorMessage('Failed to upload image. Please try again.');
+                    setErrorMessage('Falha ao carregar a imagem. Por favor, tente novamente.');
                     setTimeout(() => setErrorMessage(''), 3000);
                 });
         };
@@ -362,12 +362,12 @@ function ProfessionalProfile({ id }) {
         })
             .then((response) => {
                 setPortfolio(response.data);
-                setSuccessMessage('Image deleted successfully!');
+                setSuccessMessage('Imagem eliminada com êxito!');
                 setTimeout(() => setSuccessMessage(''), 3000);
             })
             .catch((error) => {
                 console.error('Error deleting image:', error);
-                setErrorMessage('Failed to delete image. Please try again.');
+                setErrorMessage('Falha ao eliminar a imagem. Tente novamente.');
                 setTimeout(() => setErrorMessage(''), 3000);
             });
     };
@@ -387,12 +387,12 @@ function ProfessionalProfile({ id }) {
                 setPortfolio(response.data);
                 setPortfolioImages([]);
                 setEditMode(false);
-                setSuccessMessage('Portfolio updated successfully!');
+                setSuccessMessage('Portfólio atualizado com sucesso!');
                 setTimeout(() => setSuccessMessage(''), 3000);
             })
             .catch((error) => {
                 console.error('Error saving portfolio:', error);
-                setErrorMessage('Failed to save portfolio. Please try again.');
+                setErrorMessage('Falha ao guardar o portefólio. Por favor, tente novamente.');
                 setTimeout(() => setErrorMessage(''), 3000);
             });
     };
@@ -401,19 +401,19 @@ function ProfessionalProfile({ id }) {
         axiosInstance.delete(`/portfolioItems/${portfolio.id}`)
             .then(() => {
                 setPortfolio(null);
-                setSuccessMessage('Portfolio deleted successfully!');
+                setSuccessMessage('Portfólio eliminado com sucesso!');
                 setTimeout(() => setSuccessMessage(''), 3000);
             })
             .catch((error) => {
                 console.error('Error deleting portfolio:', error);
-                setErrorMessage('Failed to delete portfolio. Please try again.');
+                setErrorMessage('Falha ao eliminar o portefólio. Por favor, tente novamente.');
                 setTimeout(() => setErrorMessage(''), 3000);
             });
     };
 
     const handleCreatePortfolio = () => {
         if (!portfolioDescription) {
-            setErrorMessage('Description is mandatory!');
+            setErrorMessage('A descrição é obrigatória!');
             setTimeout(() => setErrorMessage(''), 3000);
             return;
         }
@@ -431,12 +431,12 @@ function ProfessionalProfile({ id }) {
                 setPortfolio(response.data);
                 setPortfolioDescription('');
                 setPortfolioImages([]);
-                setSuccessMessage('Portfolio created successfully!');
+                setSuccessMessage('Portfolio criado com sucesso!');
                 setTimeout(() => setSuccessMessage(''), 3000);
             })
             .catch((error) => {
                 console.error('Error creating portfolio:', error);
-                setErrorMessage('Failed to create portfolio. Please try again.');
+                setErrorMessage('Falha ao criar o portefólio. Por favor, tente novamente.');
                 setTimeout(() => setErrorMessage(''), 3000);
             });
     };
@@ -503,11 +503,11 @@ function ProfessionalProfile({ id }) {
             }
 
             setEditMode(false);
-            setSuccessMessage("Personal information updated successfully!");
+            setSuccessMessage("Informações pessoais actualizadas com sucesso!");
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (error) {
             console.error('Error updating professional profile data:', error);
-            setErrorMessage("Failed to update personal information. Please try again.");
+            setErrorMessage("Falha ao atualizar as informações pessoais. Tente novamente.");
             setTimeout(() => setErrorMessage(''), 3000);
         }
     };
@@ -524,7 +524,7 @@ function ProfessionalProfile({ id }) {
             })
             .catch(error => {
                 console.error('Error deleting account:', error);
-                setErrorMessage("Failed to delete account. Please try again. If the error persists, please contact support.");
+                setErrorMessage("Falha ao eliminar a conta. Tente novamente. Se o erro persistir, contacte o suporte.");
                 setTimeout(() => {
                     setErrorMessage('');
                 }, 3000);
