@@ -130,7 +130,7 @@ function RequestServiceGeneric({ id }) {
 
 
   return (
-      <div className="h-screen bg-gray-200 text-black font-sans">
+      <div className="flex flex-col min-h-screen text-black font-sans">
         <main className="flex-grow bg-gray-800 bg-opacity-15 flex items-center justify-center">
           <div className="relative w-full h-full bg-cover bg-center">
             <div className="absolute inset-0"></div>
@@ -205,44 +205,44 @@ function RequestServiceGeneric({ id }) {
                     </div>
                   </div>
 
-                    <div className="mb-6">
-                      <label className="block text-black font-semibold mb-2">Descrição *</label>
-                      <textarea
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          className="w-full bg-white bg-opacity-50 mt-2 p-2 h-20 placeholder-black placeholder-opacity-80 border border-black"
-                          placeholder="Descrição"
-                      ></textarea>
-                    </div>
+                  <div className="mb-6">
+                    <label className="block text-black font-semibold mb-2">Descrição *</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="w-full bg-white bg-opacity-50 mt-2 p-2 h-20 placeholder-black placeholder-opacity-80 border border-black"
+                        placeholder="Descrição"
+                    ></textarea>
+                  </div>
 
 
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="text-black font-semibold">Pedido Urgente</span>
-                      <div
-                          onClick={() => setUrgent(!urgent)}
-                          className={`relative inline-flex items-center cursor-pointer w-12 h-6 rounded-full ${
-                              urgent ? 'bg-yellow-600' : 'bg-gray-300'
-                          }`}
-                      >
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-black font-semibold">Pedido Urgente</span>
+                    <div
+                        onClick={() => setUrgent(!urgent)}
+                        className={`relative inline-flex items-center cursor-pointer w-12 h-6 rounded-full ${
+                            urgent ? 'bg-yellow-600' : 'bg-gray-300'
+                        }`}
+                    >
     <span
         className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-transform ${
             urgent ? 'translate-x-6' : 'translate-x-0'
         }`}
     ></span>
-                      </div>
                     </div>
-                    <p className="text-sm text-gray-700 mt-2">
-                      {urgent ? 'Este pedido será tratado como urgente.' : 'Este pedido não é urgente.'}
-                    </p>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-2">
+                    {urgent ? 'Este pedido será tratado como urgente.' : 'Este pedido não é urgente.'}
+                  </p>
 
-                    <br/>
+                  <br/>
 
-                    <button
-                        type="submit"
-                        className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
-                    >
-                      Avançar
-                    </button>
+                  <button
+                      type="submit"
+                      className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                  >
+                    Avançar
+                  </button>
                 </form>
               </div>
             </div>
