@@ -180,6 +180,7 @@ public class ProfessionalServiceImpl implements ProfessionalService {
                 case "acceptedPayments" -> professional.setAcceptedPayments((List<PaymentMethod>) value);
                 case "strikes" -> professional.setStrikes((Integer) value);
                 case "isSuspended" -> professional.setSuspended((boolean) value);
+                case "suspensionReason" -> professional.setSuspensionReason((String) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
