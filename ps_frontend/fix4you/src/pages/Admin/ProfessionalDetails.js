@@ -1,49 +1,80 @@
-import React, { useState } from "react";
+import React, {useEffect, useState } from "react";
 import axiosInstance from "../../components/axiosInstance";
+import MessageModal from "../../components/MessageModal";
+import Spinner from "../../components/Spinner";
 
-const ProfessionalDetails = ({ professional, onClose }) => {
+
+const ProfessionalDetails = ({ professional, updateProfessional, onClose }) => {
     const [activeTab, setActiveTab] = useState("general"); // Manage active tab
     const [suspensionReason, setSuspensionReason] = useState("");
     const [loading, setLoading] = useState(false);
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        title: "",
+        message: "",
+        type: "success",
+    });
+
+    const showMessage = (title, message, type) => {
+        setModalState({ isOpen: true, title, message, type });
+    };
 
     const handleSuspendAccount = async () => {
         if (!suspensionReason.trim()) {
-            alert("Por favor, insira o motivo da suspensão.");
+            showMessage("Erro", "Por favor, insira o motivo da suspensão.", "error");
             return;
         }
 
         setLoading(true);
         try {
-            await axiosInstance.post(`/professionals/${professional.id}/suspend`, { reason: suspensionReason });
-            alert("Conta suspensa com sucesso.");
-            onClose();
+            const response= await axiosInstance.patch(`/professionals/${professional.id}`, { supended: true, suspensionReason });
+            if (updateProfessional) {
+                updateProfessional(response.data);
+            }
+            showMessage("Success", "Conta suspensa com sucesso.", "success");
         } catch (error) {
-            console.error("Erro ao suspender conta:", error);
-            alert("Erro ao suspender a conta. Por favor, tente novamente.");
+            showMessage("Erro", error.message, "error");
         } finally {
             setLoading(false);
         }
     };
 
     const handleActivateAccount = async () => {
-        if (!suspensionReason.trim()) {
-            alert("Por favor, insira a explicação para remoção da suspensão.");
-            return;
-        }
 
         setLoading(true);
         try {
-            await axiosInstance.post(`/professionals/${professional.id}/activate`, { reason: suspensionReason });
-            alert("Conta ativada com sucesso.");
-            onClose();
+            const response = await axiosInstance.patch(`/professionals/${professional.id}`, { IsEmailConfirmed: true });
+            if (updateProfessional) {
+                updateProfessional(response.data);
+            }
+            showMessage("Success", "Conta ativada com sucesso.", "success");
+
         } catch (error) {
-            console.error("Erro ao ativar conta:", error);
-            alert("Erro ao ativar a conta. Por favor, tente novamente.");
+            showMessage("Erro", error.message, "error");
         } finally {
             setLoading(false);
         }
     };
 
+    const handleRemoveSuspension = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosInstance.patch(`/professionals/${professional.id}`, { supended: false, suspensionReason: " " });
+            if (updateProfessional) {
+                updateProfessional(response.data);
+            }
+            showMessage("Success", "Suspensão removida com sucesso.", "success");
+
+        } catch (error) {
+            showMessage("Erro", error.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
+    }
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full relative">
@@ -61,12 +92,13 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                 <div className="flex justify-center mb-4">
                     {professional.profileImage ? (
                         <img
-                            src={professional.profileImage}
+                            src={`data:image/jpeg;base64,${professional.profileImage}`}
                             alt="Profile"
                             className="w-24 h-24 rounded-full object-cover shadow-lg"
                         />
                     ) : (
-                        <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
+                        <div
+                            className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
                             Sem Foto
                         </div>
                     )}
@@ -75,7 +107,7 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                 {/* Tabs Navigation */}
                 <div className="flex justify-center space-x-4 border-b-2 mb-4 relative">
                     <div className="flex space-x-4">
-                        <button
+                    <button
                             onClick={() => setActiveTab("general")}
                             className={`px-4 py-2 text-lg ${
                                 activeTab === "general" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
@@ -91,41 +123,9 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                         >
                             Gerir Conta
                         </button>
-                        <button
-                            onClick={() => setActiveTab("reviews")}
-                            className={`px-4 py-2 text-lg ${
-                                activeTab === "reviews" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
-                            }`}
-                        >
-                            Avaliações
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("payments")}
-                            className={`px-4 py-2 text-lg ${
-                                activeTab === "payments" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
-                            }`}
-                        >
-                            Pagamentos
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("portfolio")}
-                            className={`px-4 py-2 text-lg ${
-                                activeTab === "portfolio" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
-                            }`}
-                        >
-                            Portfólio
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("categories")}
-                            className={`px-4 py-2 text-lg ${
-                                activeTab === "categories" ? "border-b-4 border-yellow-600 font-bold" : "text-gray-500"
-                            }`}
-                        >
-                            Categorias
-                        </button>
+
                     </div>
-                    {/* Full-width underline */}
-                    {/* <div className="absolute bottom-0 left-0 w-full border-b-2 border-gray-300"></div>*/}
+
                 </div>
 
                 {/* Scrollable Content */}
@@ -144,7 +144,7 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                                     <li key={lang.id}>{lang.name}</li>
                                 ))}
                             </ul>
-                            <p><strong>Pagamentos Aceitos:</strong></p>
+                            <p><strong>Formas de pagamento aceites:</strong></p>
                             <ul className="list-disc pl-6">
                                 {professional.acceptedPayments.map((pay) => (
                                     <li key={pay.id}>{pay.name}</li>
@@ -161,21 +161,12 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                             <p><strong>Estado da Conta:</strong> {professional.supended ? "Suspensa" : "Ativa"}</p>
                             <p><strong>Strikes:</strong> {professional.strikes}</p>
                             {professional.supended ? (
-                                <div>
-                                    <textarea
-                                        placeholder="Motivo para remoção da suspensão"
-                                        value={suspensionReason}
-                                        onChange={(e) => setSuspensionReason(e.target.value)}
-                                        className="border p-2 w-full rounded"
-                                    ></textarea>
-                                    <button
-                                        onClick={handleActivateAccount}
-                                        className="bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600"
-                                        disabled={loading}
-                                    >
-                                        {loading ? "A ativar, aguarde..." : "Ativar Conta"}
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={handleRemoveSuspension}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"
+                                >
+                                    Remover Suspensão
+                                </button>
                             ) : (
                                 <div>
                                     <textarea
@@ -187,46 +178,30 @@ const ProfessionalDetails = ({ professional, onClose }) => {
                                     <button
                                         onClick={handleSuspendAccount}
                                         className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600"
-                                        disabled={loading}
                                     >
-                                        {loading ? "A suspender a conta, aguarde..." : "Suspender Conta"}
+                                        Suspender Conta
                                     </button>
                                 </div>
                             )}
-                        </div>
-                    )}
-
-                    {activeTab === "portfolio" && (
-                        <div>
-                            <p><strong>Portfólio:</strong></p>
-                            <ul className="list-disc pl-6">
-                                {professional.portfolio?.length > 0 ? (
-                                    professional.portfolio.map((item, index) => (
-                                        <li key={index}>{item}</li>
-                                    ))
-                                ) : (
-                                    <p>Sem registros no portfólio.</p>
-                                )}
-                            </ul>
-                        </div>
-                    )}
-
-                    {activeTab === "categories" && (
-                        <div>
-                            <p><strong>Categorias:</strong></p>
-                            <ul className="list-disc pl-6">
-                                {professional.categories?.length > 0 ? (
-                                    professional.categories.map((category, index) => (
-                                        <li key={index}>{category}</li>
-                                    ))
-                                ) : (
-                                    <p>Sem categorias registradas.</p>
-                                )}
-                            </ul>
+                            {!professional.isEmailConfirmed && (
+                                <button
+                                    onClick={handleActivateAccount}
+                                    className="bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600"
+                                >
+                                    Ativar Conta
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
             </div>
+            <MessageModal
+                isOpen={modalState.isOpen}
+                onClose={() => setModalState({ ...modalState, isOpen: false })}
+                title={modalState.title}
+                message={modalState.message}
+                type={modalState.type}
+            />
         </div>
     );
 };
