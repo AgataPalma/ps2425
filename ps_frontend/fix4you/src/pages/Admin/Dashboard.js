@@ -75,7 +75,7 @@ function Dashboard() {
                 setLowestPriceProfessionals(lowestPrices);
                 setLoading(false);
             } catch (err) {
-                setError(err);
+                setError(err.message);
                 console.error(err);
                 setLoading(false);
             }
@@ -92,7 +92,7 @@ function Dashboard() {
 
                 setLoading(false);
             } catch (err) {
-                setError(err);
+                setError(err.message);
                 setLoading(false);
             }
         };
@@ -112,7 +112,7 @@ function Dashboard() {
                 setTickets(displayedTickets);
                 setLoading(false);
             } catch (err) {
-                setError(err);
+                setError(err.message);
                 setLoading(false);
             }
         };
@@ -124,23 +124,22 @@ function Dashboard() {
                     await Promise.all([
                         axiosInstance.get("/services/topActivitiesClients"),
                         axiosInstance.get("/services/topActivitiesProfessionals"),
-                       //axiosInstance.get("/services/topExpensesProfessionals"),
+                        axiosInstance.get("/professionalFees/topExpensesProfessionals"),
                     ]);
 
                 const topClient = topClientsResponse.data[0] || {};
                 const topProfessional = topProfessionalsResponse.data[0] || {};
-                //const topExpense = topExpensesResponse.data[0] || {};
+                const topExpense = topExpensesResponse.data[0] || {};
 
                 setTopTops({
                     clientActivity: topClient,
                     professionalActivity: topProfessional,
-                   // professionalExpense: topExpense,
+                    professionalExpense: topExpense,
                 });
 
                 setLoading(false);
             } catch (err) {
-                setError(err);
-                console.error(err);
+                setError(err.message);
                 setLoading(false);
             }
         };
@@ -257,12 +256,18 @@ function Dashboard() {
                 {/* Pending Payments Section */}
                 <div className="border p-4 rounded-lg bg-gray-100 relative">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Pagamentos pendentes</h2>
+                    <div className="flex justify-between bg-gray-200 p-2 rounded-t shadow font-semibold text-gray-700">
+                        <span>Nome</span>
+                        <span>ID</span>
+                        <span>Valor</span>
+                    </div>
                     <ul className="space-y-2 pb-12">
-                        {pendingPayments.slice(0, 5).map((payment) => (
+                        {pendingPayments.slice(0, 8).map((payment) => (
                             <li
                                 key={payment.id}
                                 className="flex justify-between items-center bg-white p-2 rounded shadow"
                             >
+                                <span>{payment.professional?.name || "Unknown Professional"}</span>
                                 <span>{payment.professional?.id || "Unknown Professional"}</span>
                                 <span>€{payment.value.toFixed(2)}</span>
                             </li>
@@ -282,21 +287,28 @@ function Dashboard() {
                 {/* Platform Tops Section */}
                 <div className="border p-4 rounded-lg bg-gray-100 relative">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Top Utilizadores</h2>
-                    {topTops.clientActivity && topTops.professionalActivity /* && topTops.professionalExpense*/ ? (
-                        <div className="space-y-4">
+                    {topTops.clientActivity && topTops.professionalActivity  && topTops.professionalExpense ? (
+                        <div className="space-y-2 pb-12">
                             <div className="bg-white border-l-4 border-yellow-700 p-4 rounded-lg shadow">
                                 <h3 className="text-xl font-bold border-gray-800">Top Cliente</h3>
+                                <p className="text-gray-800">Nome: {topTops.clientActivity.clientName || "N/A"}</p>
+                                <p className="text-gray-800">Total de serviços: {topTops.clientActivity.serviceCount || "N/A"}</p>
                                 <p className="text-gray-800">ID: {topTops.clientActivity.clientId || "N/A"}</p>
                             </div>
                             <div className="bg-white border-l-4 border-yellow-700 p-4 rounded-lg shadow">
-                                <h3 className="text-xl font-bold border-gray-800">Top Profissional</h3>
+                                <h3 className="text-xl font-bold border-gray-800">Top Profissional - Por serviços</h3>
+                                <p className="text-gray-800">Nome: {topTops.professionalActivity.professionalName || "N/A"}</p>
+                                <p className="text-gray-800">Total de serviços: {topTops.professionalActivity.serviceCount || "N/A"}</p>
                                 <p className="text-gray-800">ID: {topTops.professionalActivity.professionalId || "N/A"}</p>
+
                             </div>
-                            {/* Uncomment when professionalExpense is available */}
-                            {/* <div className="bg-red-100 border-l-4 border-red-600 p-4 rounded-lg shadow">
-                <h3 className="text-xl font-bold text-red-800">Top Expense</h3>
-                <p className="text-gray-800">€{topTops.professionalExpense.total?.toFixed(2) || "N/A"}</p>
-            </div> */}
+                            <div className="bg-white border-l-4 border-yellow-700 p-4 rounded-lg shadow">
+                                <h3 className="text-xl font-bold text-gray-800">Top Profissional - Por faturação</h3>
+                                <p className="text-gray-800">Nome: {topTops.professionalExpense.professionalName || "N/A"}</p>
+                                <p className="text-gray-800">Total Pago:
+                                    € {topTops.professionalExpense.totalSpent?.toFixed(2) || "N/A"}</p>
+                                <p className="text-gray-800">ID: {topTops.professionalExpense.professionalId || "N/A"}</p>
+                            </div>
                         </div>
                     ) : (
                         <p className="text-gray-600">Loading top data...</p>
