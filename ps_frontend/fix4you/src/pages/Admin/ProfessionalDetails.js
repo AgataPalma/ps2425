@@ -27,7 +27,7 @@ const ProfessionalDetails = ({ professional, updateProfessional, onClose }) => {
 
         setLoading(true);
         try {
-            const response= await axiosInstance.patch(`/professionals/${professional.id}`, { supended: true, suspensionReason });
+            const response= await axiosInstance.patch(`/professionals/${professional.id}`, { isSuspended: true, suspensionReason });
             if (updateProfessional) {
                 updateProfessional(response.data);
             }
@@ -59,7 +59,7 @@ const ProfessionalDetails = ({ professional, updateProfessional, onClose }) => {
     const handleRemoveSuspension = async () => {
         setLoading(true);
         try {
-            const response = await axiosInstance.patch(`/professionals/${professional.id}`, { supended: false, suspensionReason: " " });
+            const response = await axiosInstance.patch(`/professionals/${professional.id}`, { isSuspended: false, suspensionReason: " " });
             if (updateProfessional) {
                 updateProfessional(response.data);
             }
@@ -158,9 +158,9 @@ const ProfessionalDetails = ({ professional, updateProfessional, onClose }) => {
 
                     {activeTab === "account" && (
                         <div>
-                            <p><strong>Estado da Conta:</strong> {professional.supended ? "Suspensa" : "Ativa"}</p>
+                            <p><strong>Estado da Conta:</strong> {professional.isSuspended ? "Suspensa" : "Ativa"}</p>
                             <p><strong>Strikes:</strong> {professional.strikes}</p>
-                            {professional.supended ? (
+                            {professional.isSuspended ? (
                                 <button
                                     onClick={handleRemoveSuspension}
                                     className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"

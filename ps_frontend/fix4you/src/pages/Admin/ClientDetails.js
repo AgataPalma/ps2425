@@ -29,7 +29,7 @@ const ClientDetails = ({ client,updateClient, onClose }) => {
 
         setLoading(true);
         try {
-            const response = await axiosInstance.patch(`/clients/${client.id}`, { supended: true, suspensionReason });
+            const response = await axiosInstance.patch(`/clients/${client.id}`, { isSuspended: true, suspensionReason });
             if (updateClient) {
                 updateClient(response.data);
             }
@@ -60,7 +60,7 @@ const ClientDetails = ({ client,updateClient, onClose }) => {
     const handleRemoveSuspension = async () => {
         setLoading(true);
         try {
-            const response = await axiosInstance.patch(`/clients/${client.id}`, { supended: false, suspensionReason: " " });
+            const response = await axiosInstance.patch(`/clients/${client.id}`, { isSuspended: false, suspensionReason: " " });
             if (updateClient) {
                 updateClient(response.data);
             }
@@ -97,7 +97,7 @@ const ClientDetails = ({ client,updateClient, onClose }) => {
 
                 <div className="mt-4">
 
-                    {client.supended ? (
+                    {client.isSuspended ? (
                         <button
                             onClick={handleRemoveSuspension}
                             className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"
