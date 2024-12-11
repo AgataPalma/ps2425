@@ -70,6 +70,9 @@ public class Service {
     private LocalDateTime agreementDate;
 
     @Field
+    private LocalDateTime acceptedDate;
+
+    @Field
     @NotNull(message = "As línguas não podem ser nulas")
     private List<Language> languages;
 

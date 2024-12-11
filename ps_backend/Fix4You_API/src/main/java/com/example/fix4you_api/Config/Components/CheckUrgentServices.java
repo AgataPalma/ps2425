@@ -40,10 +40,12 @@ public class CheckUrgentServices {
                 if (d.toDays() > 1) {
                     Optional<Professional> professionalOpt = professionalRepository.findById(services.get(i).getProfessionalId());
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
+                    services.get(i).setState(ServiceStateEnum.CANCELED);
+                    serviceRepository.save(services.get(i));
                     if (professionalOpt.get().getStrikes() == 3) {
                         professionalOpt.get().setSupended(true);
                         professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
-                        services.get(i).setState(ServiceStateEnum.CANCELED);
+                        professionalRepository.save(professionalOpt.get());
                     }
                 }
             }
@@ -56,13 +58,16 @@ public class CheckUrgentServices {
                 if (scheduleAppointments.get(i).isJobChecked()) {
                     Optional<Professional> professionalOpt = professionalRepository.findById(scheduleAppointments.get(i).getProfessionalId());
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
+                    scheduleAppointments.get(i).setState(ScheduleStateEnum.CANCELED);
+                    scheduleAppointmentRepository.save(scheduleAppointments.get(i));
                     if (professionalOpt.get().getStrikes() == 3) {
                         professionalOpt.get().setSupended(true);
                         professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
-                        scheduleAppointments.get(i).setState(ScheduleStateEnum.CANCELED);
+                        professionalRepository.save(professionalOpt.get());
                     }
                 }  else {
                     scheduleAppointments.get(i).setJobChecked(true);
+                    scheduleAppointmentRepository.save(scheduleAppointments.get(i));
                 }
             }
         }

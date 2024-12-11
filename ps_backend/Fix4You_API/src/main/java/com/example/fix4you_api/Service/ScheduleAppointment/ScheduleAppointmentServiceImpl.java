@@ -35,6 +35,11 @@ public class ScheduleAppointmentServiceImpl implements ScheduleAppointmentServic
     private final ServiceRepository serviceRepository;
 
     @Override
+    public List<ScheduleAppointment> getScheduleAppointmentsByServiceId(String serviceId){
+        return this.scheduleAppointmentRepository.findByServiceId(serviceId);
+    }
+
+    @Override
     public List<ScheduleAppointment> getScheduleAppointmentsByServiceIdAndStateAndDateFinishBetween(String serviceId, ScheduleStateEnum state, LocalDateTime startDate, LocalDateTime endDate){
         return this.scheduleAppointmentRepository.findByServiceIdAndStateAndDateFinishBetween(serviceId, state, startDate, endDate);
     }
