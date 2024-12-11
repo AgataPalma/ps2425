@@ -143,7 +143,7 @@ function ProfessionalRequestsHistory({ id }) {
             : true;
 
         if (activeTab === 'open') {
-            return ['PENDING', 'ACCEPTED'].includes(request.state) && isCategoryMatch;
+            return request.state === 'ACCEPTED' && isCategoryMatch;
         } else if (activeTab === 'concluded') {
             return ['COMPLETED', 'CANCELED', 'REFUSED'].includes(request.state) && isCategoryMatch;
         }
@@ -164,7 +164,7 @@ function ProfessionalRequestsHistory({ id }) {
                     onClick={() => handleTabChange('open')}
                     className={`p-2 rounded-lg ${activeTab === 'open' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-800'}`}
                 >
-                    Serviços pendentes
+                    Serviços Pendentes
                 </button>
                 <button
                     onClick={() => handleTabChange('concluded')}
