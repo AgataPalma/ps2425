@@ -64,16 +64,18 @@ function ProfessionalCalendar({ id }) {
                 })
             );
 
-            const start = new Date();
-            const end = new Date();
-            end.setDate(end.getDate() + 7);
-
-            await synchronizeGoogleCalendar(start, end);
 
             setAppointments((prevAppointments) => [
                 ...appointmentsWithDetails,
                 ...prevAppointments.filter((event) => event.googleEvent),
             ]);
+
+            if (isGoogleCalendarIntegrated) {
+                const start = new Date();
+                const end = new Date();
+                end.setDate(end.getDate() + 7);
+                await synchronizeGoogleCalendar(start, end);
+            }
 
         } catch (error) {
 
@@ -112,6 +114,9 @@ function ProfessionalCalendar({ id }) {
     };
 
     const synchronizeGoogleCalendar = async (start, end) => {
+        if (!isGoogleCalendarIntegrated) {
+            return;
+        }
         try {
             const response = await axiosInstance.get('/scheduleAppointments/google-events-between', {
                 params: {
