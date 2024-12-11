@@ -5,9 +5,8 @@ import profileIcon from '../images/profile_icon.png';
 import { Link } from 'react-router-dom';
 
 const Header = ({ userType, handleLogout }) => {
-
     console.log("UserType in Header:", userType);
-    const logoLink = userType === 'CLIENT' ? '/PrincipalPageClient' : userType === 'PROFESSIONAL' ? '/PrincipalPageProfessional' : userType === 'ADMIN' ? '/Home': '/Home';
+    const logoLink = userType === 'CLIENT' ? '/PrincipalPageClient' : userType === 'PROFESSIONAL' ? '/PrincipalPageProfessional' : userType === 'ADMIN' ? '/Home' : '/Home';
     const notificationsLink = userType === 'CLIENT' ? '/NotificationsClient' : '/NotificationsProfessional';
 
     return (
@@ -46,7 +45,6 @@ const Header = ({ userType, handleLogout }) => {
                             <Link to="/Tickets" className="text-gray-600 hover:text-gray-900">Tickets</Link>
                         </>
                     )}
-
                 </div>
 
                 <div className="flex items-center space-x-4">
@@ -76,9 +74,11 @@ const Header = ({ userType, handleLogout }) => {
                                 </Link>
                             )}
 
-                            <Link to={userType === 'CLIENT' ? "/ClientProfile" : "/ProfessionalProfile"}>
-                                <img src={profileIcon} alt="profile" className="h-10" />
-                            </Link>
+                            {userType !== 'ADMIN' && (
+                                <Link to={userType === 'CLIENT' ? "/ClientProfile" : "/ProfessionalProfile"}>
+                                    <img src={profileIcon} alt="profile" className="h-10" />
+                                </Link>
+                            )}
 
                             <button
                                 onClick={handleLogout}

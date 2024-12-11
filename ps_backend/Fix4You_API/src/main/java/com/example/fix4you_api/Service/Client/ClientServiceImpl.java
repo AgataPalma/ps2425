@@ -81,6 +81,7 @@ public class ClientServiceImpl implements ClientService {
                 //case "IsDeleted" -> client.setIsDeleted((Boolean) value);
                 case "IsEmailConfirmed" -> client.setIsEmailConfirmed((Boolean) value);
                 case "isSuspended" -> client.setSuspended((boolean) value);
+                case "suspensionReason" -> client.setSuspensionReason((String) value);
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });

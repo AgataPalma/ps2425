@@ -55,13 +55,16 @@ public class ProfessionalController {
     @GetMapping
     public ResponseEntity<List<Professional>> getProfessionals(
             @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "sort", required = false) String sort) {
+            @RequestParam(value = "sort", required = false) String sort,
+    @RequestParam(value = "includeSuspended", required = false, defaultValue = "false") boolean includeSuspended){
         List<Professional> professionals = professionalService.getProfessionals(filter, sort);
 
         // remove suspended professionals
-        for (var i=0; i < professionals.size(); i++){
-            if(professionals.get(i).isSuspended()) {
-                professionals.remove(professionals.get(i));
+        if (!includeSuspended) {
+            for (var i = 0; i < professionals.size(); i++) {
+                if (professionals.get(i).isSuspended()) {
+                    professionals.remove(professionals.get(i));
+                }
             }
         }
 

@@ -42,13 +42,15 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Client>> getAllClients() {
+    public ResponseEntity<List<Client>> getAllClients(@RequestParam(value = "includeSuspended", required = false, defaultValue = "false") boolean includeSuspended) {
         List<Client> clients = clientService.getAllClients();
 
         // remove suspended clients
-        for (var i=0; i < clients.size(); i++){
-            if(clients.get(i).isSuspended()) {
-                clients.remove(clients.get(i));
+        if (!includeSuspended) {
+            for (var i = 0; i < clients.size(); i++) {
+                if (clients.get(i).isSuspended()) {
+                    clients.remove(clients.get(i));
+                }
             }
         }
 
