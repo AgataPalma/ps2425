@@ -158,9 +158,9 @@ const ProfessionalDetails = ({ professional, updateProfessional, onClose }) => {
 
                     {activeTab === "account" && (
                         <div>
-                            <p><strong>Estado da Conta:</strong> {professional.isSuspended ? "Suspensa" : "Ativa"}</p>
+                            <p><strong>Estado da Conta:</strong> {professional.suspended ? "Suspensa" : "Ativa"}</p>
                             <p><strong>Strikes:</strong> {professional.strikes}</p>
-                            {professional.isSuspended ? (
+                            {professional.suspended ? (
                                 <button
                                     onClick={handleRemoveSuspension}
                                     className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"

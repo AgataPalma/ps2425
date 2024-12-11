@@ -97,7 +97,7 @@ const ClientDetails = ({ client,updateClient, onClose }) => {
 
                 <div className="mt-4">
 
-                    {client.isSuspended ? (
+                    {client.suspended ? (
                         <button
                             onClick={handleRemoveSuspension}
                             className="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600"

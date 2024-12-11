@@ -225,7 +225,7 @@ function Dashboard() {
                                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                                     Profissionais com preços mais baixos (Por categoria)
                                 </h3>
-                                <ul className="space-y-2">
+                                <ul className="space-y-2 pb-12">
                                     {lowestPriceProfessionals.map((user, index) => (
                                         <li key={index} className="bg-white p-2 rounded shadow">
                                             <p>
