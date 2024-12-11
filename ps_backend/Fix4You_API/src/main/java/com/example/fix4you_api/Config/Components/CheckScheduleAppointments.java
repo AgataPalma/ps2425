@@ -41,7 +41,7 @@ public class CheckScheduleAppointments {
                     Optional<Professional> professionalOpt = professionalRepository.findById(service.get().getProfessionalId());
                     professionalOpt.get().setStrikes(professionalOpt.get().getStrikes() + 1);
                     if (professionalOpt.get().getStrikes() == 3) {
-                        professionalOpt.get().setSupended(true);
+                        professionalOpt.get().setSuspended(true);
                         professionalOpt.get().setSuspensionReason("Você acumulou 3 strikes!");
                     }
                     professionalRepository.save(professionalOpt.get());
