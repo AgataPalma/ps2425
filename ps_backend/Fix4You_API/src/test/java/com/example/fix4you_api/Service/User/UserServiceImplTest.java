@@ -1,4 +1,4 @@
-package com.example.fix4you_api;
+package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
 import com.example.fix4you_api.Data.Models.User;
@@ -6,7 +6,6 @@ import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenReposito
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.Login.LoginRequest;
-import com.example.fix4you_api.Service.User.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

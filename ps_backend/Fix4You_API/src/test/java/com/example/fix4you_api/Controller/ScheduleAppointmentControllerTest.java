@@ -1,4 +1,4 @@
-package com.example.fix4you_api.ScheduleAppointment;
+package com.example.fix4you_api.Controller;
 
 import com.example.fix4you_api.Controllers.ScheduleAppointmentController;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
