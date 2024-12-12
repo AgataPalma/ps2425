@@ -1,7 +1,10 @@
 package com.example.fix4you_api.Service.Language;
 
 import com.example.fix4you_api.Data.Models.Language;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.LanguageRepository;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
+import com.example.fix4you_api.Service.Service.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,8 @@ import java.util.NoSuchElementException;
 public class LanguageServiceImpl implements LanguageService {
 
     private final LanguageRepository languageRepository;
+    private final ProfessionalService professionalService;
+    private final ServiceService serviceService;
 
     @Override
     public List<Language> getAllLanguages() {
@@ -30,9 +35,18 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     @Transactional
     public Language updateLanguage(String id, Language language) {
-        Language existingLanguage = findOrThrow(id);
-        BeanUtils.copyProperties(language, existingLanguage, "id");
-        return languageRepository.save(existingLanguage);
+        List<Professional> professionals = professionalService.getProfessionalsByLanguage(language.getId());
+        List<com.example.fix4you_api.Data.Models.Service> services = serviceService.getServicesByLanguage(language.getId());
+
+        if (professionals.isEmpty() && services.isEmpty()) {
+
+            Language existingLanguage = findOrThrow(id);
+            BeanUtils.copyProperties(language, existingLanguage, "id");
+            return languageRepository.save(existingLanguage);
+
+        }  else {
+            throw new IllegalStateException("Não é possível editar totalmente a linguagem, pois possui profissionais ou serviços associados.");
+        }
     }
 
     @Override
@@ -42,7 +56,19 @@ public class LanguageServiceImpl implements LanguageService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "name" -> existingLanguage.setName((String) value);
+                case "name" -> {
+
+                    List<Professional> professionals = professionalService.getProfessionalsByLanguage(id);
+                    List<com.example.fix4you_api.Data.Models.Service> services = serviceService.getServicesByLanguage(id);
+
+                    if (professionals.isEmpty() && services.isEmpty()) {
+
+                        existingLanguage.setName((String) value);
+
+                    }  else {
+                        throw new IllegalStateException("Não é possível editar a linguagem, pois possui profissionais ou serviços associados.");
+                    }
+                }
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
@@ -53,7 +79,16 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     @Transactional
     public void deleteLanguage(String id) {
-        languageRepository.deleteById(id);
+        List<Professional> professionals = professionalService.getProfessionalsByLanguage(id);
+        List<com.example.fix4you_api.Data.Models.Service> services = serviceService.getServicesByLanguage(id);
+
+        if (professionals.isEmpty() && services.isEmpty()) {
+
+            languageRepository.deleteById(id);
+
+        }  else {
+            throw new IllegalStateException("Não é possivel excluir a linguagem, pois possui profissionais ou serviços associados.");
+        }
     }
 
     private Language findOrThrow(String id) {

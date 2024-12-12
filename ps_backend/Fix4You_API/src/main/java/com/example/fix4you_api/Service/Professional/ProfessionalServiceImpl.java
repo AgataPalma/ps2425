@@ -75,6 +75,16 @@ public class ProfessionalServiceImpl implements ProfessionalService {
     }
 
     @Override
+    public List<Professional> getProfessionalsByLanguage(String languageId) {
+        return professionalRepository.findByLanguages_Id(languageId);
+    }
+
+    @Override
+    public List<Professional> getProfessionalsByPaymentMethod(String paymentMethodId) {
+        return professionalRepository.findByAcceptedPayments_Id(paymentMethodId);
+    }
+
+    @Override
     public List<Professional> getAllActiveProfessionals() {
         return professionalRepository.findActiveProfessionalsByUserType(EnumUserType.PROFESSIONAL);
     }

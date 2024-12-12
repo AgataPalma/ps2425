@@ -1,7 +1,10 @@
 package com.example.fix4you_api.Service.PaymentMethod;
 
+import com.example.fix4you_api.Data.Models.Language;
 import com.example.fix4you_api.Data.Models.PaymentMethod;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.MongoRepositories.PaymentMethodRepository;
+import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.NoSuchElementException;
 public class PaymentMethodServiceImpl implements PaymentMethodService {
 
     private final PaymentMethodRepository paymentMethodRepository;
+    private final ProfessionalService professionalService;
 
     @Override
     public List<PaymentMethod> getAllPaymentMethods() {
@@ -30,9 +34,17 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     @Transactional
     public PaymentMethod updatePaymentMethod(String id, PaymentMethod paymentMethod) {
-        PaymentMethod existingPaymentMethod = findOrThrow(id);
-        BeanUtils.copyProperties(paymentMethod, existingPaymentMethod, "id");
-        return paymentMethodRepository.save(existingPaymentMethod);
+        List<Professional> professionals = professionalService.getProfessionalsByPaymentMethod(paymentMethod.getId());
+
+        if (professionals.isEmpty()) {
+
+            PaymentMethod existingPaymentMethod = findOrThrow(id);
+            BeanUtils.copyProperties(paymentMethod, existingPaymentMethod, "id");
+            return paymentMethodRepository.save(existingPaymentMethod);
+
+        }  else {
+            throw new IllegalStateException("Não é possível editar totalmente o método de pagamento, pois possui profissionais associados.");
+        }
     }
 
     @Override
@@ -42,7 +54,17 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "name" -> existingPaymentMethod.setName((String) value);
+                case "name" -> {
+                    List<Professional> professionals = professionalService.getProfessionalsByPaymentMethod(id);
+
+                    if (professionals.isEmpty()) {
+
+                        existingPaymentMethod.setName((String) value);
+
+                    }  else {
+                        throw new IllegalStateException("Não é possível editar o método de pagamento, pois possui profissionais associados.\"");
+                    }
+                }
                 default -> throw new RuntimeException("Campo inválido no pedido da atualização!");
             }
         });
@@ -53,7 +75,15 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     @Transactional
     public void deletePaymentMethod(String id) {
-        paymentMethodRepository.deleteById(id);
+        List<Professional> professionals = professionalService.getProfessionalsByPaymentMethod(id);
+
+        if (professionals.isEmpty()) {
+
+            paymentMethodRepository.deleteById(id);
+
+        }  else {
+            throw new IllegalStateException("Não é possível excluir o método de pagamento, pois possui profissionais associados.");
+        }
     }
 
     private PaymentMethod findOrThrow(String id) {

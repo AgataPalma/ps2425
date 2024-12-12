@@ -13,6 +13,7 @@ public class ScheduledTasksImpl implements ScheduledTasks {
 
     // Executa no início de cada mês
     @Scheduled(cron = "0 0 0 1 * ?")
+    //@Scheduled(cron = "0 * * * * ?")
     public void runMonthlyFeeCheck() {
         professionalsFeeService.checkAndCreateMonthlyFees();
     }

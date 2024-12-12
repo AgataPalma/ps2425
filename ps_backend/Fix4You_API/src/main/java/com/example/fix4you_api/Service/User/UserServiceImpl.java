@@ -1,12 +1,15 @@
 package com.example.fix4you_api.Service.User;
 
 import com.example.fix4you_api.Data.Enums.EnumUserType;
+import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
 import com.example.fix4you_api.Data.Models.PasswordResetToken;
+import com.example.fix4you_api.Data.Models.Ticket;
 import com.example.fix4you_api.Data.Models.User;
 import com.example.fix4you_api.Data.MongoRepositories.PasswordResetTokenRepository;
 import com.example.fix4you_api.Data.MongoRepositories.UserRepository;
 import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.Login.LoginRequest;
+import com.example.fix4you_api.Service.Ticket.TicketService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     private final EmailSenderService emailSenderService;
+    private final TicketService ticketService;
 
     @Override
     public List<User> getAllUsers() {
@@ -94,9 +98,29 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(String id) {
-        //User existingUser = findOrThrow(id);
+        User existingUser = findOrThrow(id);
         //existingUser.setIsDeleted(true);
         //return userRepository.save(existingUser);
+
+        List<User> admins = getAllAdmins();
+
+        if(admins.size() == 1 && Objects.equals(admins.get(0).getId(), id)) {
+            throw new IllegalStateException("Não pode apagar o admin, pois é o único.");
+        } else if(existingUser.getUserType() == EnumUserType.ADMIN){
+            List<Ticket> tickets = ticketService.getTicketsByAdminId(id);
+
+            for(Ticket ticket: tickets) {
+                if(ticket.getStatus() == TicketStatusEnum.IN_REVIEW) {
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("status", TicketStatusEnum.NEW);
+                    updates.put("admin", null);
+                    updates.put("adminAssignmentDate", null);
+
+
+                    ticketService.partialUpdateTicket(ticket.getId(), updates);
+                }
+            }
+        }
 
         userRepository.deleteById(id);
     }

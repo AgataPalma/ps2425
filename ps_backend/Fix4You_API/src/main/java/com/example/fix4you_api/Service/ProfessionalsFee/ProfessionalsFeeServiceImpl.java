@@ -66,7 +66,12 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
     @Override
     public List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId) {
-        return professionalFeeRepository.findByProfessionalId(professionalId);
+        return professionalFeeRepository.findByProfessional_Id(professionalId);
+    }
+
+    @Override
+    public List<ProfessionalsFee> getProfessionalsFeeForProfessionalIdAndPaymentStatus(String professionalId, PaymentStatusEnum paymentStatusEnum) {
+        return professionalFeeRepository.findByProfessional_IdAndPaymentStatus(professionalId, paymentStatusEnum);
     }
 
     @Override
@@ -193,7 +198,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     @Override
     @Transactional
     public void deleteProfessionalFeesForProfessional(String professionalId) {
-        professionalFeeRepository.deleteByProfessionalId(professionalId);
+        professionalFeeRepository.deleteByProfessional_Id(professionalId);
     }
 
     @Override
@@ -206,6 +211,13 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         List<Professional> professionals = professionalService.getAllActiveProfessionals();
 
         for (Professional professional : professionals) {
+
+            //Se já tiver alguma fee pendente, não cria mais
+            List<ProfessionalsFee> professionalsFeesPending = getProfessionalsFeeForProfessionalIdAndPaymentStatus(professional.getId(), PaymentStatusEnum.PENDING);
+            if(!professionalsFeesPending.isEmpty()) {
+                continue;
+            }
+
             int completedLastMonthServicesCount = 0;
 
             List<com.example.fix4you_api.Data.Models.Service> completedServices = serviceService.getServicesByProfessionalIdAndState(professional.getId(), ServiceStateEnum.COMPLETED);

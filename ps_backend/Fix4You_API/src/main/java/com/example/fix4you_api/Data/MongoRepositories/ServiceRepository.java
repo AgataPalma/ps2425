@@ -1,6 +1,7 @@
 package com.example.fix4you_api.Data.MongoRepositories;
 
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
+import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Data.Models.Service;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -15,11 +16,14 @@ public interface ServiceRepository extends MongoRepository<Service, String> {
 
     List<Service> findByCategory_Id(String categoryId);
 
+    @Query(value = "{ 'languages': { $elemMatch: { id: ?0 } } }")
+    List<Service> findByLanguages_Id(String languagesId);
+
     List<Service> findByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
 
     List<Service> findByUrgentTrueAndState(ServiceStateEnum state);
 
-    List<Service> findByCategoryAndState(String name, ServiceStateEnum state);
+    List<Service> findByCategory_NameAndState(String name, ServiceStateEnum state);
 
     @Query( "SELECT s.clientId" +
             "COUNT(s) " +

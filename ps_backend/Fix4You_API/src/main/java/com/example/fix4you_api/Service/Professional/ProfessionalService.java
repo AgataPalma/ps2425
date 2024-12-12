@@ -2,7 +2,6 @@ package com.example.fix4you_api.Service.Professional;
 
 import com.example.fix4you_api.Data.Models.Professional;
 import com.example.fix4you_api.Service.Professional.DTOs.ProfessionalData;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +11,10 @@ public interface ProfessionalService {
     List<Professional> getProfessionals(String filter, String sort);
 
     List<Professional> getAllActiveProfessionals();
+
+    List<Professional> getProfessionalsByLanguage(String languageId);
+
+    List<Professional> getProfessionalsByPaymentMethod(String paymentMethodId);
 
     ProfessionalData getAllProfessionalsCompleteData(String id);
 
