@@ -16,6 +16,9 @@ function ProfessionalRequestsHistory({ id }) {
     const [activeModalTab, setActiveModalTab] = useState('details');
     const [review, setReview] = useState({ classification: 0, reviewDescription: '' });
     const [submitting, setSubmitting] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState({ title: "", message: "", type: "success" });
+
 
     useEffect(() => {
         fetchData();
@@ -34,10 +37,10 @@ function ProfessionalRequestsHistory({ id }) {
             const scheduleResponse = await axiosInstance.get(`/scheduleAppointments/professional/${id}`);
             const appointmentsMap = {};
             scheduleResponse.data.forEach((appointment) => {
-                console.log('Mapping appointment:', appointment);
+                //console.log('Mapping appointment:', appointment);
                 appointmentsMap[appointment.serviceId] = appointment;
             });
-            console.log('Mapped Appointments:', appointmentsMap);
+            //console.log('Mapped Appointments:', appointmentsMap);
             setScheduleAppointments(appointmentsMap);
 
             const reviewsResponse = await axiosInstance.get(`/reviews?reviewedId=${id}`);
@@ -67,6 +70,8 @@ function ProfessionalRequestsHistory({ id }) {
             setClientDetails(clientDetailsMap);
         } catch (error) {
             console.error('Error fetching data:', error);
+            showMessageModal("Erro", "Erro ao carregar os dados: " + error.message, "error");
+
         } finally {
             setLoading(false);
         }
@@ -79,6 +84,11 @@ function ProfessionalRequestsHistory({ id }) {
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         setSelectedCategory('');
+    };
+
+    const showMessageModal = (title, message, type) => {
+        setModalMessage({ title, message, type });
+        setModalOpen(true);
     };
 
     const handleViewDetails = async (request) => {
@@ -109,7 +119,7 @@ function ProfessionalRequestsHistory({ id }) {
                 reviewedId: selectedRequest.clientId,
             })
             .then(() => {
-                alert("Avaliação submetida!");
+                showMessageModal("Sucesso", "Review enviada com sucesso!", "success");
                 setReviews((prev) => ({
                     ...prev,
                     [selectedRequest.id]: { classification: review.classification, reviewDescription: review.reviewDescription },
@@ -117,8 +127,7 @@ function ProfessionalRequestsHistory({ id }) {
                 handleCloseModal();
             })
             .catch((err) => {
-                console.error("Error submitting review:", err);
-                alert("Erro ao enviar avaliação. Por favor, tente novamente.");
+                showMessageModal("Erro", "Erro ao enviar a review: " + err.message, "error");
             })
             .finally(() => {
                 setSubmitting(false);
@@ -132,8 +141,6 @@ function ProfessionalRequestsHistory({ id }) {
 
     const getAppointmentState = (serviceId) => {
         const appointment = scheduleAppointments[serviceId];
-        console.log('Appointment: ', appointment);
-        console.log('serviceId: ', serviceId)
         return appointment ? appointment.state : 'Unknown';
     };
 
@@ -260,7 +267,7 @@ function ProfessionalRequestsHistory({ id }) {
                             >
                                 Reviews
                             </button>
-                            {!reviews[selectedRequest.id] && selectedRequest.state === "COMPLETED" && (
+                            {!reviews[selectedRequest.id]?.professionalToClient && selectedRequest.state === "COMPLETED" && (
                                 <button
                                     className={`px-4 py-2 ${
                                         activeModalTab === 'writeReview' ? 'border-b-2 border-yellow-600 text-yellow-600' : 'text-gray-500'
@@ -372,6 +379,14 @@ function ProfessionalRequestsHistory({ id }) {
                     </div>
                 </div>
             )}
+
+            <MessageModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={modalMessage.title}
+                message={modalMessage.message}
+                type={modalMessage.type}
+            />
 
         </div>
     );

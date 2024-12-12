@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../components/axiosInstance";
 import Spinner from "../components/Spinner";
+import MessageModal from "../components/MessageModal";
 
 function ClientRequestsHistory({ id }) {
     const [requests, setRequests] = useState([]);
     const [reviews, setReviews] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [activeTab, setActiveTab] = useState("details"); // "details", "reviews", or "writeReview"
     const [review, setReview] = useState({ classification: 0, reviewDescription: "" });
     const [submitting, setSubmitting] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState({ title: "", message: "", type: "success" });
+
 
     useEffect(() => {
         axiosInstance
@@ -42,14 +45,12 @@ function ClientRequestsHistory({ id }) {
                         setReviews(reviewMap);
                     })
                     .catch((err) => {
-                        console.error("Error fetching reviews:", err);
-                        setError("Erro ao carregar as revisões.");
+                        showMessageModal("Erro", "Erro ao carregar as revisões: " + err.message, "error");
                     })
                     .finally(() => setLoading(false));
             })
             .catch((err) => {
-                console.error("Error fetching client requests:", err);
-                setError("Não foi possível carregar os serviços concluídos.");
+                showMessageModal("Erro", "Não foi possível carregar os detalhes do serviço: " + err.message, "error");
                 setLoading(false);
             });
     }, [id]);
@@ -70,12 +71,17 @@ function ClientRequestsHistory({ id }) {
                 scheduleAppointment: matchingAppointment || null,
             });
         } catch (error) {
-            console.error("Error fetching schedule appointment:", error);
-            setError("Não foi possível carregar os detalhes do serviço.");
+            showMessageModal("Erro", "Não foi possível carregar os detalhes do serviço.: " + error.message, "error");
         } finally {
             setLoading(false);
         }
     };
+
+    const showMessageModal = (title, message, type) => {
+        setModalMessage({ title, message, type });
+        setModalOpen(true);
+    };
+
 
     const handleWriteReview = (request) => {
         setSelectedRequest(request);
@@ -104,13 +110,12 @@ function ClientRequestsHistory({ id }) {
                     ...prev,
                     [selectedRequest.id]: response.data,
                 }));
-                alert("Revisão enviada com sucesso!");
+                showMessageModal("Sucesso", "Review enviada com sucesso!", "success");
                 setSelectedRequest(null);
                 setReview({ classification: 0, reviewDescription: "" });
             })
             .catch((err) => {
-                console.error("Error submitting review:", err);
-                alert("Erro ao enviar a revisão. Por favor, tente novamente.");
+                showMessageModal("Erro", "Erro ao enviar a review: " + err.message, "error");
             })
             .finally(() => {
                 setSubmitting(false);
@@ -127,9 +132,6 @@ function ClientRequestsHistory({ id }) {
         return <Spinner message="A carregar" spinnerColor="border-yellow-600" />;
     }
 
-    if (error) {
-        return <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">{error}</div>;
-    }
 
     return (
         <div className="p-8 max-w-6xl mx-auto bg-white shadow-lg rounded-lg mt-8">
@@ -294,10 +296,9 @@ function ClientRequestsHistory({ id }) {
                                             <button
                                                 key={star}
                                                 type="button"
-                                                className={`w-8 h-8 text-yellow-500 ${
+                                                className={`w-8 h-8 text-xl ${
                                                     review.classification >= star
-                                                        ? "text-yellow-600"
-                                                        : "text-gray-300"
+                                                        ? 'text-yellow-500' : 'text-gray-300'
                                                 }`}
                                                 onClick={() =>
                                                     setReview({ ...review, classification: star })
@@ -342,6 +343,14 @@ function ClientRequestsHistory({ id }) {
                 </div>
             )}
 
+            {/* MessageModal */}
+            <MessageModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={modalMessage.title}
+                message={modalMessage.message}
+                type={modalMessage.type}
+            />
         </div>
     );
 }
