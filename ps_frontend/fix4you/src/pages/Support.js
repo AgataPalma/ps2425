@@ -3,9 +3,10 @@ import Footer from "../components/Footer";
 import axiosInstance from "../components/axiosInstance";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
-const Support = ({ id, userType}) => {
+const Support = ({ id, userType }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [isLoading, setIsLoading] = useState(false); // Estado para rastrear o envio
     const navigate = useNavigate(); // Hook para redirecionamento
 
     // Verifica o ID e redireciona se for null
@@ -17,11 +18,12 @@ const Support = ({ id, userType}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true); // Define o estado como "enviando"
 
         const ticketData = {
-                userId: id,
-                title: title,
-                description: description,
+            userId: id,
+            title: title,
+            description: description,
         };
 
         try {
@@ -31,17 +33,18 @@ const Support = ({ id, userType}) => {
             setTitle("");
             setDescription("");
             console.log(userType);
-            if(userType === "CLIENT"){
+
+            if (userType === "CLIENT") {
                 navigate("/PrincipalPageClient");
-            } else if(userType === "PROFESSIONAL") {
+            } else if (userType === "PROFESSIONAL") {
                 navigate("/PrincipalPageProfessional");
-            }else{
-                <h1>Error</h1>
+            } else {
                 navigate("/Home");
             }
-
         } catch (error) {
             console.error("Erro ao enviar o ticket:", error.response || error.message);
+        } finally {
+            setIsLoading(false); // Redefine o estado para "não enviando"
         }
     };
 
@@ -84,10 +87,14 @@ const Support = ({ id, userType}) => {
                                 <button
                                     type="submit"
                                     className="w-full px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition"
+                                    disabled={isLoading} // Desabilita o botão enquanto carrega
                                 >
-                                    Pedir Ajuda
+                                    {isLoading ? "Enviando..." : "Pedir Ajuda"}
                                 </button>
                             </form>
+                            {isLoading && (
+                                <p className="text-center text-yellow-600 mt-4">Enviando o pedido, por favor aguarde...</p>
+                            )}
                         </div>
                     </div>
                 </div>
