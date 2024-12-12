@@ -7,6 +7,7 @@ import com.example.fix4you_api.Service.Email.EmailSenderService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ public class ProfessionalsFeeEventListener {
                         "Estado do pagamento: %s",
                 fee.getValue(), fee.getNumberServices(), fee.getRelatedMonthYear(), fee.getPaymentDate(), fee.getPaymentStatus());
 
-        if (fee.getProfessional().getId().equals(currentUserId)) {
+        if (currentUserId == null || fee.getProfessional().getId().equals(currentUserId)) {
             sseNotificationController.sendNotificationToClients(notification);
         }
     }
@@ -46,6 +47,9 @@ public class ProfessionalsFeeEventListener {
     }
 
     private String getCurrentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication == null
+                ? null
+                : authentication.getName();
     }
 }
