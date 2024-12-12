@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import '../index.css';
 import Footer from '../components/Footer';
+import Spinner from "../components/Spinner";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/users/send-email-verification/${email}`, {
                 method: 'POST',
@@ -18,17 +21,22 @@ const ForgotPassword = () => {
             });
 
             if (response.ok) {
-                setMessage('Se já tiver uma conta conosco receberá um e-mail! Por favor, verifique a sua caixa de correio.');
+                setLoading(false);
+                setMessage('Se já tiver uma conta connosco receberá um e-mail! Por favor, verifique a sua caixa de correio.');
                 setError('');
             } else {
+                setLoading(false);
                 setError('Falha no envio do e-mail de verificação. Por favor, tente novamente.');
                 setMessage('');
             }
         } catch (error) {
+            setLoading(false);
             setError('Ocorreu um erro. Por favor, tente novamente.');
             setMessage('');
         }
     };
+
+
 
     return (
         <div className="bg-gray-200">
@@ -60,24 +68,36 @@ const ForgotPassword = () => {
                     {error && <p className="text-red-500 text-sm">{error}</p>}
 
                     <div>
-                        <button
-                            type="submit"
-                            className="flex w-full justify-center rounded-md bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            Enviar email de verificação
-                        </button>
+                        {loading ? (
+                            <button
+                                className="flex w-full justify-center rounded-md bg-gray-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white rounded-lg cursor-not-allowed"
+                                disabled
+                            >
+                                A carregar
+                            </button>
+                            ) :
+                            (
+                                <button
+                                    type="submit"
+                                    className="flex w-full justify-center rounded-md bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                    Enviar email de verificação
+                                </button>
+                            )
+                        }
+
                     </div>
                 </form>
 
                 <p className="mt-10 text-center text-sm text-gray-800">
-                    Lembra-se da sua password?<br />
+                    Lembra-se da sua password?<br/>
                     <a href="/login" className="font-semibold leading-6 text-yellow-500 mx-2 hover:underline">Log in</a>
                 </p>
-                
+
             </div>
-            <br />
-            <br />
-            <br />
+            <br/>
+            <br/>
+            <br/>
             <br />
             <br />
             

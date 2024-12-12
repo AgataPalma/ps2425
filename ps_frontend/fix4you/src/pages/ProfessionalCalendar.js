@@ -382,7 +382,7 @@ function ProfessionalCalendar({ id }) {
                         className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-yellow-500 transition mb-4"
                         onClick={handleIntegrateGoogleCalendar}
                     >
-                        Integrate your Google Calendar
+                        Sincronizar com Google Calendar
                     </button>
                 )}
             </div>
@@ -408,12 +408,11 @@ function ProfessionalCalendar({ id }) {
                 eventDrop={handleEventChange} // Handle drag and drop
                 eventResize={handleEventChange} // Handle resizing
                 eventContent={(eventInfo) => (
-                    <div>
-                        <strong>{eventInfo.event.title}</strong>
-                        {eventInfo.event.extendedProps.description && (
-                            <p>{eventInfo.event.extendedProps.description}</p>
-                        )}
-                    </div>
+
+                        <div>
+                            <strong>{eventInfo.event.title}</strong>
+                            
+                        </div>
                 )}
                 eventBackgroundColor={(info) =>
                     info.extendedProps.state === 'PENDING' ? '#f9a825' : '#43a047'
