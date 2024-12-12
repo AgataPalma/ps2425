@@ -11,10 +11,6 @@ import Spinner from "../components/Spinner";
 const PrincipalPageProfessional = ({ id }) => {
 
     const [requests, SetRequests] = useState([]);
-    const [priceRange, setPriceRange] = useState('');
-    const [rating, setRating] = useState(null);
-    const [includeTravelCost, setIncludeTravelCost] = useState(false);
-    const [includeInvoice, setIncludeInvoice] = useState(false);
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [languages, setLanguages] = useState([]);
@@ -26,7 +22,6 @@ const PrincipalPageProfessional = ({ id }) => {
     const [locationOptions, setLocationOptions] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const [professionalCategories, setprofessionalCategories] = useState([]);
     const [includeIsUrgent, setIncludeIsUrgent] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -222,38 +217,65 @@ const PrincipalPageProfessional = ({ id }) => {
         setConfirmationModal({ isVisible: true, request });
     };
 
-    const confirmAcceptRequest = () => {
+    const confirmAcceptRequest = async () => {
         if (confirmationModal.request) {
-            const payload = {
-                professionalId: id,
-                serviceId: confirmationModal.request.id
-            };
+            try {
+                // Accept the service
+                const response = await axiosInstance.put(
+                    `/services/accept-service?professionalId=${id}&serviceId=${confirmationModal.request.id}`
+                );
 
-            axiosInstance.put(`/services/accept-service?professionalId=${id}&serviceId=${confirmationModal.request.id}`)
-                .then(response => {
-                    console.log('Serviço aceito com sucesso:', response.data);
-                    setConfirmationModal({ isVisible: false, request: null });
-                })
-                .catch(error => {
-                    console.error('Erro ao aceitar o serviço:', error.response?.data);
+                console.log('Serviço aceite com sucesso:', response.data);
 
-                    if (error.response?.data === "O Profissional está suspenso!") {  setError(
-                            <>
-                                CONTA SUSPENSA<br />
-                                Por favor, entre em contato com o suporte.
-                            </>
+                // Fetch all schedule appointments
+                const appointmentsResponse = await axiosInstance.get('/scheduleAppointments');
+                const scheduleAppointment = appointmentsResponse.data.find(
+                    (appointment) => appointment.serviceId === confirmationModal.request.id
+                );
+
+                // Update the professionalId in the scheduleAppointment
+                if (scheduleAppointment && scheduleAppointment.id) {
+                    try {
+                        const patchResponse = await axiosInstance.patch(
+                            `/scheduleAppointments/${scheduleAppointment.id}`,
+                            { professionalId: id }
                         );
-                    } else {
+                        console.log('Horário atualizado com sucesso:', patchResponse.data);
+                    } catch (patchError) {
+                        console.error('Erro ao atualizar o horário:', patchError.response?.data);
                         setError(
                             <>
-                                Erro ao aceitar o serviço<br />
+                                Erro ao atualizar o horário<br />
                                 Por favor, tente mais tarde.
                             </>
                         );
                     }
-                });
+                }
+
+                // Close the confirmation modal
+                setConfirmationModal({ isVisible: false, request: null });
+            } catch (error) {
+                console.error('Erro ao aceitar o serviço:', error.response?.data);
+
+                if (error.response?.data === "O Profissional está suspenso!") {
+                    setError(
+                        <>
+                            CONTA SUSPENSA<br />
+                            Por favor, entre em contato com o suporte.
+                        </>
+                    );
+                } else {
+                    setError(
+                        <>
+                            Erro ao aceitar o serviço<br />
+                            Por favor, tente mais tarde.
+                        </>
+                    );
+                }
+            }
         }
     };
+
 
     const resetFilters = () => {
         setLocation(null);

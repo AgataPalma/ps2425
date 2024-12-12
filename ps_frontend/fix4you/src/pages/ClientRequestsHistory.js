@@ -227,7 +227,7 @@ function ClientRequestsHistory({ id }) {
                                     Descriçao: {selectedDetails.service.description}
                                 </p>
                                 <p className="text-gray-600">
-                                    Preço por hora: ${selectedDetails.service.price}
+                                    Preço por hora: € {selectedDetails.service.price}
                                 </p>
 
                                 {selectedDetails.scheduleAppointment && (

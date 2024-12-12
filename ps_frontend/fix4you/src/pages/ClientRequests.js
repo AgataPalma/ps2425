@@ -105,7 +105,7 @@ function ClientRequests({ id }) {
                         <div key={request.id} className="p-4 bg-gray-100 rounded-lg shadow-md">
                             <h3 className="text-xl font-bold text-gray-800 mb-2">{request.title}</h3>
                             <p className="text-gray-600">Categoria: {request.category.name}</p>
-                            <p className="text-gray-600">Preço por hora: ${request.price}</p>
+                            <p className="text-gray-600">Preço por hora: € {request.price}</p>
                             <p className="text-gray-600">Estado: {request.state}</p>
 
                             {request.state.toLowerCase() === "accepted" && (
