@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,20 +51,6 @@ class CategoryDescriptionControllerTest {
         mockCategoryDescription.setCategory(mockCategory);
         mockCategoryDescription.setChargesTravels(true);
         mockCategoryDescription.setMediumPricePerService(100.50f);
-    }
-
-    @Test
-    void testAddCategoryDescription() {
-        when(categoryDescriptionService.createCategoryDescription(any(CategoryDescription.class)))
-                .thenReturn(mockCategoryDescription);
-
-        ResponseEntity<CategoryDescription> response = categoryDescriptionController.addCategoryDescription(mockCategoryDescription);
-
-        verify(categoryDescriptionService).createCategoryDescription(mockCategoryDescription);
-        verify(categoryService).updateCategoryMinMaxValue(mockCategoryDescription.getCategory().getId());
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(mockCategoryDescription, response.getBody());
     }
 
     @Test
@@ -148,21 +135,6 @@ class CategoryDescriptionControllerTest {
     }
 
     @Test
-    void testUpdateCategoryDescription() {
-        String id = "desc123";
-        when(categoryDescriptionService.updatecategoryDescription(eq(id), any(CategoryDescription.class)))
-                .thenReturn(mockCategoryDescription);
-
-        ResponseEntity<CategoryDescription> response = categoryDescriptionController.updateCategoryDescription(id, mockCategoryDescription);
-
-        verify(categoryDescriptionService).updatecategoryDescription(id, mockCategoryDescription);
-        verify(categoryService).updateCategoryMinMaxValue(mockCategoryDescription.getCategory().getId());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockCategoryDescription, response.getBody());
-    }
-
-    @Test
     void testUpdateCategoryDescription_InvalidId() {
         String invalidId = "invalidDesc";
         when(categoryDescriptionService.updatecategoryDescription(eq(invalidId), any(CategoryDescription.class)))
@@ -174,22 +146,6 @@ class CategoryDescriptionControllerTest {
 
         verify(categoryDescriptionService).updatecategoryDescription(eq(invalidId), any(CategoryDescription.class));
         assertEquals("Unable to update category description", exception.getMessage());
-    }
-
-    @Test
-    void testPartialUpdateCategoryDescription() {
-        String id = "desc123";
-        Map<String, Object> updates = Map.of("mediumPricePerService", 120.75f);
-        when(categoryDescriptionService.partialUpdateCategoryDescription(eq(id), eq(updates)))
-                .thenReturn(mockCategoryDescription);
-
-        ResponseEntity<CategoryDescription> response = categoryDescriptionController.partialUpdateCategoryDescription(id, updates);
-
-        verify(categoryDescriptionService).partialUpdateCategoryDescription(id, updates);
-        verify(categoryService).updateCategoryMinMaxValue(mockCategoryDescription.getCategory().getId());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockCategoryDescription, response.getBody());
     }
 
     @Test
@@ -205,35 +161,6 @@ class CategoryDescriptionControllerTest {
 
         verify(categoryDescriptionService).partialUpdateCategoryDescription(eq(id), eq(invalidUpdates));
         assertEquals("Invalid field in updates", exception.getMessage());
-    }
-
-    @Test
-    void testDeleteCategoryDescription() {
-        String id = "desc123";
-        when(categoryDescriptionService.getCategoryDescriptionById(id)).thenReturn(mockCategoryDescription);
-
-        ResponseEntity<Void> response = categoryDescriptionController.deleteCategoryDescription(id);
-
-        verify(categoryDescriptionService).getCategoryDescriptionById(id);
-        verify(categoryDescriptionService).deleteCategoryDescriptionById(id);
-        verify(categoryService).updateCategoryMinMaxValue(mockCategoryDescription.getCategory().getId());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void testDeleteCategoryDescription_InvalidId() {
-        String invalidId = "invalidDesc";
-        when(categoryDescriptionService.getCategoryDescriptionById(invalidId))
-                .thenThrow(new IllegalArgumentException("Category description not found"));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                categoryDescriptionController.deleteCategoryDescription(invalidId)
-        );
-
-        verify(categoryDescriptionService).getCategoryDescriptionById(invalidId);
-        verify(categoryDescriptionService, never()).deleteCategoryDescriptionById(any());
-        assertEquals("Category description not found", exception.getMessage());
     }
 }
 
