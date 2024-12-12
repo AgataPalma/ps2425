@@ -3,12 +3,12 @@ package com.example.fix4you_api.Service.ProfessionalsFee;
 import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Enums.ScheduleStateEnum;
 import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Enums.TicketStatusEnum;
 import com.example.fix4you_api.Data.Models.*;
 import com.example.fix4you_api.Data.Models.Dtos.SimpleProfessionalDTO;
 import com.example.fix4you_api.Data.MongoRepositories.ProfessionalFeeRepository;
 import com.example.fix4you_api.Event.ProfessionalFee.FeeCreationEvent;
 import com.example.fix4you_api.Event.ProfessionalFee.FeePaymentCompletionEvent;
+import com.example.fix4you_api.Service.Notification.NotificationService;
 import com.example.fix4you_api.Service.Professional.ProfessionalService;
 import com.example.fix4you_api.Service.ScheduleAppointment.ScheduleAppointmentService;
 import com.example.fix4you_api.Service.Service.ServiceService;
@@ -22,11 +22,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +43,10 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     private final ServiceService serviceService;
     private final ScheduleAppointmentService scheduleAppointmentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final NotificationService notificationService;
+
+    // Map para associar o ID do profissional ao seu SseEmitter
+    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     @Override
     public List<ProfessionalsFee> getAllProfessionalsFee() {
@@ -124,6 +132,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     }
 
     @Override
+    @Transactional
     public ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee) {
         ProfessionalsFee fee = professionalFeeRepository.save(professionalsFee);
         eventPublisher.publishEvent(new FeeCreationEvent(this, fee));
@@ -131,6 +140,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     }
 
     @Override
+    @Transactional
     public ProfessionalsFee createProfessionalFeeForRespectiveMonth(String professionalId, int numberServices, String relatedMonthYear) {
         Professional professional = professionalService.getProfessionalById(professionalId);
 
@@ -146,6 +156,39 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
 
         ProfessionalsFee newProfessionalsFee = new ProfessionalsFee(feeProfessional, numberServices, relatedMonthYear, PaymentStatusEnum.PENDING);
         eventPublisher.publishEvent(new FeeCreationEvent(this, newProfessionalsFee));
+
+        //Notificação
+
+        Notification notification = new Notification();
+        notification.setProfessionalId(newProfessionalsFee.getProfessional().getId());
+        notification.setMessage("Tem taxas para pagar!");
+        notification.setRead(false);
+        notification.setType("fee");
+        notification.setReferenceId(newProfessionalsFee.getId());
+        notification.setCreatedAt(new Date());
+
+        // Adicionar detalhes da taxa
+        notification.setFeeValue(newProfessionalsFee.getValue());
+        notification.setNumberServices(newProfessionalsFee.getNumberServices());
+        notification.setRelatedMonthYear(newProfessionalsFee.getRelatedMonthYear());
+
+        // Corrigir paymentStatus
+        notification.setPaymentStatus(newProfessionalsFee.getPaymentStatus().toString());
+
+        // Corrigir paymentDate
+        LocalDateTime localDateTime = newProfessionalsFee.getPaymentDate();
+        if (localDateTime != null) {
+            Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            notification.setPaymentDate(date);
+        } else {
+            notification.setPaymentDate(null);
+        }
+
+        notificationService.createNotification(notification);
+
+        // Enviar notificação via SSE
+        sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
+
         return professionalFeeRepository.save(newProfessionalsFee);
     }
 
@@ -252,6 +295,43 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
         eventPublisher.publishEvent(new FeePaymentCompletionEvent(this, updatedFee, professional));
 
         return fee;
+    }
+
+    @Override
+    public SseEmitter streamSseEmitter(String professionalId) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        // Associa o emitter ao ID do profissional
+        emitters.put(professionalId, emitter);
+
+        // Remover o emitter quando a conexão for finalizada
+        emitter.onCompletion(() -> emitters.remove(professionalId));
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            emitters.remove(professionalId);
+        });
+        emitter.onError((e) -> {
+            emitter.completeWithError(e);
+            emitters.remove(professionalId);
+        });
+
+        return emitter;
+    }
+
+    // Método para enviar mensagens a um profissional específico
+    @Transactional
+    public void sendSseMessageToProfessional(String professionalId, String message) {
+        SseEmitter emitter = emitters.get(professionalId);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("message")
+                        .data(message));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+                emitters.remove(professionalId);
+            }
+        }
     }
 
     public byte[] generateInvoice(ProfessionalsFee fee, Professional professional) throws DocumentException {
