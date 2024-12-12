@@ -105,7 +105,7 @@ function ProfessionalCalendar({ id }) {
                     code: authCode,
                 },
             });
-            setModalMessage('Google Calendar integrated successfully!');
+            setModalMessage('Google Calendar sincronizado!');
             setIsErrorModal(false);
             setIsGoogleCalendarIntegrated(true);
         } catch (error) {
