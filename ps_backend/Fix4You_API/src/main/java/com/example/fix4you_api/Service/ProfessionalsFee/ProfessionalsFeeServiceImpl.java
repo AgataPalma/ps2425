@@ -319,7 +319,7 @@ public class ProfessionalsFeeServiceImpl implements ProfessionalsFeeService{
     }
 
     // Método para enviar mensagens a um profissional específico
-    @Transactional
+    @Override
     public void sendSseMessageToProfessional(String professionalId, String message) {
         SseEmitter emitter = emitters.get(professionalId);
         if (emitter != null) {
