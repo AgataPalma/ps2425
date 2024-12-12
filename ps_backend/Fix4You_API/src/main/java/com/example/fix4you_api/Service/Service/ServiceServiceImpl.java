@@ -281,6 +281,11 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    public List<com.example.fix4you_api.Data.Models.Service> getServicesByLanguage(String languageId){
+        return this.serviceRepository.findByLanguages_Id(languageId);
+    }
+
+    @Override
     public List<com.example.fix4you_api.Data.Models.Service> getServicesByUrgency() {
         return this.serviceRepository.findByUrgentTrueAndState(ServiceStateEnum.PENDING);
     }

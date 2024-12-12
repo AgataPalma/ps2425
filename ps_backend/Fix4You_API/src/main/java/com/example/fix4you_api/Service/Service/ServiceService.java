@@ -20,6 +20,7 @@ public interface ServiceService {
     List<Service> getServicesByProfessionalId(String professionalId);
     List<Service> getServicesByClientId(String clientId);
     List<Service> getServicesByCategoryId(String categoryId);
+    List<Service> getServicesByLanguage(String languageId);
     List<Service> getServicesByProfessionalIdAndState(String professionalId, ServiceStateEnum state);
     List<Service> getServicesByUrgency();
     void deleteService(String id);

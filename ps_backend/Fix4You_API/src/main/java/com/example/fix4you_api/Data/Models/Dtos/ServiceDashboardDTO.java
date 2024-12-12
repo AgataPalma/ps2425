@@ -1,13 +1,6 @@
 package com.example.fix4you_api.Data.Models.Dtos;
 
-import com.example.fix4you_api.Data.Enums.ServiceStateEnum;
-import com.example.fix4you_api.Data.Models.Language;
 import com.example.fix4you_api.Data.Models.Service;
-import jakarta.validation.constraints.*;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class ServiceDashboardDTO extends Service {
     private byte[] clientProfileImage;

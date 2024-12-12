@@ -127,7 +127,7 @@ public class ServiceController {
                 Category category = categoryService.getCategoryByName(service.getCategory().getName());
                 category.setCompletedServices(category.getCompletedServices()+1);
 
-                List<Service> services = serviceRepository.findByCategoryAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
+                List<Service> services = serviceRepository.findByCategory_NameAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
                 float[] medianPrices = new float[services.size()];
                 for (var i=0; i<services.size(); i++){
                     medianPrices[i] = services.get(i).getPrice();
@@ -218,7 +218,7 @@ public class ServiceController {
                             Category category = categoryService.getCategoryByName(service.getCategory().getName());
                             category.setCompletedServices(category.getCompletedServices()+1);
 
-                            List<Service> services = serviceRepository.findByCategoryAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
+                            List<Service> services = serviceRepository.findByCategory_NameAndState(service.getCategory().getName(), ServiceStateEnum.COMPLETED);
                             float[] medianPrices = new float[services.size()];
                             for (var i=0; i<services.size(); i++){
                                 medianPrices[i] = services.get(i).getPrice();

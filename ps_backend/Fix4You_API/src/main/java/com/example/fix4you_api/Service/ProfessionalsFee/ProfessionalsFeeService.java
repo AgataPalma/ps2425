@@ -1,5 +1,6 @@
 package com.example.fix4you_api.Service.ProfessionalsFee;
 
+import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.itextpdf.text.DocumentException;
@@ -11,6 +12,7 @@ public interface ProfessionalsFeeService {
     List<ProfessionalsFee> getAllProfessionalsFee();
     ProfessionalsFee getProfessionalsFeeById(String id);
     List<ProfessionalsFee> getProfessionalsFeeForProfessionalId(String professionalId);
+    List<ProfessionalsFee> getProfessionalsFeeForProfessionalIdAndPaymentStatus(String professionalId, PaymentStatusEnum paymentStatusEnum);
     List<ProfessionalTotalSpent> getTopPriceProfessionals();
     List<ProfessionalTotalSpent> sendEmailTopPriceProfessionals();
     ProfessionalsFee createProfessionalsFee(ProfessionalsFee professionalsFee);

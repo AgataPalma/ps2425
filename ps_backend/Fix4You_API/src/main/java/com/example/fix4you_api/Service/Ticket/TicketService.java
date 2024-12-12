@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface TicketService {
     List<Ticket> getAllTickets();
+    List<Ticket> getTicketsByAdminId(String adminId);
     Ticket createTicket(CreateTicketRequestDTO createTicketRequest) throws MessagingException;
     Ticket updateTicket(String id, Ticket ticket);
     Ticket partialUpdateTicket(String id, Map<String, Object> updates);

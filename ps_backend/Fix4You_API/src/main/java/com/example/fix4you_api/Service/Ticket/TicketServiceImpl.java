@@ -9,11 +9,11 @@ import com.example.fix4you_api.Data.MongoRepositories.TicketRepository;
 import com.example.fix4you_api.Service.Email.EmailSenderService;
 import com.example.fix4you_api.Service.User.UserService;
 import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
 
     @Value("${spring.mail.username}")
@@ -32,9 +31,23 @@ public class TicketServiceImpl implements TicketService {
     private final UserService userService;
     private final EmailSenderService emailSenderService;
 
+    public TicketServiceImpl(TicketRepository ticketRepository,
+                               @Lazy UserService userService,
+                               EmailSenderService emailSenderService) {
+        this.ticketRepository = ticketRepository;
+        this.userService = userService;
+        this.emailSenderService = emailSenderService;
+    }
+
+
     @Override
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
+    }
+
+    @Override
+    public List<Ticket> getTicketsByAdminId(String adminId) {
+        return ticketRepository.findByAdmin_Id(adminId);
     }
 
     @Override
@@ -74,7 +87,15 @@ public class TicketServiceImpl implements TicketService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "admin" -> existingTicket.setAdmin((SimpleUserDTO) value);
+                case "admin" -> {
+                    if (value == null) {
+                        existingTicket.setAdmin(null);
+                    } else if (value instanceof SimpleUserDTO) {
+                        existingTicket.setAdmin((SimpleUserDTO) value);
+                    } else {
+                        throw new RuntimeException("Valor inválido para o admin: " + value);
+                    }
+                }
                 case "title" -> existingTicket.setTitle((String) value);
                 case "status" -> {
                     try {
@@ -91,10 +112,14 @@ public class TicketServiceImpl implements TicketService {
                     }
                 }
                 case "adminAssignmentDate" -> {
-                    if (value instanceof LocalDateTime) {
+                    if (value == null) {
+                        existingTicket.setAdminAssignmentDate(null);
+                    }else if (value instanceof LocalDateTime) {
                         existingTicket.setAdminAssignmentDate((LocalDateTime) value);
                     } else if (value instanceof String) {
                         existingTicket.setAdminAssignmentDate(LocalDateTime.parse((CharSequence) value));
+                    } else {
+                        throw new RuntimeException("Valor inválido para o adminAssignmentDate: " + value);
                     }
                 }
                 case "ticketCloseDate" -> {
@@ -125,7 +150,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void deleteTicketsForUser(String userId) {
-        ticketRepository.deleteByUserId(userId);
+        ticketRepository.deleteByUser_Id(userId);
     }
 
     private void sendEmailConfirmationToUser(String title, String userEmail, String description) throws MessagingException {
