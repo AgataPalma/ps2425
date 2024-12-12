@@ -4,6 +4,7 @@ import user from '../images/user.png';
 import Footer from '../components/Footer';
 import axiosInstance from "../components/axiosInstance";
 import Spinner from "../components/Spinner";
+import scheduleAppointments from "./ScheduleAppointments";
 
 const NewRequests = ({ id }) => {
 
@@ -34,6 +35,26 @@ const NewRequests = ({ id }) => {
                     console.error('Erro ao aceitar o serviço:', error);
                 });
 
+    };
+
+    const handleRefuseRequest = async (request) => {
+        try {
+
+            await axiosInstance.patch(`/services/${request.id}`, { state: "CANCELED" });
+            const response = await axiosInstance.get('/scheduleAppointments');
+            const scheduleAppointment = response.data.find(
+                (appointment) => appointment.serviceId === request.id
+            );
+
+            if (scheduleAppointment && scheduleAppointment.id) {
+
+                await axiosInstance.patch(`/scheduleAppointments/${scheduleAppointment.id}`, { state: "CANCELED" });
+            }
+
+            SetRequests((prevRequests) => prevRequests.filter((r) => r.id !== request.id));
+        } catch (error) {
+            console.error('Erro ao recusar o serviço e cancelar o agendamento:', error);
+        }
     };
 
     useEffect(() => {
@@ -201,11 +222,16 @@ const NewRequests = ({ id }) => {
                                             </button>
                                         )}
                                     </div>
-                                    <div className="mt-4 flex justify-center">
+                                    <div className="mt-4 flex justify-center space-x-4">
                                         <button
                                             onClick={() => handleAcceptRequest(request)}
                                             className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 transition">
                                             Aceitar
+                                        </button>
+                                        <button
+                                            onClick={() => handleRefuseRequest(request)}
+                                            className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-yellow-600 transition">
+                                            Recusar
                                         </button>
                                     </div>
                                 </div>
