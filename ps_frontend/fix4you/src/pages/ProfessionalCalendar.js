@@ -46,27 +46,33 @@ function ProfessionalCalendar({ id }) {
             const appointmentsWithDetails = await Promise.all(
                 response.data.map(async (appointment) => {
                     const serviceResponse = await axiosInstance.get(`/services/${appointment.serviceId}`);
-                    return {
-                        id: appointment.id,
-                        title: serviceResponse.data.title,
-                        start: new Date(appointment.dateStart),
-                        end: new Date(appointment.dateFinish),
-                        originalStart: new Date(appointment.dateStart),
-                        originalEnd: new Date(appointment.dateFinish),
-                        state: appointment.state,
-                        serviceState: serviceResponse.data.state,
-                        description: serviceResponse.data.description,
-                        color: appointment.state === 'PENDING' ? '#f9a825' : '#43a047',
-                        clientId: appointment.clientId,
-                        location: serviceResponse.data.location,
-                        serviceId: appointment.serviceId,
-                    };
+                        return {
+                            id: appointment.id,
+                            title: serviceResponse.data.title,
+                            start: new Date(appointment.dateStart),
+                            end: new Date(appointment.dateFinish),
+                            originalStart: new Date(appointment.dateStart),
+                            originalEnd: new Date(appointment.dateFinish),
+                            state: appointment.state,
+                            serviceState: serviceResponse.data.state,
+                            description: serviceResponse.data.description,
+                            color: appointment.state === 'PENDING' ? '#f9a825' : '#43a047',
+                            clientId: appointment.clientId,
+                            location: serviceResponse.data.location,
+                            serviceId: appointment.serviceId,
+                        };
                 })
             );
 
 
+            const filteredAppointments = appointmentsWithDetails.filter(
+                (appointment) =>
+                    ['ACCEPTED', 'PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(appointment.serviceState) &&
+                    appointment.state !== 'CANCELED' && appointment.state !== 'EXPIRED'
+            );
+
             setAppointments((prevAppointments) => [
-                ...appointmentsWithDetails,
+                ...filteredAppointments,
                 ...prevAppointments.filter((event) => event.googleEvent),
             ]);
 
@@ -411,7 +417,7 @@ function ProfessionalCalendar({ id }) {
 
                         <div>
                             <strong>{eventInfo.event.title}</strong>
-                            
+
                         </div>
                 )}
                 eventBackgroundColor={(info) =>
