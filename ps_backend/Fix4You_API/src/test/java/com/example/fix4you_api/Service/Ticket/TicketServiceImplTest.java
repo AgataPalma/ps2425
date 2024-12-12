@@ -128,11 +128,11 @@ class TicketServiceImplTest {
 
     @Test
     void testDeleteTicketsForUser() {
-        doNothing().when(ticketRepository).deleteByUserId("123");
+        doNothing().when(ticketRepository).deleteByUser_Id("123");
 
         ticketService.deleteTicketsForUser("123");
 
-        verify(ticketRepository, times(1)).deleteByUserId("123");
+        verify(ticketRepository, times(1)).deleteByUser_Id("123");
     }
 
     @Test

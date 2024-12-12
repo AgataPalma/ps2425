@@ -2,15 +2,19 @@ package com.example.fix4you_api.Service.Language;
 
 import com.example.fix4you_api.Data.Models.Language;
 import com.example.fix4you_api.Data.MongoRepositories.LanguageRepository;
+import com.example.fix4you_api.Service.Professional.ProfessionalServiceImpl;
+import com.example.fix4you_api.Service.Service.ServiceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -23,6 +27,10 @@ public class LanguageServiceImplTest {
     private LanguageServiceImpl languageService;
 
     private Language language;
+    @Mock
+    private ProfessionalServiceImpl professionalService;
+    @Mock
+    private ServiceService serviceService;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +71,8 @@ public class LanguageServiceImplTest {
 
         when(languageRepository.findById("1")).thenReturn(Optional.of(language));
         when(languageRepository.save(any(Language.class))).thenReturn(language);
+        when(professionalService.getProfessionalsByLanguage(any())).thenReturn(emptyList());
+        when(serviceService.getServicesByLanguage(any())).thenReturn(emptyList());
 
         Language result = languageService.updateLanguage("1", updatedLanguage);
 

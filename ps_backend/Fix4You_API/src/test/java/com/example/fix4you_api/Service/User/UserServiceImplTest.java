@@ -103,6 +103,7 @@ class UserServiceImplTest {
     @Test
     void testDeleteUser() {
         doNothing().when(userRepository).deleteById("123");
+        when(userRepository.findById("123")).thenReturn(Optional.of(new User()));
 
         userService.deleteUser("123");
 

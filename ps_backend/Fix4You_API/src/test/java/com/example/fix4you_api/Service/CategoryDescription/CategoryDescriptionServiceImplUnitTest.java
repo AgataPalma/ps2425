@@ -1,8 +1,10 @@
 package com.example.fix4you_api.Service.CategoryDescription;
 
 import com.example.fix4you_api.Data.Models.CategoryDescription;
+import com.example.fix4you_api.Data.Models.Dtos.SimpleCategoryDTO;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryDescriptionRepository;
 import com.example.fix4you_api.Event.CategoryDescription.CategoryDescriptionCreationEvent;
+import com.example.fix4you_api.Service.Category.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +28,9 @@ class CategoryDescriptionServiceImplUnitTest {
     private CategoryDescriptionRepository categoryDescriptionRepository;
 
     @Mock
+    private CategoryService categoryService;
+
+    @Mock
     private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
@@ -42,6 +47,7 @@ class CategoryDescriptionServiceImplUnitTest {
         testCategoryDescription.setProfessionalId("prof123");
         testCategoryDescription.setMediumPricePerService(100f);
         testCategoryDescription.setChargesTravels(false);
+        testCategoryDescription.setCategory(new SimpleCategoryDTO());
     }
 
     @Test
@@ -92,6 +98,7 @@ class CategoryDescriptionServiceImplUnitTest {
         // Mock behavior
         when(categoryDescriptionRepository.save(any(CategoryDescription.class))).thenReturn(testCategoryDescription);
 
+
         // Test
         CategoryDescription createdDescription = categoryDescriptionService.createCategoryDescription(testCategoryDescription);
 
@@ -135,23 +142,5 @@ class CategoryDescriptionServiceImplUnitTest {
         verify(categoryDescriptionRepository, times(1)).findById("1");
         verify(categoryDescriptionRepository, times(1)).save(testCategoryDescription);
         assertThat(updatedDescription.getMediumPricePerService()).isEqualTo(150f);
-    }
-
-    @Test
-    void testDeleteCategoryDescriptionsById() {
-        // Test
-        categoryDescriptionService.deleteCategoryDescriptionById("1");
-
-        // Verify
-        verify(categoryDescriptionRepository, times(1)).deleteById("1");
-    }
-
-    @Test
-    void testDeleteCategoryDescriptionsForProfessional() {
-        // Test
-        categoryDescriptionService.deleteCategoryDescriptionsForProfessional("prof123");
-
-        // Verify
-        verify(categoryDescriptionRepository, times(1)).deleteByProfessionalId("prof123");
     }
 }

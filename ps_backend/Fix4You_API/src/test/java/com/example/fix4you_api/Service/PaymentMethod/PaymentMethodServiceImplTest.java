@@ -2,10 +2,12 @@ package com.example.fix4you_api.Service.PaymentMethod;
 
 import com.example.fix4you_api.Data.Models.PaymentMethod;
 import com.example.fix4you_api.Data.MongoRepositories.PaymentMethodRepository;
+import com.example.fix4you_api.Service.Professional.ProfessionalServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -23,6 +25,8 @@ public class PaymentMethodServiceImplTest {
     private PaymentMethodServiceImpl paymentMethodService;
 
     private PaymentMethod paymentMethod;
+    @Mock
+    private ProfessionalServiceImpl professionalService;
 
     @BeforeEach
     void setUp() {
@@ -95,6 +99,7 @@ public class PaymentMethodServiceImplTest {
     @Test
     void testDeletePaymentMethod() {
         when(paymentMethodRepository.findById("1")).thenReturn(Optional.of(paymentMethod));
+        when(professionalService.getProfessionalsByPaymentMethod(any())).thenReturn(Collections.emptyList());
 
         paymentMethodService.deletePaymentMethod("1");
 

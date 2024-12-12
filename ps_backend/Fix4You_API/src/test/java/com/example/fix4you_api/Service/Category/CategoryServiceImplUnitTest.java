@@ -3,6 +3,7 @@ package com.example.fix4you_api.Service.Category;
 import com.example.fix4you_api.Data.Models.Category;
 import com.example.fix4you_api.Data.MongoRepositories.CategoryRepository;
 import com.example.fix4you_api.Service.CategoryDescription.CategoryDescriptionService;
+import com.example.fix4you_api.Service.Service.ServiceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -28,6 +30,8 @@ public class CategoryServiceImplUnitTest {
     private CategoryServiceImpl categoryService;
 
     private Category testCategory;
+    @Mock
+    private ServiceService serviceService;
 
     @BeforeEach
     void setup() {
@@ -73,6 +77,7 @@ public class CategoryServiceImplUnitTest {
         // Mock behavior
         when(categoryRepository.findById("1")).thenReturn(Optional.of(testCategory));
         when(categoryRepository.save(any(Category.class))).thenReturn(testCategory);
+        when(serviceService.getServicesByCategoryId(any())).thenReturn(emptyList());
 
         // Test updateCategory
         testCategory.setName("Updated Category");
