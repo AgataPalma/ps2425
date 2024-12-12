@@ -35,45 +35,11 @@ public class ProfessionalFeeController {
     private final ProfessionalsFeeService professionalsFeeService;
     private final ProfessionalService professionalService;
 
-    // Map para associar o ID do profissional ao seu SseEmitter
-    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-
     // Endpoint SSE modificado para receber o ID do profissional
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamSse(@RequestParam String professionalId) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-
-        // Associa o emitter ao ID do profissional
-        emitters.put(professionalId, emitter);
-
-        // Remover o emitter quando a conexão for finalizada
-        emitter.onCompletion(() -> emitters.remove(professionalId));
-        emitter.onTimeout(() -> {
-            emitter.complete();
-            emitters.remove(professionalId);
-        });
-        emitter.onError((e) -> {
-            emitter.completeWithError(e);
-            emitters.remove(professionalId);
-        });
-
-        return emitter;
-    }
-
-    // Método para enviar mensagens a um profissional específico
-    private void sendSseMessageToProfessional(String professionalId, String message) {
-        SseEmitter emitter = emitters.get(professionalId);
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event()
-                    .name("message")
-                    .data(message));
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-                emitters.remove(professionalId);
-            }
-        }
+       return professionalsFeeService.streamSseEmitter(professionalId);
     }
 
     @PostMapping
@@ -109,7 +75,7 @@ public class ProfessionalFeeController {
         notificationService.createNotification(notification);
 
         // Enviar notificação via SSE
-        sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
+        professionalsFeeService.sendSseMessageToProfessional(notification.getProfessionalId(), "Você tem uma nova notificação");
 
         return new ResponseEntity<>(createdProfessionalsFee, HttpStatus.CREATED);
     }

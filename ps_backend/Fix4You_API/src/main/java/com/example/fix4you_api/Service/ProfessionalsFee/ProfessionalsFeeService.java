@@ -4,6 +4,7 @@ import com.example.fix4you_api.Data.Enums.PaymentStatusEnum;
 import com.example.fix4you_api.Data.Models.ProfessionalTotalSpent;
 import com.example.fix4you_api.Data.Models.ProfessionalsFee;
 import com.itextpdf.text.DocumentException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -23,4 +24,6 @@ public interface ProfessionalsFeeService {
     void deleteProfessionalFeesForProfessional(String professionalId);
     void checkAndCreateMonthlyFees();
     ProfessionalsFee setFeeAsPaid(String id) throws DocumentException;
+    SseEmitter streamSseEmitter(String professionalId);
+    void sendSseMessageToProfessional(String professionalId, String message);
 }
